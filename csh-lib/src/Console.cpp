@@ -42,7 +42,7 @@ void Console::setForegroundColor(u8 r, u8 g, u8 b) {
     std::wcout << s;
 }
 
-void Console::setColor(u8 br, u8 bg, u8 bb, u8 fr, u8 fg, u8 fb) {
+void Console::setColor(u8 fr, u8 fg, u8 fb, u8 br, u8 bg, u8 bb) {
     if (!withColor)
         return;
     std::wstring s = L"\033[38;2;";

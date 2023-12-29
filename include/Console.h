@@ -25,9 +25,9 @@ public:
 
     static void setForegroundColor(u8 r, u8 g, u8 b);
 
-    static void setColor(csh::Color &bc, csh::Color &fc) {
-        setColor(bc.r, bc.g, bc.b, fc.r, fc.g, fc.b);
+    static void setColor(csh::Color &fc, csh::Color &bc) {
+        setColor(fc.r, fc.g, fc.b, bc.r, bc.g, bc.b);
     }
 
-    static void setColor(u8 br, u8 bg, u8 bb, u8 fr, u8 fg, u8 fb);
+    static void setColor(u8 fr, u8 fg, u8 fb, u8 br, u8 bg, u8 bb);
 };
