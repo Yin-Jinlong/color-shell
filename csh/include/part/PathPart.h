@@ -6,19 +6,8 @@
 
 namespace csh {
 
-    class PathPartConfig : virtual public IconPartConfig {
-    public:
-        PathPartConfig(
-                const Color &foregroundColor,
-                const Color &backgroundColor,
-                const wchar_t *icon,
-                ShowMode showMode = ShowMode::AUTO,
-                std::wstring end = DefaultEnd,
-                bool passBgc = DefaultPassBgc,
-                int maxWidth = DefaultMaxWidth,
-                EllipsisPosition ellipsis = DefaultEllipsis);
+    struct PathPartConfig : IconPartConfig {
 
-        ~PathPartConfig();
     };
 
     class PathPart : public Part {
@@ -30,6 +19,10 @@ namespace csh {
         PathPartConfig *config;
 
         explicit PathPart(PathPartConfig &config, std::vector<std::wstring> &contents);
+
+        PathPart(PathPart &other);
+
+        ~PathPart();
 
         void update() override;
 

@@ -7,7 +7,24 @@
 #include <functional>
 
 csh::PathPart::PathPart(csh::PathPartConfig &config, std::vector<std::wstring> &contents) : Part(config, contents) {
-    this->config = &config;
+    this->config = new PathPartConfig;
+    this->config->foregroundColor = config.foregroundColor;
+    this->config->backgroundColor = config.backgroundColor;
+    this->config->icon = config.icon;
+    this->config->iconShowMode = config.iconShowMode;
+    this->config->end = config.end;
+    this->config->passBgc = config.passBgc;
+    this->config->maxWidth = config.maxWidth;
+    this->config->ellipsis = config.ellipsis;
+}
+
+csh::PathPart::PathPart(csh::PathPart &other) : PathPart(*other.config,
+                                                         other.contents) {
+
+}
+
+csh::PathPart::~PathPart() {
+    delete config;
 }
 
 void csh::PathPart::update() {
@@ -16,7 +33,7 @@ void csh::PathPart::update() {
     path = buf;
 }
 
-void csh::PathPart::printContents(){
+void csh::PathPart::printContents() {
     if (config->iconShowMode != ShowMode::NEVER) {
         std::wcout << this->config->icon;
     }
@@ -24,22 +41,3 @@ void csh::PathPart::printContents(){
     printContentString(0);
 }
 
-csh::PathPartConfig::PathPartConfig(const csh::Color &foregroundColor, const csh::Color &backgroundColor,
-                                    const wchar_t *icon, csh::ShowMode showMode, std::wstring end, bool passBgc,
-                                    int maxWidth, csh::EllipsisPosition ellipsis) :
-        IconPartConfig(foregroundColor,
-                       backgroundColor,
-                       icon, showMode, std::move(end),
-                       passBgc,
-                       maxWidth,
-                       ellipsis),
-        BasePartConfig(foregroundColor,
-                       backgroundColor,
-                       end,
-                       passBgc,
-                       maxWidth,
-                       ellipsis) {
-
-}
-
-csh::PathPartConfig::~PathPartConfig() = default;

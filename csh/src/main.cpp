@@ -4,6 +4,7 @@
 #include "color-shell.h"
 #include "part/PathPart.h"
 #include "part/Parts.h"
+#include "part/UserPart.h"
 
 #define SET_C_UTF_8(s) s.imbue(std::locale("en.UTF-8"))
 
@@ -27,12 +28,20 @@ int main() {
 
     int rc = 0;
     while (true) {
+        CONSOLE_SCREEN_BUFFER_INFO ocbi = {}, icbi = {};
+        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &ocbi);
+        GetConsoleScreenBufferInfo(GetStdHandle(STD_INPUT_HANDLE), &icbi);
+        if (ocbi.dwCursorPosition.X || icbi.dwCursorPosition.X) {
+            std::wcout << std::endl;
+        }
+
         parts.update();
         parts.print();
 
-        wchar_t buf[1024];
+        wchar_t buf[4096];
         Console::reset();
-        std::wcin.getline(buf, 1024);
+        _flushall();
+        std::wcin.getline(buf, 4096);
         std::wstring cmdLine(buf);
 
         if (cmdLine.empty()) {
@@ -59,13 +68,18 @@ BOOL WINAPI handleCtrlC(DWORD dwCtrlType) {
 }
 
 void initParts() {
-    auto pathPartConfig = csh::PathPartConfig(
-            csh::White,
-            csh::Color(240, 205, 100),
-            L" \uF413 ",
-            csh::ShowMode::AUTO
-    );
-    auto vector1 = std::vector<std::wstring>();
-    csh::PathPart pp(pathPartConfig, vector1);
-    parts += &pp;
+    csh::UserPartConfig userConfig;
+    userConfig.backgroundColor = csh::Color(68, 125, 222);
+    userConfig.icon = L"\uF4FF ";
+    auto userContents = std::vector<std::wstring>();
+    auto up = new csh::UserPart(userConfig, userContents);
+    parts += up;
+
+    csh::PathPartConfig pathPartConfig;
+    pathPartConfig.backgroundColor = csh::Color(240, 205, 100);
+    pathPartConfig.icon = L"\uF413 ";
+    pathPartConfig.iconShowMode = csh::ShowMode::AUTO;
+    auto pathContents = std::vector<std::wstring>();
+    auto pp = new csh::PathPart(pathPartConfig, pathContents);
+    parts += pp;
 }

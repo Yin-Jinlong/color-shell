@@ -1,6 +1,12 @@
 #include <part/Parts.h>
 #include "Console.h"
 
+csh::Parts::~Parts() {
+    for (auto &part: parts) {
+        delete part;
+    }
+}
+
 void csh::Parts::print() const {
     Console::reset();
     Console::setForegroundColor(parts[0]->config->backgroundColor);
@@ -30,7 +36,14 @@ void csh::Parts::update() {
     }
 }
 
-csh::Parts &csh::Parts::operator+=(csh::Part *part) {
-    parts.push_back(part);
+csh::Parts &csh::Parts::operator+=(csh::UserPart *part) {
+    auto p = new UserPart(*part);
+    parts.push_back(p);
+    return *this;
+}
+
+csh::Parts &csh::Parts::operator+=(csh::PathPart *part) {
+    auto p = new PathPart(*part);
+    parts.push_back(p);
     return *this;
 }

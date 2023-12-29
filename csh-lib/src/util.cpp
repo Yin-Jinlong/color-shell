@@ -8,8 +8,3 @@ std::wstring getCurrentDirectory() {
     return buffer;
 }
 
-CONSOLE_SCREEN_BUFFER_INFOEX getConsoleBufferInfo() {
-    CONSOLE_SCREEN_BUFFER_INFOEX info;
-    GetConsoleScreenBufferInfoEx(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-    return info;
-}
