@@ -2,13 +2,17 @@
 #include <Windows.h>
 #include "Console.h"
 #include "color-shell.h"
+#include "part/PathPart.h"
+#include "part/Parts.h"
 
-#define C_UTF_8 "C.UTF-8"
-#define SET_C_UTF_8(s) s.imbue(std::locale(C_UTF_8))
+#define SET_C_UTF_8(s) s.imbue(std::locale("en.UTF-8"))
 
 BOOL WINAPI handleCtrlC(DWORD dwCtrlType);
 
 ColorShell sh;
+csh::Parts parts;
+
+void initParts();
 
 int main() {
     SetConsoleCtrlHandler(handleCtrlC, TRUE);
@@ -19,13 +23,12 @@ int main() {
     SET_C_UTF_8(std::wcout);
     SET_C_UTF_8(std::wcerr);
 
+    initParts();
+
     int rc = 0;
     while (true) {
-        if (rc)
-            Console::setForegroundColor(255, 0, 0);
-        else
-            Console::setForegroundColor(0, 255, 0);
-        std::wcout << L"csh> ";
+        parts.update();
+        parts.print();
 
         wchar_t buf[1024];
         Console::reset();
@@ -53,4 +56,16 @@ int main() {
 
 BOOL WINAPI handleCtrlC(DWORD dwCtrlType) {
     return TRUE;
+}
+
+void initParts() {
+    auto pathPartConfig = csh::PathPartConfig(
+            csh::White,
+            csh::Color(240, 205, 100),
+            L" \uF413 ",
+            csh::ShowMode::AUTO
+    );
+    auto vector1 = std::vector<std::wstring>();
+    csh::PathPart pp(pathPartConfig, vector1);
+    parts += &pp;
 }

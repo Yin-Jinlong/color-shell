@@ -3,10 +3,10 @@
 #include <str/wstring-util.h>
 
 bool isWhitespace(wchar_t c) {
-    return c == L' '|| c == L'\t' || c == L'\r' || c == L'\n';
+    return c == L' ' || c == L'\t' || c == L'\r' || c == L'\n';
 }
 
-std::wstring wstr_trim(const std::wstring& str, bool start, bool end) {
+std::wstring wstr_trim(const std::wstring &str, bool start, bool end) {
     auto r = str.c_str();
     auto len = (int) str.size();
     auto s = 0, e = (int) str.size();
@@ -17,10 +17,18 @@ std::wstring wstr_trim(const std::wstring& str, bool start, bool end) {
         }
     }
     if (end) {
-        while (len && isWhitespace(r[e-1])) {
+        while (len && isWhitespace(r[e - 1])) {
             e--;
             len--;
         }
     }
     return str.substr(s, e - s + 1);
+}
+
+constexpr inline i64 WSTR_HASH(wchar_t *str) {
+    i64 hc = 0;
+    while (*str) {
+        hc = hc * 31 + *str++;
+    }
+    return hc;
 }
