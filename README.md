@@ -27,6 +27,7 @@
  │ │ └─ CMakeLists.txt⚙️
  │ └─ CMakeLists.txt⚙️
  ├─ csh💼
+ ├─ csh-lib💼
  ├─ lib📁
  ├─ CMakeLists.txt⚙️
  └─ LICENSE.md⚖️
