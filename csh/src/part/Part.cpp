@@ -45,17 +45,17 @@ void csh::Part::printWithMaxWidth(const BasePartConfig &config, const std::wstri
         case EllipsisPosition::NONE:
             break;
         case EllipsisPosition::START:
-            Console::print("...");
+            Console::print(L"...");
             Console::print(text.substr(len - maxWidth + 3));
             break;
         case EllipsisPosition::CENTER:
             Console::print(text.substr(0, maxWidth / 2 - 2));
-            Console::print("...");
+            Console::print(L"...");
             Console::print(text.substr(len - maxWidth / 2 + 1));
             break;
         case EllipsisPosition::END:
             Console::print(text.substr(0, maxWidth / 2 - 2));
-            Console::print("...");
+            Console::print(L"...");
             break;
     }
 }
@@ -63,7 +63,7 @@ void csh::Part::printWithMaxWidth(const BasePartConfig &config, const std::wstri
 void csh::Part::print() {
     Console::setColor(config->foregroundColor, config->backgroundColor);
     printContents();
-    Console::print(" ");
+    Console::print(L" ");
     Console::reset();
     if (config->passBgc || !next) {
         Console::setForegroundColor(config->backgroundColor);

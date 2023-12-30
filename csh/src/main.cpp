@@ -9,7 +9,7 @@
 #include "file.h"
 #include "util.h"
 
-#define SET_C_UTF_8(s) s.imbue(std::locale("en.UTF-8"))
+#define SET_UTF_8(s) s.imbue(std::locale(".UTF-8"))
 
 BOOL WINAPI handleCtrlC(DWORD dwCtrlType);
 
@@ -20,12 +20,13 @@ void initParts();
 
 int main() {
     SetConsoleCtrlHandler(handleCtrlC, TRUE);
-    _wsystem(L"chcp 65001>NUL");
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
     Console::setColorMode(true);
 
-    SET_C_UTF_8(std::wcin);
-    SET_C_UTF_8(std::wcout);
-    SET_C_UTF_8(std::wcerr);
+    SET_UTF_8(std::wcin);
+    SET_UTF_8(std::wcout);
+    SET_UTF_8(std::wcerr);
 
     initParts();
 

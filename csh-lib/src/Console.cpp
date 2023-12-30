@@ -60,10 +60,3 @@ void Console::print(const wchar_t *str) {
     std::cout << buf;
 }
 
-void Console::print(const std::string &str) {
-    print(str.c_str());
-}
-
-void Console::print(const char *str) {
-    std::cout << str;
-}
