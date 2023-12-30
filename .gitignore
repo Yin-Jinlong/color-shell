@@ -24,5 +24,4 @@ _deps
 *build*/
 
 ### OUT ###
-bin/
-lib/
+out/

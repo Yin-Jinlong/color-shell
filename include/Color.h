@@ -3,7 +3,7 @@
 #include <predef.h>
 
 namespace csh {
-    class LIB_API Color {
+    class DLL_OUT Color {
     public:
         u8 r, g, b;
 

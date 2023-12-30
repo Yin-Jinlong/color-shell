@@ -5,6 +5,7 @@
 
 #include <utility>
 #include <functional>
+#include <Console.h>
 
 csh::PathPart::PathPart(csh::PathPartConfig &config, std::vector<std::wstring> &contents) : Part(config, contents) {
     this->config = new PathPartConfig;
@@ -35,9 +36,9 @@ void csh::PathPart::update() {
 
 void csh::PathPart::printContents() {
     if (config->iconShowMode != ShowMode::NEVER) {
-        std::wcout << this->config->icon;
+        Console::print(config->icon);
     }
-    printWithMaxWidth(path);
+    printWithMaxWidth(*config, path);
     printContentString(0);
 }
 

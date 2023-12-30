@@ -1,3 +1,4 @@
+#include <windows.h>
 #include "Console.h"
 
 
@@ -59,4 +60,30 @@ void Console::setColor(u8 fr, u8 fg, u8 fb, u8 br, u8 bg, u8 bb) {
     s += std::to_wstring(bb);
     s += L"m";
     std::wcout << s;
+}
+
+void Console::print(const std::wstring &str) {
+    print(str.c_str());
+}
+
+void Console::print(const wchar_t *str) {
+    if (!str)
+        return;
+    char buf[MAX_LINE_LENGTH];
+    if (!WideCharToMultiByte(
+            CP_UTF8, 0,
+            str, -1,
+            buf, MAX_LINE_LENGTH,
+            nullptr, nullptr)) {
+        throw std::runtime_error("Error : " + std::to_string(GetLastError()));
+    }
+    std::cout << buf;
+}
+
+void Console::print(const std::string &str) {
+    print(str.c_str());
+}
+
+void Console::print(const char *str) {
+    std::cout << str;
 }

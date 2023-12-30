@@ -23,7 +23,7 @@
 #endif
 
 namespace csh {
-    class LIB_API File {
+    class DLL_OUT File {
     private:
         std::wstring path;
         struct _stat32i64 stat{};

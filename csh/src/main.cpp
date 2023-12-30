@@ -5,6 +5,7 @@
 #include "part/PathPart.h"
 #include "part/Parts.h"
 #include "part/UserPart.h"
+#include "part/PluginPart.h"
 
 #define SET_C_UTF_8(s) s.imbue(std::locale("en.UTF-8"))
 
@@ -77,9 +78,16 @@ void initParts() {
 
     csh::PathPartConfig pathPartConfig;
     pathPartConfig.backgroundColor = csh::Color(240, 205, 100);
-    pathPartConfig.icon = L"\uF413 ";
+    pathPartConfig.icon = L" \uF413 ";
     pathPartConfig.iconShowMode = csh::ShowMode::AUTO;
     auto pathContents = std::vector<std::wstring>();
     auto pp = new csh::PathPart(pathPartConfig, pathContents);
     parts += pp;
+
+    std::wstring pluginName = L"git";
+    csh::PartConfig pluginPartConfig;
+    pluginPartConfig.backgroundColor = csh::Color(250, 80, 40);
+    auto plugin = new csh::PluginPart(pluginPartConfig,pluginName);
+    parts += plugin;
+
 }

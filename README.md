@@ -19,7 +19,6 @@
 
 ```text
 项目📦
- ├─ bin📁
  ├─ commands💼
  │ └─ cmds🧰
  │ │ ├─ clear📘
@@ -28,7 +27,12 @@
  │ └─ CMakeLists.txt⚙️
  ├─ csh💼
  ├─ csh-lib💼
- ├─ lib📁
+ ├─ include🏷️
+ ├─ extras🧰
+ ├─ out📁
+ │  ├─ bin🛞
+ │  ├─ extras🔧
+ │  └─ LICENSE.md⚖️
  ├─ CMakeLists.txt⚙️
  └─ LICENSE.md⚖️
 ```

@@ -4,7 +4,7 @@
 #include "File.h"
 
 namespace csh {
-    class LIB_API FileStream {
+    class DLL_OUT FileStream {
     private:
         const csh::File *file= nullptr;
         FILE *handle = nullptr;

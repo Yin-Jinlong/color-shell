@@ -3,7 +3,7 @@
 #include <predef.h>
 #include "Color.h"
 
-class LIB_API Console {
+class DLL_OUT Console {
 private:
 
     static bool withColor;
@@ -30,4 +30,14 @@ public:
     }
 
     static void setColor(u8 fr, u8 fg, u8 fb, u8 br, u8 bg, u8 bb);
+
+    static void print(const std::string &str);
+
+    static void print(const std::wstring &str);
+
+    static void print(const wchar_t *str);
+
+    static void print(const char *str);
 };
+
+

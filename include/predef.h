@@ -6,7 +6,10 @@
 #include <cstdlib>
 #include <string>
 
-#define LIB_API __declspec(dllexport)
+#define MAX_LINE_LENGTH 1024
+
+#define DLL_OUT __declspec(dllexport)
+#define DLL_IN __declspec(dllimport)
 #define USE_RET [[nodiscard]]
 
 typedef int8_t i8;

@@ -1,6 +1,7 @@
 #include <part/UserPart.h>
 #include <windows.h>
 #include <Lmcons.h>
+#include "Console.h"
 
 
 csh::UserPart::UserPart(csh::UserPartConfig &config, std::vector<std::wstring> &contents) : Part(config, contents) {
@@ -31,8 +32,8 @@ void csh::UserPart::update() {
 
 void csh::UserPart::printContents() {
     if (config->iconShowMode != ShowMode::NEVER) {
-        std::wcout << this->config->icon;
+        Console::print(config->icon);
     }
-    std::wcout << user;
+    Console::print(user);
     printContentString(0);
 }

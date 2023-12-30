@@ -21,13 +21,14 @@ namespace csh {
     public:
         Color foregroundColor = Color(255, 255, 255);
         Color backgroundColor = Color(0, 0, 0);
-        std::wstring end=DefaultEnd;
-        bool passBgc= DefaultPassBgc;
-        int maxWidth= DefaultMaxWidth;
-        EllipsisPosition ellipsis= DefaultEllipsis;
+        std::wstring end = DefaultEnd;
+        bool passBgc = DefaultPassBgc;
     };
 
     struct BasePartConfig : csh::PartConfig {
+    public:
+        int maxWidth = DefaultMaxWidth;
+        EllipsisPosition ellipsis = DefaultEllipsis;
     };
 
     enum class ShowMode {

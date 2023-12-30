@@ -47,3 +47,9 @@ csh::Parts &csh::Parts::operator+=(csh::PathPart *part) {
     parts.push_back(p);
     return *this;
 }
+
+csh::Parts &csh::Parts::operator+=(csh::PluginPart *part) {
+    auto p = new PluginPart(*part);
+    parts.push_back(p);
+    return *this;
+}
