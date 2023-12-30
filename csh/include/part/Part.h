@@ -20,9 +20,7 @@ namespace csh {
 
         ~Part();
 
-        USE_RET virtual bool canShow() const;
-
-        virtual void update(UpdateType type);
+        virtual bool update(UpdateType type);
 
         virtual void printContents();
 

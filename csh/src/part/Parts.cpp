@@ -11,10 +11,16 @@ void csh::Parts::print() const {
     Console::reset();
     Console::setForegroundColor(parts[0]->config->backgroundColor);
     std::wcout << start;
-    std::vector<Part *> showList;
+    for (auto part: showList) {
+        part->print();
+    }
+}
+
+void csh::Parts::update(UpdateType type) {
     Part *last = nullptr;
+    showList.clear();
     for (auto part: parts) {
-        if (part->canShow()) {
+        if (part->update(type)) {
             showList.push_back(part);
             if (last) {
                 last->next = part;
@@ -25,15 +31,6 @@ void csh::Parts::print() const {
     }
     if (last)
         last->next = nullptr;
-    for (auto part: showList) {
-        part->print();
-    }
-}
-
-void csh::Parts::update(UpdateType type) {
-    for (auto &part: parts) {
-        part->update(type);
-    }
 }
 
 csh::Parts &csh::Parts::operator+=(csh::UserPart *part) {

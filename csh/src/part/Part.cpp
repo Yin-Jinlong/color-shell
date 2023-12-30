@@ -23,12 +23,8 @@ csh::Part::~Part() {
     delete config;
 }
 
-bool csh::Part::canShow() const {
+bool csh::Part::update(UpdateType type) {
     return true;
-}
-
-void csh::Part::update(UpdateType type) {
-
 }
 
 void csh::Part::printContents() {

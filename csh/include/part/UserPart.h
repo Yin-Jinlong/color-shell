@@ -24,7 +24,7 @@ namespace csh {
 
         ~UserPart();
 
-        void update(UpdateType type) override;
+        bool update(UpdateType type) override;
 
         void printContents() override;
     };

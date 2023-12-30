@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(lib CXX)
 
+set_msvc_utf_flags()
+
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/../csh)
 
 file(GLOB LIB_SRCS

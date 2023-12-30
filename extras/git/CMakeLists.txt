@@ -11,6 +11,7 @@ file(GLOB
 )
 
 add_library(csh-git SHARED ${CSH_GIT_SRCS})
+target_link_libraries(csh-git csh-lib)
 
 add_custom_target(build-csh-git ALL
         DEPENDS csh-git

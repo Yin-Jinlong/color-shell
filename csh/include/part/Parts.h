@@ -11,6 +11,7 @@ namespace csh {
     class Parts {
     private:
         std::vector<csh::Part *> parts;
+        std::vector<Part *> showList;
     public:
         const wchar_t start[2] = L"\ue0b6";
 

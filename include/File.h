@@ -56,5 +56,7 @@ namespace csh {
 
         USE_RET std::wstring getPath()const;
 
+        USE_RET std::wstring getFileName()const;
+
     };
 }

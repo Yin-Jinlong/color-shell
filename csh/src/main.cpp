@@ -43,6 +43,7 @@ int main() {
         csh::File wdir(getCurrentDirectory());
         if (!parts.cd && wdir.lastModified() != parts.lastModifiedTime) {
             parts.update(csh::UpdateType::WORK_DIR_CHANGED);
+            parts.lastModifiedTime = wdir.lastModified();
         } else {
             parts.cd = false;
             parts.update(csh::UpdateType::UPDATE);

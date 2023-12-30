@@ -25,9 +25,7 @@ namespace csh {
 
         ~PluginPart();
 
-        USE_RET bool canShow() const override;
-
-        void update(UpdateType type) override;
+        bool update(UpdateType type) override;
 
         void printContents() override;
     };

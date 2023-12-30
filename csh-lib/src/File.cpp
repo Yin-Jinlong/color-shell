@@ -69,4 +69,8 @@ std::wstring csh::File::getPath() const {
     return path;
 }
 
+std::wstring csh::File::getFileName() const {
+    std::wstring fullPath = absolutePath();
+    return fullPath.substr(fullPath.find_last_of(L"/\\") + 1);
+}
 

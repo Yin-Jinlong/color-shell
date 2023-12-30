@@ -30,13 +30,11 @@ csh::PluginPart::~PluginPart() {
     FreeLibrary(hModule);
 }
 
-bool csh::PluginPart::canShow() const {
-    return canShowFn && canShowFn();
-}
-
-void csh::PluginPart::update(UpdateType type) {
-    if (updateType <= type)
+bool csh::PluginPart::update(UpdateType type) {
+    if (updateType <= type) {
         onUpdatePlugin && onUpdatePlugin(parts);
+        return canShowFn && canShowFn();
+    }
 }
 
 void csh::PluginPart::printContents() {

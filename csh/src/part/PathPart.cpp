@@ -28,12 +28,13 @@ csh::PathPart::~PathPart() {
     delete config;
 }
 
-void csh::PathPart::update(UpdateType type) {
+bool csh::PathPart::update(UpdateType type) {
     if (type > UpdateType::WORK_DIR_CHANGED)
-        return;
+        return true;
     wchar_t buf[MAX_PATH];
     _wgetcwd(buf, MAX_PATH);
     path = buf;
+    return true;
 }
 
 void csh::PathPart::printContents() {
