@@ -20,46 +20,26 @@ void Console::reset(bool all) {
 void Console::setBackgroundColor(u8 r, u8 g, u8 b) {
     if (!withColor)
         return;
-    std::wstring s = L"\033[48;2;";
-    s += std::to_wstring(r);
-    s += L";";
-    s += std::to_wstring(g);
-    s += L";";
-    s += std::to_wstring(b);
-    s += L"m";
-    std::wcout << s;
+    std::wcout << std::format(
+            L"\033[48;2;{};{};{}m",
+            r, g, b);
 }
 
 void Console::setForegroundColor(u8 r, u8 g, u8 b) {
     if (!withColor)
         return;
-    std::wstring s = L"\033[38;2;";
-    s += std::to_wstring(r);
-    s += L";";
-    s += std::to_wstring(g);
-    s += L";";
-    s += std::to_wstring(b);
-    s += L"m";
-    std::wcout << s;
+    std::wcout << std::format(
+            L"\033[38;2;{};{};{}m",
+            r, g, b);
 }
 
 void Console::setColor(u8 fr, u8 fg, u8 fb, u8 br, u8 bg, u8 bb) {
     if (!withColor)
         return;
-    std::wstring s = L"\033[38;2;";
-    s += std::to_wstring(fr);
-    s += L";";
-    s += std::to_wstring(fg);
-    s += L";";
-    s += std::to_wstring(fb);
-    s += L";48;2;";
-    s += std::to_wstring(br);
-    s += L";";
-    s += std::to_wstring(bg);
-    s += L";";
-    s += std::to_wstring(bb);
-    s += L"m";
-    std::wcout << s;
+    std::wcout << std::format(
+            L"\033[38;2;{};{};{};48;2;{};{};{}m",
+            fr, fg, fb,
+            br, bg, bb);
 }
 
 void Console::print(const std::wstring &str) {
