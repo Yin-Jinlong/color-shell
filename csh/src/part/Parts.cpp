@@ -30,9 +30,9 @@ void csh::Parts::print() const {
     }
 }
 
-void csh::Parts::update() {
+void csh::Parts::update(UpdateType type) {
     for (auto &part: parts) {
-        part->update();
+        part->update(type);
     }
 }
 

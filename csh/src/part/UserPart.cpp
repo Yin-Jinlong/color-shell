@@ -23,7 +23,9 @@ csh::UserPart::~UserPart() {
     delete config;
 }
 
-void csh::UserPart::update() {
+void csh::UserPart::update(UpdateType type) {
+    if (type > UpdateType::INIT)
+        return;
     wchar_t buf[UNLEN + 1];
     DWORD len = UNLEN + 1;
     GetUserNameW(buf, &len);

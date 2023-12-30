@@ -6,6 +6,8 @@
 #include "part/Parts.h"
 #include "part/UserPart.h"
 #include "part/PluginPart.h"
+#include "file.h"
+#include "util.h"
 
 #define SET_C_UTF_8(s) s.imbue(std::locale("en.UTF-8"))
 
@@ -27,6 +29,8 @@ int main() {
 
     initParts();
 
+    parts.update(csh::UpdateType::INIT);
+
     int rc = 0;
     while (true) {
         CONSOLE_SCREEN_BUFFER_INFO ocbi = {}, icbi = {};
@@ -36,7 +40,14 @@ int main() {
             std::wcout << std::endl;
         }
 
-        parts.update();
+        csh::File wdir(getCurrentDirectory());
+        if (!parts.cd && wdir.lastModified() != parts.lastModifiedTime) {
+            parts.update(csh::UpdateType::WORK_DIR_CHANGED);
+        } else {
+            parts.cd = false;
+            parts.update(csh::UpdateType::UPDATE);
+        }
+
         parts.print();
 
         wchar_t buf[4096];
@@ -87,7 +98,7 @@ void initParts() {
     std::wstring pluginName = L"git";
     csh::PartConfig pluginPartConfig;
     pluginPartConfig.backgroundColor = csh::Color(250, 80, 40);
-    auto plugin = new csh::PluginPart(pluginPartConfig,pluginName);
+    auto plugin = new csh::PluginPart(pluginPartConfig, pluginName);
     parts += plugin;
 
 }

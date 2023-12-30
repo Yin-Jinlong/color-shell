@@ -16,10 +16,14 @@ csh::PluginPart::PluginPart(csh::PartConfig &config, std::wstring &name) : Part(
     }
     onLoadPluginFn = (CShOnLoadPluginFn) GetProcAddress(hModule, "CShOnLoadPlugin");
     canShowFn = (CShCanShowFn) GetProcAddress(hModule, "CShCanShow");
-    updateTimeFn = (CShUpdateTimeFn) GetProcAddress(hModule, "CShUpdateTime");
+    updateTypeFn = (CShUpdateTypeFn) GetProcAddress(hModule, "CShUpdateType");
     onUpdatePlugin = (CShOnUpdateFn) GetProcAddress(hModule, "CShOnUpdate");
+
     std::map<std::wstring, std::wstring> pconfig;
     onLoadPluginFn && onLoadPluginFn(pconfig);
+
+    if (updateTypeFn)
+        updateType = updateTypeFn();
 }
 
 csh::PluginPart::~PluginPart() {
@@ -30,8 +34,9 @@ bool csh::PluginPart::canShow() const {
     return canShowFn && canShowFn();
 }
 
-void csh::PluginPart::update() {
-    onUpdatePlugin && onUpdatePlugin(parts);
+void csh::PluginPart::update(UpdateType type) {
+    if (updateType <= type)
+        onUpdatePlugin && onUpdatePlugin(parts);
 }
 
 void csh::PluginPart::printContents() {

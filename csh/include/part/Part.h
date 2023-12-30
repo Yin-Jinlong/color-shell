@@ -3,6 +3,7 @@
 #include <predef.h>
 #include <vector>
 #include "PartConfig.h"
+#include "csh-plugin.h"
 
 namespace csh {
 
@@ -21,7 +22,7 @@ namespace csh {
 
         USE_RET virtual bool canShow() const;
 
-        virtual void update();
+        virtual void update(UpdateType type);
 
         virtual void printContents();
 

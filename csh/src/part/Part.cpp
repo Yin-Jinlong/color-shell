@@ -27,7 +27,7 @@ bool csh::Part::canShow() const {
     return true;
 }
 
-void csh::Part::update() {
+void csh::Part::update(UpdateType type) {
 
 }
 

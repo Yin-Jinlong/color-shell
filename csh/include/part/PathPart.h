@@ -24,7 +24,7 @@ namespace csh {
 
         ~PathPart();
 
-        void update() override;
+        void update(UpdateType type) override;
 
         void printContents() override;
     };

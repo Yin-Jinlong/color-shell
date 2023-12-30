@@ -11,11 +11,13 @@ namespace csh {
     private:
         HMODULE hModule;
         CShOnLoadPluginFn onLoadPluginFn;
-        CShUpdateTimeFn updateTimeFn;
+        CShUpdateTypeFn updateTypeFn;
         CShCanShowFn canShowFn;
         CShOnUpdateFn onUpdatePlugin;
 
         std::vector<ColorStrPart> parts;
+
+        UpdateType updateType;
     public:
         std::wstring name;
 
@@ -25,7 +27,7 @@ namespace csh {
 
         USE_RET bool canShow() const override;
 
-        void update() override;
+        void update(UpdateType type) override;
 
         void printContents() override;
     };

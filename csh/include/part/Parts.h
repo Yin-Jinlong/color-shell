@@ -14,13 +14,17 @@ namespace csh {
     public:
         const wchar_t start[2] = L"\ue0b6";
 
+        u32 lastModifiedTime = 0;
+
+        bool cd= false;
+
         Parts() = default;
 
         ~Parts();
 
         void print() const;
 
-        void update();
+        void update(UpdateType type);
 
         Parts &operator+=(csh::UserPart *part);
 

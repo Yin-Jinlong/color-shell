@@ -28,7 +28,9 @@ csh::PathPart::~PathPart() {
     delete config;
 }
 
-void csh::PathPart::update() {
+void csh::PathPart::update(UpdateType type) {
+    if (type > UpdateType::WORK_DIR_CHANGED)
+        return;
     wchar_t buf[MAX_PATH];
     _wgetcwd(buf, MAX_PATH);
     path = buf;
