@@ -8,12 +8,14 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/Yin-Jinlong/color-shell)
 ![GitHub forks](https://img.shields.io/github/forks/Yin-Jinlong/color-shell)
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
-![Total Lines](https://img.shields.io/badge/total_lines-1465-9a9a9a)
+![Total Lines](https://img.shields.io/badge/total_lines-2000-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell/main?label=commit%20main)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/Yin-Jinlong/color-shell/main)
+
+程序使用`UTF-8`环境，部分win命令使用系统默认编码，会出现乱码，请使用替代命令。
 
 ## 项目结构🗂️
 
