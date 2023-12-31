@@ -8,36 +8,35 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/Yin-Jinlong/color-shell)
 ![GitHub forks](https://img.shields.io/github/forks/Yin-Jinlong/color-shell)
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
-![Total Lines](https://img.shields.io/badge/total_lines-2000-9a9a9a)
+![Total Lines](https://img.shields.io/badge/total_lines-1374-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
-![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell/main?label=commit%20main)
+![GitHub contributors](https://img.shields.io/github/contributors/Yin-Jinlong/color-shell)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/Yin-Jinlong/color-shell/main)
 
 程序使用`UTF-8`环境。
 
 ## 项目结构🗂️
 
-```text
-项目📦
- ├─ commands💼
- │ └─ cmds🧰
- │ │ ├─ clear📘
- │ │ ├─ pwd📘
- │ │ └─ CMakeLists.txt⚙️
- │ └─ CMakeLists.txt⚙️
- ├─ csh💼
- ├─ csh-lib💼
- ├─ include🏷️
- ├─ extras🧰
- ├─ out📁
- │  ├─ bin🛞
- │  ├─ extras🔧
- │  └─ LICENSE.md⚖️
- ├─ CMakeLists.txt⚙️
- └─ LICENSE.md⚖️
-```
+**项目📦**
+
+- [commands](./commands/README.md)💼
+    - [cmds](./commands/README.md)🧰
+        - [clear](./commands/cmds/clear/README.md)📘
+        - [pwd](./commands/cmds/pwd/README.md)📘
+        - CMakeLists.txt⚙️
+    - CMakeLists.txt⚙️
+- [csh](./csh/README.md)💼
+- [csh-lib](./csh-lib/README.md)💼
+- include🏷️公开可用头文件(csh-lib)
+- [extras](./extras/README.md)🧰
+- out📁项目输出
+    - bin🛞
+    - extras🔧
+    - LICENSE.md⚖️
+- CMakeLists.txt⚙️
+- [LICENSE.md](./LICENSE.md)⚖️
 
 ## 环境要求 🌏
 
@@ -47,7 +46,7 @@
 
 ## 编译 🔨
 
-构建目标`build`，可执行文件位于`bin`目录下
+构建目标`build`，所有输出在`out`目录下
 
 ## Windows Terminal配置 ![Terminal](https://img.shields.io/badge/%3E__-3c3c3c)
 
@@ -64,11 +63,6 @@
 - ✅ 当前用户名
 - ✅ 工作目录
 - ✅ 执行结果*
-
-**git**
-
-- 🔲 项目
-- 🔲 文件变动
-- 🔲 当前分支
+- ✅ [插件](./extras/README.md)*
 
 <small style="color:rgba(128,128,128,0.5)">注：*为基本完成，未勾选标识正在进行或将要进行</small>
