@@ -10,6 +10,7 @@ std::wstring getCurrentDirectory() {
 
 
 std::string getProcessOutput(const std::wstring &cmdLine) {
+    // TODO ReadFile卡死
     SECURITY_ATTRIBUTES sa = {0};
     HANDLE hRead = nullptr, hWrite = nullptr;
     sa.nLength = sizeof(SECURITY_ATTRIBUTES);

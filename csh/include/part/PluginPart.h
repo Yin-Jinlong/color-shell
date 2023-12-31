@@ -13,7 +13,7 @@ namespace csh {
         CShOnLoadPluginFn onLoadPluginFn;
         CShUpdateTypeFn updateTypeFn;
         CShCanShowFn canShowFn;
-        CShOnUpdateFn onUpdatePlugin;
+        CShOnUpdateFn onUpdateFn;
 
         std::vector<ColorStrPart> parts;
 
