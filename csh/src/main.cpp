@@ -99,10 +99,12 @@ void initParts() {
     auto pp = new csh::PathPart(pathPartConfig, pathContents);
     parts += pp;
 
-    std::wstring pluginName = L"git";
-    csh::PartConfig pluginPartConfig;
-    pluginPartConfig.backgroundColor = csh::Color(250, 80, 40);
-    auto plugin = new csh::PluginPart(pluginPartConfig, pluginName);
-    parts += plugin;
+    csh::PartConfig nodePluginPartConfig;
+    nodePluginPartConfig.backgroundColor = csh::Color(67, 133, 61);
+    parts += new csh::PluginPart(nodePluginPartConfig, std::wstring(L"node"));
+
+    csh::PartConfig gitPluginPartConfig;
+    gitPluginPartConfig.backgroundColor = csh::Color(250, 80, 40);
+    parts += new csh::PluginPart(gitPluginPartConfig, L"git");
 
 }

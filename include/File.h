@@ -54,9 +54,13 @@ namespace csh {
 
         csh::FileStream open(const wchar_t *mode);
 
-        USE_RET std::wstring getPath()const;
+        USE_RET std::wstring getPath() const;
 
-        USE_RET std::wstring getFileName()const;
+        USE_RET std::wstring getFileName() const;
+
+        USE_RET File getParent() const;
+
+        bool operator==(const File &other) const;
 
     };
 }

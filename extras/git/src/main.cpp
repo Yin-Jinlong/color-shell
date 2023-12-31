@@ -31,13 +31,15 @@ void addModified(std::vector<csh::ColorStrPart> &parts) {
 void addBranch(std::vector<csh::ColorStrPart> &parts) {
     auto branch = getProcessOutput(L"git rev-parse --abbrev-ref HEAD");
     branch.erase(branch.end() - 1);
+    if (branch.length() > 32)
+        return;
     auto b = str_to_wstr(CP_UTF8, branch);
     parts.push_back(csh::ColorStrPart(std::format(L"\U000f062c {}", std::wstring(b)), csh::White));
 }
 
 DLL_OUT CallResult CShOnUpdate(std::vector<csh::ColorStrPart> &parts) {
     parts.clear();
-    parts.push_back(csh::ColorStrPart(L"\U000f02a2 ", csh::White));
+    parts.push_back(csh::ColorStrPart(L" \U000f02a2 ", csh::White));
     addModified(parts);
     addBranch(parts);
     return CSH_CALL_FN_SUCCESS;

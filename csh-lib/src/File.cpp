@@ -74,3 +74,15 @@ std::wstring csh::File::getFileName() const {
     return fullPath.substr(fullPath.find_last_of(L"/\\") + 1);
 }
 
+csh::File csh::File::getParent() const {
+    auto p = absolutePath();
+    unsigned int i = p.find_last_of('\\');
+    if (p.find_first_of('\\') == i)
+        return csh::File(p);
+    return File(p.substr(0, i));
+}
+
+bool csh::File::operator==(const csh::File &other) const {
+    return absolutePath() == other.absolutePath();
+}
+

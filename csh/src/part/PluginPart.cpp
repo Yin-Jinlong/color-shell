@@ -1,7 +1,7 @@
 #include <part/PluginPart.h>
 #include "Console.h"
 
-csh::PluginPart::PluginPart(csh::PartConfig &config, std::wstring &name) : Part(config) {
+csh::PluginPart::PluginPart(csh::PartConfig &config, std::wstring name) : Part(config) {
     this->name = name;
 
     std::wstring path = L"../extras/";
