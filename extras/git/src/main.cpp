@@ -1,6 +1,7 @@
 #include <predef.h>
 #include <csh-plugin.h>
 #include "util.h"
+#include "str/wstring-util.h"
 
 extern "C" {
 DLL_OUT CallResult CShOnLoadPlugin(std::map<std::wstring, std::wstring> &config) {
@@ -17,9 +18,17 @@ DLL_OUT bool CShCanShow() {
     return gitOut == "true\n";
 }
 
+void addBranch(std::vector<csh::ColorStrPart> &parts) {
+    auto branch = getProcessOutput(L"git rev-parse --abbrev-ref HEAD");
+    branch.erase(branch.end() - 1);
+    auto b = str_to_wstr(CP_UTF8, branch);
+    parts.push_back(csh::ColorStrPart(std::format(L"\U000f062c {}", std::wstring(b)), csh::White));
+}
+
 DLL_OUT CallResult CShOnUpdate(std::vector<csh::ColorStrPart> &parts) {
     parts.clear();
-    parts.push_back(csh::ColorStrPart(L"\U000f02a2", csh::Color(0, 0, 0)));
+    parts.push_back(csh::ColorStrPart(L"\U000f02a2 ", csh::White));
+    addBranch(parts);
     return CSH_CALL_FN_SUCCESS;
 }
 }
