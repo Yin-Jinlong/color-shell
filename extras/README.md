@@ -12,6 +12,6 @@ csh插件
 
 - ✅ [git](./git/README.md)*
 - 🔲 gradle
-- ✅ [node](./node/README.md)
+- ✅ [node](./node/README.md)*
 
 <small style="color:rgba(128,128,128,0.5)">注：*为基本完成，未勾选标识正在进行或将要进行</small>

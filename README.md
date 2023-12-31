@@ -8,7 +8,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/Yin-Jinlong/color-shell)
 ![GitHub forks](https://img.shields.io/github/forks/Yin-Jinlong/color-shell)
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
-![Total Lines](https://img.shields.io/badge/total_lines-1408-9a9a9a)
+![Total Lines](https://img.shields.io/badge/total_lines-1503-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
@@ -31,6 +31,8 @@
 - [csh-lib](./csh-lib/README.md)💼
 - include🏷️公开可用头文件(csh-lib)
 - [extras](./extras/README.md)🧰
+    - [git](./extras/git/README.md)📙
+    - [node](./extras/node/README.md)📙
 - out📁项目输出
     - bin🛞
     - extras🔧
@@ -53,7 +55,7 @@
 1. 打开终端设置，添加新配置文件
 2. 设置名称`ColorShell`
 3. 命令行为本程序路径
-4. 外观中配置Nerd字体(推荐[JetBrainsMono Nerd](https://www.jetbrains.com/lp/mono/))
+4. 外观中配置Nerd字体(推荐[JetBrainsMono Nerd](https://www.nerdfonts.com/font-downloads))
 
 ## 进度 🏗️⏳♾️
 
