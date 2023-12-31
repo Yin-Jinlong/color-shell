@@ -15,7 +15,7 @@
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell/main?label=commit%20main)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/Yin-Jinlong/color-shell/main)
 
-程序使用`UTF-8`环境，部分win命令使用系统默认编码，会出现乱码，请使用替代命令。
+程序使用`UTF-8`环境。
 
 ## 项目结构🗂️
 
