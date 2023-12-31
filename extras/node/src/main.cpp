@@ -29,10 +29,14 @@ DLL_OUT bool CShCanShow() {
 }
 
 void addVersion(std::vector<csh::ColorStrPart> &parts) {
-    auto v = getProcessOutput(L"node -v");
-    v.erase(v.end() - 1);
-    v.erase(v.end() - 1);
-    parts.push_back(csh::ColorStrPart(str_to_wstr(CP_UTF8, v), csh::White));
+    try {
+        auto v = getProcessOutput(L"node -v");
+        v.erase(v.end() - 1);
+        v.erase(v.end() - 1);
+        parts.push_back(csh::ColorStrPart(str_to_wstr(CP_UTF8, v), csh::White));
+    } catch (...) {
+        parts.push_back(csh::ColorStrPart(L"v?.?.?", csh::White));
+    }
 }
 
 DLL_OUT CallResult CShOnUpdate(std::vector<csh::ColorStrPart> &parts) {

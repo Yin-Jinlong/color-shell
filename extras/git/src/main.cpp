@@ -14,8 +14,12 @@ DLL_OUT csh::UpdateType CShUpdateType() {
 }
 
 DLL_OUT bool CShCanShow() {
-    auto gitOut = getProcessOutput(L"git rev-parse --is-inside-work-tree");
-    return gitOut == "true\n";
+    try {
+        auto gitOut = getProcessOutput(L"git rev-parse --is-inside-work-tree");
+        return gitOut == "true\n";
+    } catch (...) {
+    }
+    return false;
 }
 
 void addModified(std::vector<csh::ColorStrPart> &parts) {
