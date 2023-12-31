@@ -18,6 +18,16 @@ DLL_OUT bool CShCanShow() {
     return gitOut == "true\n";
 }
 
+void addModified(std::vector<csh::ColorStrPart> &parts) {
+    auto modified = getProcessOutput(L"git diff --shortstat");
+    modified.erase(modified.begin());
+    auto i = modified.find_first_of(' ');
+    if (i == std::string::npos)
+        return;
+    auto s = str_to_wstr(CP_UTF8, modified.substr(0, i));
+    parts.push_back(csh::ColorStrPart(std::format(L"\uF4D2 *{} ", s), csh::White));
+}
+
 void addBranch(std::vector<csh::ColorStrPart> &parts) {
     auto branch = getProcessOutput(L"git rev-parse --abbrev-ref HEAD");
     branch.erase(branch.end() - 1);
@@ -28,6 +38,7 @@ void addBranch(std::vector<csh::ColorStrPart> &parts) {
 DLL_OUT CallResult CShOnUpdate(std::vector<csh::ColorStrPart> &parts) {
     parts.clear();
     parts.push_back(csh::ColorStrPart(L"\U000f02a2 ", csh::White));
+    addModified(parts);
     addBranch(parts);
     return CSH_CALL_FN_SUCCESS;
 }
