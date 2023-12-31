@@ -32,3 +32,14 @@ constexpr inline i64 WSTR_HASH(wchar_t *str) {
     }
     return hc;
 }
+
+std::wstring str_to_wstr(UINT codepage, const std::string &str) {
+    if (str.empty())
+        return L"";
+    auto len = MultiByteToWideChar(codepage, 0, str.c_str(), -1, nullptr, 0);
+    auto *buf = (wchar_t *) malloc(sizeof(wchar_t) * len);
+    MultiByteToWideChar(codepage, 0, str.c_str(), -1, buf, len);
+    auto r = std::wstring((const wchar_t *)buf);
+    free(buf);
+    return r;
+}

@@ -50,7 +50,6 @@ std::string getProcessOutput(const std::wstring &cmdLine) {
     WaitForSingleObject(pi.hProcess, INFINITE);
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
-    CloseHandle(hWrite);
     CloseHandle(hRead);
 
     return out;
