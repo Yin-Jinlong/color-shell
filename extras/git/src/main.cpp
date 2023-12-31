@@ -9,7 +9,7 @@ DLL_OUT CallResult CShOnLoadPlugin(std::map<std::wstring, std::wstring> &config)
     return CSH_CALL_FN_SUCCESS;
 }
 
-DLL_OUT csh::UpdateType CShUpdateTime() {
+DLL_OUT csh::UpdateType CShUpdateType() {
     return csh::UpdateType::DIR_MODIFIED;
 }
 

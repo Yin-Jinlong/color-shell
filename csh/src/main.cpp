@@ -19,7 +19,7 @@ csh::Parts parts;
 void initParts();
 
 int main() {
-    auto def=GetConsoleOutputCP();
+    auto def = GetConsoleOutputCP();
     SetConsoleCtrlHandler(handleCtrlC, TRUE);
     SetConsoleCP(CP_UTF8);
     Console::setColorMode(true);

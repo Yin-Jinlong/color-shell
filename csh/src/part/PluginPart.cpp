@@ -1,7 +1,7 @@
 #include <part/PluginPart.h>
 #include "Console.h"
 
-csh::PluginPart::PluginPart(csh::PartConfig &config, std::wstring name) : Part(config) {
+csh::PluginPart::PluginPart(csh::PartConfig &config, const std::wstring &name) : Part(config) {
     this->name = name;
 
     std::wstring path = L"../extras/";
@@ -31,13 +31,11 @@ csh::PluginPart::~PluginPart() {
 }
 
 bool csh::PluginPart::update(UpdateType type) {
-    if (updateType <= type) {
-        auto s = canShowFn && canShowFn();
-        if (s)
-            onUpdateFn && onUpdateFn(parts);
-        return s;
+    auto s = canShowFn && canShowFn();
+    if (type <= updateType && s && onUpdateFn) {
+        onUpdateFn(parts);
     }
-    return true;
+    return s;
 }
 
 void csh::PluginPart::printContents() {

@@ -21,7 +21,7 @@ namespace csh {
     public:
         std::wstring name;
 
-        explicit PluginPart(csh::PartConfig &config,std::wstring name);
+        explicit PluginPart(csh::PartConfig &config,const std::wstring& name);
 
         ~PluginPart();
 
