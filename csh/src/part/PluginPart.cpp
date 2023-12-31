@@ -35,6 +35,7 @@ bool csh::PluginPart::update(UpdateType type) {
         onUpdatePlugin && onUpdatePlugin(parts);
         return canShowFn && canShowFn();
     }
+    return true;
 }
 
 void csh::PluginPart::printContents() {
