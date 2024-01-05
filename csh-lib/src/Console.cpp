@@ -12,34 +12,54 @@ void Console::setColorMode(bool on) {
 
 void Console::reset(bool all) {
     if (all)
-        std::wcout << L"\033c";
+        print(L"\033c");
     else
-        std::wcout << L"\033[0m";
+        print(L"\033[0m");
 }
 
 void Console::setBackgroundColor(u8 r, u8 g, u8 b) {
     if (!withColor)
         return;
-    std::wcout << std::format(
+    print(std::format(
             L"\033[48;2;{};{};{}m",
-            r, g, b);
+            r, g, b));
 }
 
 void Console::setForegroundColor(u8 r, u8 g, u8 b) {
     if (!withColor)
         return;
-    std::wcout << std::format(
+    print(std::format(
             L"\033[38;2;{};{};{}m",
-            r, g, b);
+            r, g, b));
 }
 
 void Console::setColor(u8 fr, u8 fg, u8 fb, u8 br, u8 bg, u8 bb) {
     if (!withColor)
         return;
-    std::wcout << std::format(
+    print(std::format(
             L"\033[38;2;{};{};{};48;2;{};{};{}m",
             fr, fg, fb,
-            br, bg, bb);
+            br, bg, bb));
+}
+
+void Console::moveCursorUp(int n) {
+    print(std::format(L"\033[{}A", n));
+}
+
+void Console::moveCursorDown(int n) {
+    print(std::format(L"\033[{}B", n));
+}
+
+void Console::moveCursorLeft(int n) {
+    print(std::format(L"\033[{}D", n));
+}
+
+void Console::moveCursorRight(int n) {
+    print(std::format(L"\033[{}C", n));
+}
+
+void Console::clear(int flag) {
+    print(std::format(L"\033[{}J", flag));
 }
 
 void Console::print(const std::wstring &str) {
@@ -59,4 +79,13 @@ void Console::print(const wchar_t *str) {
     }
     std::cout << buf;
 }
+
+void Console::print(wchar_t c) {
+    std::wcout << c;
+}
+
+void Console::printNum(int i) {
+    std::wcout << i;
+}
+
 

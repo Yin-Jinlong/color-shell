@@ -31,9 +31,29 @@ public:
 
     static void setColor(u8 fr, u8 fg, u8 fb, u8 br, u8 bg, u8 bb);
 
+    static void moveCursorUp(int n);
+
+    static void moveCursorDown(int n);
+
+    static void moveCursorLeft(int n);
+
+    static void moveCursorRight(int n);
+
+    const static int CLEAR_CURSOR_TO_END   = 0;
+    const static int CLEAR_CURSOR_TO_START = 1;
+    const static int CLEAR_VIEW_ALL        = 2;
+    const static int CLEAR_ALL             = 3;
+
+    static void clear(int flag);
+
     static void print(const std::wstring &str);
 
     static void print(const wchar_t *str);
+
+    static void print(wchar_t c);
+
+    static void printNum(int i);
+
 
 };
 
