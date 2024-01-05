@@ -20,6 +20,10 @@ _deps
 ### VS Code ###
 .vscode/
 
+### Third party ###
+
+third_party/externals/
+
 ### Build ###
 *build*/
 

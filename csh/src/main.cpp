@@ -19,9 +19,10 @@ csh::Parts parts;
 void initParts();
 
 int main() {
-    auto def = GetConsoleOutputCP();
+    auto defOut = GetConsoleOutputCP();
+    auto defIn = GetConsoleCP();
     SetConsoleCtrlHandler(handleCtrlC, TRUE);
-    SetConsoleCP(CP_UTF8);
+
     Console::setColorMode(true);
 
     SET_UTF_8(std::wcin);
@@ -41,6 +42,7 @@ int main() {
             std::wcout << std::endl;
         }
 
+        SetConsoleCP(CP_UTF8);
         SetConsoleOutputCP(CP_UTF8);
         csh::File wdir(getCurrentDirectory());
         if (!parts.cd && wdir.lastModified() != parts.lastModifiedTime) {
@@ -69,7 +71,8 @@ int main() {
 
         std::wstring cmd;
         try {
-            SetConsoleOutputCP(def);
+            SetConsoleCP(defIn);
+            SetConsoleOutputCP(defOut);
             if (sh.run(cmdLine, cmd, rc))
                 break;
         } catch (std::runtime_error &err) {
