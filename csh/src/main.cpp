@@ -76,7 +76,7 @@ int main() {
             if (sh.run(cmdLine, cmd, rc))
                 break;
         } catch (std::runtime_error &err) {
-            std::wcout << L"Unknown command or executable : " << cmd << std::endl;
+            std::wcerr << L"error: " << err.what() << std::endl;
         }
     }
     return EXIT_SUCCESS;
