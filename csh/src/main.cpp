@@ -153,12 +153,19 @@ void setCurPos(SHORT x, SHORT y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), {x, y});
 }
 
+std::vector<std::wstring> history;
+
 std::wstring input() {
+    ctrlC = false;
+
     updateConsoleInfo();
-    auto  sp = cbi.dwCursorPosition;
-    short i  = 0;
+    _COORD sp        = cbi.dwCursorPosition;
+    short  i         = 0;
+    int    hi        = history.size();
+    bool   hiChanged = false;
 
     std::wstring line;
+    std::wstring input;
     while (true) {
         if (_kbhit()) // 检查是否有按键按下
         {
@@ -179,6 +186,35 @@ std::wstring input() {
                         else
                             Console::moveCursorRight(1);
                         break;
+                    case SK_UP:
+                        if (history.empty())
+                            break;
+                        if (hi > 0)
+                            hi--;
+                        hiChanged = true;
+                        line = history[hi];
+                        setCurPos(sp);
+                        Console::clear();
+                        Console::print(line);
+                        i = line.size();
+                        break;
+                    case SK_DOWN:
+                        if (history.empty())
+                            break;
+                        hiChanged = true;
+                        if (hi < history.size())
+                            hi++;
+                        if (hi == history.size()) {
+                            line      = input;
+                            hiChanged = false;
+                        } else {
+                            line = history[hi];
+                        }
+                        setCurPos(sp);
+                        Console::clear();
+                        Console::print(line);
+                        i = line.size();
+                        break;
                 }
             } else {
                 if (c == '\t') {
@@ -191,7 +227,7 @@ std::wstring input() {
                         i--;
                         line.erase(line.begin() + i);
                         setCurPos(sp);
-                        Console::clear(Console::CLEAR_CURSOR_TO_END);
+                        Console::clear();
                         Console::print(line);
                         setCurPos(sp.X + i, sp.Y);
                     }
@@ -205,10 +241,14 @@ std::wstring input() {
                     setCurPos(sp.X + i, sp.Y);
                 }
             }
+            if (!hiChanged)
+                input = line;
         } else if (ctrlC) {
             ctrlC = false;
             return L"";
         }
     }
+    if (history.empty() || history[history.size() - 1] != line)
+        history.push_back(line);
     return line;
 }

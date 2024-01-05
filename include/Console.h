@@ -44,7 +44,7 @@ public:
     const static int CLEAR_VIEW_ALL        = 2;
     const static int CLEAR_ALL             = 3;
 
-    static void clear(int flag);
+    static void clear(int flag=CLEAR_CURSOR_TO_END);
 
     static void print(const std::wstring &str);
 
