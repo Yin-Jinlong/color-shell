@@ -155,6 +155,14 @@ void setCurPos(SHORT x, SHORT y) {
 
 std::vector<std::wstring> history;
 
+void reprint(const _COORD &src, const std::wstring &line) {
+    setCurPos(src);
+    Console::clear();
+    Console::print(line);
+}
+
+#define SetCursorToI() setCurPos(sp.X + i, sp.Y)
+
 std::wstring input() {
     ctrlC = false;
 
@@ -172,6 +180,13 @@ std::wstring input() {
             wchar_t c = _getwch();
             if (!c || c == 0xe0) {
                 switch (_getwch()) {
+                    case SK_DEL:
+                        if (line.empty() || i == line.size())
+                            break;
+                        line.erase(i, 1);
+                        reprint(sp, line);
+                        SetCursorToI();
+                        break;
                     case SK_LEFT:
                         i--;
                         if (i < 0)
@@ -192,10 +207,8 @@ std::wstring input() {
                         if (hi > 0)
                             hi--;
                         hiChanged = true;
-                        line = history[hi];
-                        setCurPos(sp);
-                        Console::clear();
-                        Console::print(line);
+                        line      = history[hi];
+                        reprint(sp, line);
                         i = line.size();
                         break;
                     case SK_DOWN:
@@ -210,9 +223,7 @@ std::wstring input() {
                         } else {
                             line = history[hi];
                         }
-                        setCurPos(sp);
-                        Console::clear();
-                        Console::print(line);
+                        reprint(sp, line);
                         i = line.size();
                         break;
                 }
@@ -226,19 +237,16 @@ std::wstring input() {
                     if (!line.empty()) {
                         i--;
                         line.erase(line.begin() + i);
-                        setCurPos(sp);
-                        Console::clear();
-                        Console::print(line);
-                        setCurPos(sp.X + i, sp.Y);
+                        reprint(sp, line);
+                        SetCursorToI();
                     }
                 } else {
                     if (c < ' ')
                         continue;
                     line.insert(line.begin() + i, c);
                     i++;
-                    setCurPos(sp);
-                    Console::print(line);
-                    setCurPos(sp.X + i, sp.Y);
+                    reprint(sp, line);
+                    SetCursorToI();
                 }
             }
             if (!hiChanged)
