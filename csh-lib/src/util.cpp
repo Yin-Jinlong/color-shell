@@ -55,3 +55,9 @@ std::string getProcessOutput(const std::wstring &cmdLine) {
 
     return out;
 }
+
+std::wstring getEnv(const std::wstring &name) {
+    wchar_t buffer[4096];
+    GetEnvironmentVariableW(name.c_str(), buffer, 4096);
+    return buffer;
+}

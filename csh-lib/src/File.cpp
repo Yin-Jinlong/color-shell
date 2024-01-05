@@ -7,9 +7,15 @@ csh::File::File(std::wstring path) {
     this->path = std::move(path);
 }
 
-csh::File::~File() {
-
+csh::File::File(std::wstring dir, std::wstring child) {
+    if (!dir.ends_with(L"\\") && !child.ends_with(L"/")) {
+        path = dir + L"\\" + child;
+    } else {
+        path = dir + child;
+    }
 }
+
+csh::File::~File() = default;
 
 int csh::File::update() {
     return _wstat32i64(path.c_str(), &stat);

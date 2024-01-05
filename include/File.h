@@ -32,6 +32,8 @@ namespace csh {
     public:
         explicit File(std::wstring path);
 
+        explicit File(std::wstring dir, std::wstring child);
+
         ~File();
 
         USE_RET std::wstring absolutePath() const;
