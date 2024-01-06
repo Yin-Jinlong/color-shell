@@ -10,6 +10,7 @@
 #include "file.h"
 #include "util.h"
 #include "key-scan-code.h"
+#include "str/char-util.h"
 
 #define SET_UTF_8(s) s.imbue(std::locale(".UTF-8"))
 
@@ -110,7 +111,9 @@ void updateConsoleInfo() {
 }
 
 void mainLoop() {
-    int rc = 0;
+    int          rc = 0;
+    std::wstring err;
+
     while (true) {
         updateConsoleInfo();
         if (cbi.dwCursorPosition.X) {
@@ -137,10 +140,17 @@ void mainLoop() {
         std::wstring cmd;
         try {
             resetToDefault();
-            if (sh.run(line, cmd, rc))
+            if (!sh.run(line, cmd, rc, err))
                 break;
+            if (!err.empty()) {
+                resetToUTF_8();
+                Console::setForegroundColor(csh::Red);
+                std::wcerr << L"error: ";
+                Console::reset();
+                std::wcerr << err << std::endl;
+            }
         } catch (std::runtime_error &err) {
-            std::wcerr << L"error: " << err.what() << std::endl;
+            MessageBoxA(nullptr, err.what(), "error", MB_OK);
         }
     }
 }
@@ -161,96 +171,133 @@ void reprint(const _COORD &src, const std::wstring &line) {
     Console::print(line);
 }
 
-#define SetCursorToI() setCurPos(sp.X + i, sp.Y)
+void SetCursorToI(const std::wstring &line, _COORD sp, short i) {
+    int len = i;
+
+    for (auto li=0;li<i;li++) {
+        if (is_full_width_char(line[li]))
+            len++;
+    }
+    setCurPos(sp.X + len, sp.Y);
+}
+
+void dealArrowKey(
+        std::wstring &line,
+        int &i,
+        int &hi,
+        bool &hiChanged,
+        const _COORD &sp,
+        const std::wstring &input,
+        int key
+) {
+    if (key == SK_LEFT) {
+        i--;
+        if (i < 0)
+            i = 0;
+        else {
+            Console::moveCursorLeft(is_full_width_char(line[i]) ? 2 : 1);
+        }
+    } else if (key == SK_RIGHT) {
+        i++;
+        if (i > line.size())
+            i = line.size();
+        else {
+            Console::moveCursorRight(is_full_width_char(line[i - 1]) ? 2 : 1);
+        }
+    } else if (key == SK_UP) {
+        if (history.empty())
+            return;
+        if (hi > 0)
+            hi--;
+        hiChanged = true;
+        line      = history[hi];
+        reprint(sp, line);
+        i = line.size();
+    } else {
+        if (history.empty())
+            return;
+        hiChanged = true;
+        if (hi < history.size())
+            hi++;
+        if (hi == history.size()) {
+            line      = input;
+            hiChanged = false;
+        } else {
+            line = history[hi];
+        }
+        reprint(sp, line);
+        i = line.size();
+    }
+}
+
+bool dealChar(
+        std::wstring &line,
+        std::wstring &input,
+        int &i,
+        int &hi,
+        bool &hiChanged,
+        const _COORD &sp,
+        wchar_t c
+) {
+    if (!c || c == 0xe0) {
+        c = _getwch();
+        if (c == SK_LEFT || c == SK_RIGHT || c == SK_UP || c == SK_DOWN)
+            dealArrowKey(line, i, hi, hiChanged, sp, input, c);
+        else if (c == SK_DEL) {
+            if (line.empty() || i == line.size())
+                return true;
+            line.erase(i, 1);
+            reprint(sp, line);
+            SetCursorToI(line, sp, i);
+        }
+    } else {
+        if (c == '\t') {
+
+        } else if (c == '\r' || c == '\n') {
+            Console::print(L"\r\n");
+            return false;
+        } else if (c == '\b') {
+            if (!line.empty()) {
+                i--;
+                line.erase(line.begin() + i);
+                reprint(sp, line);
+                SetCursorToI(line, sp, i);
+            }
+        } else {
+            if (c < ' ')
+                return true;
+            line.insert(line.begin() + i, c);
+            i++;
+            reprint(sp, line);
+            SetCursorToI(line, sp, i);
+        }
+    }
+    if (!hiChanged)
+        input = line;
+    return true;
+}
 
 std::wstring input() {
     ctrlC = false;
 
     updateConsoleInfo();
     _COORD sp        = cbi.dwCursorPosition;
-    short  i         = 0;
+    int    i         = 0;
     int    hi        = history.size();
     bool   hiChanged = false;
 
     std::wstring line;
     std::wstring input;
-    while (true) {
+    bool         inputting = true;
+
+    while (inputting) {
         if (_kbhit()) // 检查是否有按键按下
         {
-            wchar_t c = _getwch();
-            if (!c || c == 0xe0) {
-                switch (_getwch()) {
-                    case SK_DEL:
-                        if (line.empty() || i == line.size())
-                            break;
-                        line.erase(i, 1);
-                        reprint(sp, line);
-                        SetCursorToI();
-                        break;
-                    case SK_LEFT:
-                        i--;
-                        if (i < 0)
-                            i = 0;
-                        else
-                            Console::moveCursorLeft(1);
-                        break;
-                    case SK_RIGHT:
-                        i++;
-                        if (i > line.size())
-                            i = line.size();
-                        else
-                            Console::moveCursorRight(1);
-                        break;
-                    case SK_UP:
-                        if (history.empty())
-                            break;
-                        if (hi > 0)
-                            hi--;
-                        hiChanged = true;
-                        line      = history[hi];
-                        reprint(sp, line);
-                        i = line.size();
-                        break;
-                    case SK_DOWN:
-                        if (history.empty())
-                            break;
-                        hiChanged = true;
-                        if (hi < history.size())
-                            hi++;
-                        if (hi == history.size()) {
-                            line      = input;
-                            hiChanged = false;
-                        } else {
-                            line = history[hi];
-                        }
-                        reprint(sp, line);
-                        i = line.size();
-                        break;
-                }
-            } else {
-                if (c == '\t') {
-                    Console::print(' ');
-                } else if (c == '\r' || c == '\n') {
-                    Console::print(L"\r\n");
+            wchar_t c = WEOF;
+            while ((c = _getwch()) != WEOF) {
+                if (!(inputting = dealChar(line, input, i, hi, hiChanged, sp, c)))
                     break;
-                } else if (c == '\b') {
-                    if (!line.empty()) {
-                        i--;
-                        line.erase(line.begin() + i);
-                        reprint(sp, line);
-                        SetCursorToI();
-                    }
-                } else {
-                    if (c < ' ')
-                        continue;
-                    line.insert(line.begin() + i, c);
-                    i++;
-                    reprint(sp, line);
-                    SetCursorToI();
-                }
             }
-            if (!hiChanged)
-                input = line;
         } else if (ctrlC) {
             ctrlC = false;
             return L"";
