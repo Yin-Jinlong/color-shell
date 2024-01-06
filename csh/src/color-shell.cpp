@@ -50,9 +50,14 @@ std::wstring get_ext(const std::wstring &path) {
     return ext;
 }
 
-bool checkExt(
+#define EXTI_CMD 1
+#define EXTI_BAT 2
+#define EXTI_PS1 3
+
+static std::vector<std::wstring> exts = {L".exe", L".cmd", L".bat", L".ps1"};
+
+std::wstring checkExt(
         const std::vector<std::wstring> &paths,
-        std::initializer_list<std::wstring> exts,
         const std::wstring &cmd
 ) {
     auto noExt = true;
@@ -64,23 +69,39 @@ bool checkExt(
             break;
         }
     }
-    // 路径中存在该命令
-    return std::any_of(paths.begin(), paths.end(), [&](const std::wstring &p) {
-        // 查找所有后缀
-        return noExt ? std::any_of(exts.begin(), exts.end(), [&](const std::wstring &e) {
-            csh::File file(p, cmd + e);
-            return file.exists();
-        }) : csh::File(p, cmd).exists();
-    });
+
+    for (auto &p: paths) {
+        if (!noExt) {
+            const csh::File &file = csh::File(p, cmd);
+            if (file.exists()) {
+                if (ext == exts[0]) {
+                    return file.getPath();
+                }
+                return ext;
+            }
+            continue;
+        }
+        // 补全后缀找
+        for (auto &e: exts) {
+            const csh::File &file = csh::File(p, cmd + e);
+            if (file.exists()) {
+                if (e == exts[0]) {
+                    return file.getPath();
+                }
+                return e;
+            }
+        }
+    }
+    return L"";
 }
 
-void runCmd(std::wstring cmdLine, DWORD &rc) {
+void runCmd(std::wstring cmdLine, DWORD &rc, const wchar_t *app = nullptr) {
     PROCESS_INFORMATION pi = {};
     STARTUPINFOW        si = {};
     si.cb = sizeof(si);
 
     if (!CreateProcessW(
-            nullptr,
+            app,
             cmdLine.data(),
             nullptr,
             nullptr,
@@ -100,10 +121,6 @@ void runCmd(std::wstring cmdLine, DWORD &rc) {
 }
 
 bool ColorShell::run(std::wstring line, std::wstring &cmd, int &rc, std::wstring &err) {
-    static std::initializer_list<std::wstring> exeExts = {L".exe"};
-    static std::initializer_list<std::wstring> cmdExts = {L".cmd", L".bat"};
-    static std::initializer_list<std::wstring> psExts  = {L".ps1"};
-
     err.clear();
     std::wstring arg;
     split(line, cmd, arg);
@@ -114,15 +131,22 @@ bool ColorShell::run(std::wstring line, std::wstring &cmd, int &rc, std::wstring
         if (!rc) { // 目录切换，更新路径
             paths[0] = getCurrentDirectory();
         }
-    } else if (checkExt(paths, exeExts, cmd)) { // exe 优先级最高
-        runCmd(line, (DWORD &) rc);
-    } else if (checkExt(paths, cmdExts, cmd)) { // cmd脚本
+        return true;
+    }
+
+    auto t = checkExt(paths, cmd);
+    if (t.empty()) {
+        err = std::format(L"Unknown command or executable or runnable script file : '{}'", cmd);
+    } else if (t == exts[EXTI_CMD] || t == exts[EXTI_BAT]) {
         runCmd(std::format(L"cmd /c {}", line), (DWORD &) rc);
-    } else if (checkExt(paths, psExts, cmd)) { // powershell脚本
+    } else if (t == exts[EXTI_PS1]) {
         runCmd(std::format(L"powershell /c {}", line), (DWORD &) rc);
     } else {
-        err = std::format(L"Unknown command or executable or runnable script file : '{}'", cmd);
+        runCmd(line, (DWORD &) rc, t.c_str());
     }
     return true;
 }
 
+#undef EXTI_CMD
+#undef EXTI_BAT
+#undef EXTI_PS1
