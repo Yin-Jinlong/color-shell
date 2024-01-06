@@ -8,7 +8,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/Yin-Jinlong/color-shell)
 ![GitHub forks](https://img.shields.io/github/forks/Yin-Jinlong/color-shell)
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
-![Total Lines](https://img.shields.io/badge/total_lines-1843-9a9a9a)
+![Total Lines](https://img.shields.io/badge/total_lines-1963-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
@@ -66,6 +66,7 @@
 - ✅ 工作目录
 - ✅ 直接输入（不阻塞）
 - ✅ 历史命令
+- 🔲 持久化历史命令
 - 🔲 命令补全
 - ✅ 执行结果*
 - ✅ [插件](./extras/README.md)*
