@@ -7,5 +7,6 @@ add_subdirectory(cmds)
 add_custom_target(build-cmds ALL
         DEPENDS
         build-clear
+        build-mkdir
         build-pwd
 )

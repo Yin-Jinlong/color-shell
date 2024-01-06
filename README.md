@@ -8,8 +8,10 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/Yin-Jinlong/color-shell)
 ![GitHub forks](https://img.shields.io/github/forks/Yin-Jinlong/color-shell)
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
-![Total Lines](https://img.shields.io/badge/total_lines-2787-9a9a9a)
-![Source Lines](https://img.shields.io/badge/source_lines-1207-9a9a9a)
+
+[//]: # (统计)
+![Total Lines](https://img.shields.io/badge/total_lines-2,942-9a9a9a)
+![Source Lines](https://img.shields.io/badge/source_lines-1,269-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
@@ -25,6 +27,7 @@
 - [commands](./commands/README.md)💼
     - [cmds](./commands/README.md)🧰
         - [clear](./commands/cmds/clear/README.md)📘
+        - [mkdir](./commands/cmds/mkdir/README.md)📘
         - [pwd](./commands/cmds/pwd/README.md)📘
         - CMakeLists.txt⚙️
     - CMakeLists.txt⚙️
@@ -70,6 +73,11 @@
 - 🔲 持久化历史命令
 - 🔲 命令补全
 - ✅ 执行结果*
+- ❌ 管道
+- ❌ 重定向输入
+- ❌ 重定向输出
+- ❌ 配置
+- ❌ 自定义配置
 - ✅ [插件](./extras/README.md)*
 
 <small style="color:rgba(128,128,128,0.5)">注：*为基本完成，未勾选标识正在进行或将要进行</small>

@@ -1,4 +1,3 @@
-#include <windows.h>
 #include "Console.h"
 
 
@@ -69,15 +68,7 @@ void Console::print(const std::wstring &str) {
 void Console::print(const wchar_t *str) {
     if (!str)
         return;
-    char buf[MAX_LINE_LENGTH];
-    if (!WideCharToMultiByte(
-            CP_UTF8, 0,
-            str, -1,
-            buf, MAX_LINE_LENGTH,
-            nullptr, nullptr)) {
-        throw std::runtime_error("Error : " + std::to_string(GetLastError()));
-    }
-    std::cout << buf;
+    std::wcout << str;
 }
 
 void Console::print(wchar_t c) {
