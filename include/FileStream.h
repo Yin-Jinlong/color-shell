@@ -4,6 +4,9 @@
 #include "File.h"
 
 namespace csh {
+    /**
+     * 文件流
+     */
     class DLL_OUT FileStream {
     private:
         const csh::File *file= nullptr;

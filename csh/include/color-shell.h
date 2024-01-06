@@ -5,6 +5,9 @@
 
 class ColorShell {
 private:
+    /**
+     * 路径
+     */
     std::vector<std::wstring> paths;
 public:
     ColorShell();

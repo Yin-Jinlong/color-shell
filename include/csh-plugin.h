@@ -11,16 +11,39 @@
 typedef bool CallResult;
 
 namespace csh {
-    // 更新时机
+    /**
+     * 更新时机
+     */
     enum class UpdateType {
+        /**
+         * 初始化
+         */
         INIT,
+        /**
+         * 工作目录改变
+         */
         WORK_DIR_CHANGED,
+        /**
+         * 目录更改
+         */
         DIR_MODIFIED,
+        /**
+         * 每次(命令输入)
+         */
         UPDATE,
     };
 
+    /**
+     * 带颜色字符串的部分
+     */
     typedef struct ColorStrPartStruct {
+        /**
+         * 字符串
+         */
         std::wstring str;
+        /**
+         * 颜色
+         */
         csh::Color color;
     } ColorStrPart;
 }

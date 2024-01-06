@@ -19,16 +19,28 @@ BOOL WINAPI handleCtrlC(DWORD dwCtrlType);
 ColorShell sh;
 csh::Parts parts;
 
+/**
+ * 初始化
+ */
 void initParts();
 
+/**
+ * 更新
+ */
 void updateParts();
 
 void mainLoop();
 
+/**
+ * 处理输入
+ */
 std::wstring input();
 
 u32 defOut, defIn;
 
+/**
+ * 重置编码到 UTF-8
+ */
 void resetToUTF_8() {
     SetConsoleCP(CP_UTF8);
     SetConsoleOutputCP(CP_UTF8);
@@ -37,6 +49,9 @@ void resetToUTF_8() {
     SET_UTF_8(std::wcerr);
 }
 
+/**
+ * 重置编码到默认
+ */
 void resetToDefault() {
     SetConsoleCP(defIn);
     SetConsoleOutputCP(defOut);
@@ -155,22 +170,37 @@ void mainLoop() {
     }
 }
 
+/**
+ * 设置光标位置
+ */
 void setCurPos(_COORD pos) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
+/**
+ * 设置光标位置
+ */
 void setCurPos(SHORT x, SHORT y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), {x, y});
 }
 
+/**
+ * 历史记录
+ */
 std::vector<std::wstring> history;
 
+/**
+ * 重新打印当前输入
+ */
 void reprint(const _COORD &src, const std::wstring &line) {
     setCurPos(src);
     Console::clear();
     Console::print(line);
 }
 
+/**
+ * 设置光标位置到line的i位置
+ */
 void SetCursorToI(const std::wstring &line, _COORD sp, short i) {
     int len = i;
 
@@ -181,6 +211,9 @@ void SetCursorToI(const std::wstring &line, _COORD sp, short i) {
     setCurPos(sp.X + len, sp.Y);
 }
 
+/**
+ * 处理方向键
+ */
 void dealArrowKey(
         std::wstring &line,
         int &i,
@@ -230,6 +263,9 @@ void dealArrowKey(
     }
 }
 
+/**
+ * 处理单个字符
+ */
 bool dealChar(
         std::wstring &line,
         std::wstring &input,
