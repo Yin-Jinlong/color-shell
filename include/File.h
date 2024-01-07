@@ -4,7 +4,6 @@
 #include <string>
 #include <predef.h>
 #include <Windows.h>
-#include <FileStream.h>
 
 #ifndef F_OK
 #define F_OK 0
@@ -129,7 +128,14 @@ namespace csh {
          * @param mode 模式
          * @return 文件流
          */
-        MAYBE_UNUSED csh::FileStream open(const wchar_t *mode);
+        MAYBE_UNUSED std::fstream open(std::ios_base::openmode mode);
+
+        /**
+         * 读取所有作为文本
+         *
+         * @return 文本
+         */
+        MAYBE_UNUSED USE_RET wstr readAllTexts();
 
         /**
          * 获取路径
@@ -151,6 +157,13 @@ namespace csh {
          * @return 父目录
          */
         MAYBE_UNUSED USE_RET File getParent() const;
+
+        /**
+         * 创建目录
+         *
+         * @return 是否成功
+         */
+        USE_RET bool mkdirs() const;
 
         /**
          * 比较

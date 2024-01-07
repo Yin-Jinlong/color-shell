@@ -85,8 +85,3 @@ void Console::println(wchar_t c) {
 void Console::println() {
     print('\n');
 }
-
-template<class... T>
-void Console::printf(const std::wformat_string<T...> fmt, T &&... args) {
-    std::wcout << std::format(fmt, std::forward<T>(args)...);
-}

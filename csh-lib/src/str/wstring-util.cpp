@@ -49,6 +49,9 @@ int wstr_split(const wstr &str, std::vector<wstr> &out, wchar_t delim) {
             out.push_back(s.substr(0, i));
             s = s.substr(i + 1);
             i = -1;
+            while (!s.empty() && s[0] == delim) {
+                s.erase(0, 1);
+            }
         }
     }
     out.push_back(s);

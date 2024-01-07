@@ -11,13 +11,20 @@
 #include "util.h"
 #include "key-scan-code.h"
 #include "str/char-util.h"
+#include "CmdHistory.h"
 
 #define SET_UTF_8(s) s.imbue(std::locale(".UTF-8"))
 
 BOOL WINAPI handleCtrlC(DWORD dwCtrlType);
 
-ColorShell sh;
-csh::Parts parts;
+csh::File *historyFile;
+
+ColorShell      sh;
+csh::Parts      parts;
+/**
+ * 历史记录
+ */
+csh::CmdHistory history;
 
 /**
  * 初始化
@@ -57,7 +64,28 @@ void resetToDefault() {
     SetConsoleOutputCP(defOut);
 }
 
+void error(const str &msg){
+    MessageBoxA(nullptr, msg.c_str(), "Error", MB_OK);
+    exit(1);
+}
+
+void setup() {
+    wstr home = getEnv(L"USERPROFILE");
+    if (home.empty()) {
+        error("Can't find user profile");
+    }
+    csh::File cshHome(home, L".csh");
+    if (!cshHome.exists()) {
+        if (!cshHome.mkdirs())
+            error("Can't create .csh directory");
+    }
+    historyFile = new csh::File(cshHome.getPath(), L"history");
+    history.load(*historyFile);
+}
+
 int main() {
+    setup();
+
     defOut = GetConsoleOutputCP();
     defIn  = GetConsoleCP();
     SetConsoleCtrlHandler(handleCtrlC, TRUE);
@@ -78,6 +106,9 @@ bool ctrlC = false;
 BOOL WINAPI handleCtrlC(DWORD dwCtrlType) {
     if (dwCtrlType == CTRL_C_EVENT) {
         ctrlC = true;
+    } else if (dwCtrlType == CTRL_CLOSE_EVENT) {
+        if (historyFile)
+            history.save();
     }
     return TRUE;
 }
@@ -185,11 +216,6 @@ void setCurPos(int x, int y) {
 }
 
 /**
- * 历史记录
- */
-std::vector<wstr> history;
-
-/**
  * 重新打印当前输入
  */
 void reprint(const COORD &src, const wstr &line) {
@@ -217,7 +243,6 @@ void setCursorToI(const wstr &line, COORD sp, int i) {
 void dealArrowKey(
         wstr &line,
         int &i,
-        int &hi,
         bool &hiChanged,
         const COORD &sp,
         const wstr &input,
@@ -240,23 +265,20 @@ void dealArrowKey(
     } else if (key == SK_UP) {
         if (history.empty())
             return;
-        if (hi > 0)
-            hi--;
         hiChanged = true;
-        line      = history[hi];
+        line      = *history.last();
         reprint(sp, line);
         i = static_cast<int>(line.size());
     } else {
         if (history.empty())
             return;
         hiChanged = true;
-        if (hi < history.size())
-            hi++;
-        if (hi == history.size()) {
+        wstr *ns  = history.next();
+        if (ns) {
+            line = *ns;
+        } else {
             line      = input;
             hiChanged = false;
-        } else {
-            line = history[hi];
         }
         reprint(sp, line);
         i = static_cast<int>(line.size());
@@ -268,48 +290,30 @@ void dealArrowKey(
  */
 bool dealChar(
         wstr &line,
-        wstr &input,
         int &i,
-        int &hi,
-        bool &hiChanged,
         const COORD &sp,
         wchar_t c
 ) {
-    if (!c || c == 0xe0) {
-        c = _getwch();
-        if (c == SK_LEFT || c == SK_RIGHT || c == SK_UP || c == SK_DOWN)
-            dealArrowKey(line, i, hi, hiChanged, sp, input, c);
-        else if (c == SK_DEL) {
-            if (line.empty() || i == line.size())
-                return true;
-            line.erase(i, 1);
+    if (c == '\t') {
+
+    } else if (c == '\r' || c == '\n') {
+        Console::print(L"\r\n");
+        return false;
+    } else if (c == '\b') {
+        if (!line.empty()) {
+            i--;
+            line.erase(line.begin() + i);
             reprint(sp, line);
             setCursorToI(line, sp, i);
         }
     } else {
-        if (c == '\t') {
-
-        } else if (c == '\r' || c == '\n') {
-            Console::print(L"\r\n");
-            return false;
-        } else if (c == '\b') {
-            if (!line.empty()) {
-                i--;
-                line.erase(line.begin() + i);
-                reprint(sp, line);
-                setCursorToI(line, sp, i);
-            }
-        } else {
-            if (c < ' ')
-                return true;
-            line.insert(line.begin() + i, c);
-            i++;
-            reprint(sp, line);
-            setCursorToI(line, sp, i);
-        }
+        if (c < ' ')
+            return true;
+        line.insert(line.begin() + i, c);
+        i++;
+        reprint(sp, line);
+        setCursorToI(line, sp, i);
     }
-    if (!hiChanged)
-        input = line;
     return true;
 }
 
@@ -319,27 +323,41 @@ wstr input() {
     updateConsoleInfo();
     COORD sp        = cbi.dwCursorPosition;
     int   i         = 0;
-    int   hi        = static_cast<int>(history.size());
     bool  hiChanged = false;
 
     wstr line;
     wstr input;
     bool inputting = true;
 
+    history.reset();
     while (inputting) {
         if (_kbhit()) // 检查是否有按键按下
         {
             wchar_t c = WEOF;
             while ((c = _getwch()) != WEOF) {
-                if (!(inputting = dealChar(line, input, i, hi, hiChanged, sp, c)))
-                    break;
+                if (!c || c == 0xe0) {
+                    c = _getwch();
+                    if (c == SK_LEFT || c == SK_RIGHT || c == SK_UP || c == SK_DOWN)
+                        dealArrowKey(line, i, hiChanged, sp, input, c);
+                    else if (c == SK_DEL) {
+                        if (line.empty() || i == line.size())
+                            continue;
+                        line.erase(i, 1);
+                        reprint(sp, line);
+                        setCursorToI(line, sp, i);
+                    }
+                } else {
+                    if (!(inputting = dealChar(line, i, sp, c)))
+                        break;
+                }
+                if (!hiChanged)
+                    input = line;
             }
         } else if (ctrlC) {
             ctrlC = false;
             return L"";
         }
     }
-    if (history.empty() || history[history.size() - 1] != line)
-        history.push_back(line);
+    history += line;
     return line;
 }

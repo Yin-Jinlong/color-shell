@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <string>
 #include <format>
+#include <vector>
 
 #define MAX_LINE_LENGTH 1024
 

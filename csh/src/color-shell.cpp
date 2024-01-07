@@ -6,6 +6,8 @@
 #include <Windows.h>
 #include <algorithm>
 
+extern csh::CmdHistory history;
+
 ColorShell::ColorShell() {
     wstr    path = getEnv(L"PATH");
     wchar_t buf[MAX_PATH];
@@ -132,6 +134,9 @@ bool ColorShell::run(wstr line, wstr &cmd, int &rc, wstr &err) {
         if (!rc) { // 目录切换，更新路径
             paths[0] = getCurrentDirectory();
         }
+        return true;
+    } else if (cmd == L"history") {
+        rc = csh::history(history, arg);
         return true;
     }
 

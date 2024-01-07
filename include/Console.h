@@ -194,5 +194,7 @@ public:
      * @param args 参数
      */
     template<class... T>
-    MAYBE_UNUSED static void printf(std::wformat_string<T...> fmt, T &&... args);
+    MAYBE_UNUSED static inline void printf(std::wformat_string<T...> fmt, T &&... args) {
+        print(std::format(fmt, std::forward<T>(args)...));
+    }
 };

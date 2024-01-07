@@ -1,7 +1,10 @@
+#include "str/wstring-util.h"
 #include <File.h>
 
 #include <utility>
 #include <sys/stat.h>
+#include <fstream>
+#include <corecrt_io.h>
 
 csh::File::File(wstr path) {
     this->path = std::move(path);
@@ -12,6 +15,10 @@ csh::File::File(const wstr &dir, const wstr &child) {
         path = dir + L"\\" + child;
     } else {
         path = dir + child;
+    }
+    for (wchar_t &c: path) {
+        if (c == L'/')
+            c = L'\\';
     }
 }
 
@@ -67,8 +74,26 @@ wstr csh::File::absolutePath() const {
     return buf;
 }
 
-csh::FileStream csh::File::open(const wchar_t *mode) {
-    return FileStream(this, mode);
+std::fstream csh::File::open(std::ios_base::openmode mode) {
+    if (!isFile())
+        throw std::runtime_error("not a file");
+    return std::fstream(path, mode);
+}
+
+wstr csh::File::readAllTexts() {
+    if (!isFile())
+        throw std::runtime_error("not a file");
+    FILE    *fs;
+    errno_t err = _wfopen_s(&fs, path.c_str(), L"r");
+    if (err)
+        throw std::runtime_error(std::format("open file failed : ", err));
+    wstr    texts;
+    wchar_t buf[4096];
+    while (fgetws(buf, 4096, fs)) {
+        texts += buf;
+    }
+    fclose(fs);
+    return texts;
 }
 
 wstr csh::File::getPath() const {
@@ -90,5 +115,31 @@ csh::File csh::File::getParent() const {
 
 bool csh::File::operator==(const csh::File &other) const {
     return absolutePath() == other.absolutePath();
+}
+
+DWORD mk(const wstr &name) {
+    CreateDirectoryW(name.c_str(), nullptr);
+    return GetLastError();
+}
+
+void mks(const std::vector<wstr> &paths) {
+    wstr            p;
+    for (const wstr &n: paths) {
+        p += n;
+        p += '\\';
+        if (!_waccess(p.c_str(), 0))
+            continue;
+        if (mk(p) == ERROR_PATH_NOT_FOUND)
+            return;
+    }
+}
+
+bool csh::File::mkdirs() const {
+    if (exists())
+        return false;
+    std::vector<wstr> paths;
+    wstr_split(path, paths, '\\');
+    mks(paths);
+    return exists();
 }
 
