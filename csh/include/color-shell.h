@@ -8,7 +8,7 @@ private:
     /**
      * 路径
      */
-    std::vector<std::wstring> paths;
+    std::vector<wstr> paths;
 public:
     ColorShell();
 
@@ -23,5 +23,5 @@ public:
      * @param [out] err 错误信息
      * @return 是否继续执行
      */
-    bool run(std::wstring line, std::wstring &cmd, int &rc,std::wstring &err);
+    bool run(wstr line, wstr &cmd, int &rc, wstr &err);
 };

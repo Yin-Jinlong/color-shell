@@ -18,19 +18,19 @@ namespace csh {
         /**
          * 初始化
          */
-        INIT,
+        Init,
         /**
          * 工作目录改变
          */
-        WORK_DIR_CHANGED,
+        WorkDirChanged,
         /**
          * 目录更改
          */
-        DIR_MODIFIED,
+        DirModified,
         /**
          * 每次(命令输入)
          */
-        UPDATE,
+        Update,
     };
 
     /**
@@ -40,7 +40,7 @@ namespace csh {
         /**
          * 字符串
          */
-        std::wstring str;
+        wstr       str;
         /**
          * 颜色
          */
@@ -50,7 +50,7 @@ namespace csh {
 
 
 // 加载插件函数
-typedef CallResult (*CShOnLoadPluginFn)(std::map<std::wstring, std::wstring> &config);
+typedef CallResult (*CShOnLoadPluginFn)(std::map<wstr, wstr> &config);
 
 // 插件更新时机函数
 typedef csh::UpdateType (*CShUpdateTypeFn)();

@@ -8,7 +8,6 @@ void Console::setColorMode(bool on) {
     withColor = on;
 }
 
-
 void Console::reset(bool all) {
     if (all)
         print(L"\033c");
@@ -19,9 +18,8 @@ void Console::reset(bool all) {
 void Console::setBackgroundColor(u8 r, u8 g, u8 b) {
     if (!withColor)
         return;
-    print(std::format(
-            L"\033[48;2;{};{};{}m",
-            r, g, b));
+    printf(L"\033[48;2;{};{};{}m",
+           r, g, b);
 }
 
 void Console::setForegroundColor(u8 r, u8 g, u8 b) {
@@ -35,34 +33,33 @@ void Console::setForegroundColor(u8 r, u8 g, u8 b) {
 void Console::setColor(u8 fr, u8 fg, u8 fb, u8 br, u8 bg, u8 bb) {
     if (!withColor)
         return;
-    print(std::format(
-            L"\033[38;2;{};{};{};48;2;{};{};{}m",
-            fr, fg, fb,
-            br, bg, bb));
+    printf(L"\033[38;2;{};{};{};48;2;{};{};{}m",
+           fr, fg, fb,
+           br, bg, bb);
 }
 
 void Console::moveCursorUp(int n) {
-    print(std::format(L"\033[{}A", n));
+    printf(L"\033[{}A", n);
 }
 
 void Console::moveCursorDown(int n) {
-    print(std::format(L"\033[{}B", n));
+    printf(L"\033[{}B", n);
 }
 
 void Console::moveCursorLeft(int n) {
-    print(std::format(L"\033[{}D", n));
+    printf(L"\033[{}D", n);
 }
 
 void Console::moveCursorRight(int n) {
-    print(std::format(L"\033[{}C", n));
+    printf(L"\033[{}C", n);
 }
 
 void Console::clear(int flag) {
-    print(std::format(L"\033[{}J", flag));
+    printf(L"\033[{}J", flag);
 }
 
-void Console::print(const std::wstring &str) {
-    print(str.c_str());
+void Console::print(const wstr &str) {
+    std::wcout << str;
 }
 
 void Console::print(const wchar_t *str) {
@@ -71,12 +68,25 @@ void Console::print(const wchar_t *str) {
     std::wcout << str;
 }
 
+void Console::println(const wchar_t *str) {
+    print(str);
+    println();
+}
+
 void Console::print(wchar_t c) {
     std::wcout << c;
 }
 
-void Console::printNum(int i) {
-    std::wcout << i;
+void Console::println(wchar_t c) {
+    print(c);
+    println();
 }
 
+void Console::println() {
+    print('\n');
+}
 
+template<class... T>
+void Console::printf(const std::wformat_string<T...> fmt, T &&... args) {
+    std::wcout << std::format(fmt, std::forward<T>(args)...);
+}

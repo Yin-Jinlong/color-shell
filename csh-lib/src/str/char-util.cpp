@@ -8,7 +8,7 @@ bool is_low_surrogate(wchar_t wc) {
     return wc >= 0xDC00 && wc <= 0xDFFF;
 }
 
-#define AND(a, b) (c>=a && c<=b)
+#define AND(a, b) (c>=(a) && c<=(b))
 
 bool is_full_width_char(wchar_t c) {
     // 不完全符合，还可能有预留和空白

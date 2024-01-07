@@ -20,7 +20,7 @@ void printIfError(DWORD err, const std::string &name) {
     else if (err == ERROR_PATH_NOT_FOUND)
         std::cerr << "Path '" << name << "' does not exist" << std::endl;
     else
-        std::cerr << "Error creating directory : '" << name << "' code:"<< err << std::endl;
+        std::cerr << "Error creating directory : '" << name << "' code:" << err << std::endl;
 }
 
 void mkdir(const std::string &name) {
@@ -28,11 +28,11 @@ void mkdir(const std::string &name) {
 }
 
 void mkdirs(const std::vector<std::string> &paths) {
-    std::string p;
-    for (auto   &n: paths) {
+    std::string    p;
+    for (const std::string &n: paths) {
         p += n;
         p += '\\';
-        if (!_access(p.c_str(),0))
+        if (!_access(p.c_str(), 0))
             continue;
         DWORD err = mk(p);
         if (err) {
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
     int         pi = 1;
     std::string s  = argv[1];
     bool        r  = s == "-p";
-    if (r){
+    if (r) {
         pi++;
         if (pi == argc) {
             printHelp();
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
         s = argv[pi];
         if (r) {
             paths.clear();
-            for (auto i = 0; i < s.size(); i++) {
+            for (int i = 0; i < s.size(); i++) {
                 if (s[i] == '\\' || s[i] == '/') {
                     paths.push_back(s.substr(0, i));
                     s = s.substr(i + 1);

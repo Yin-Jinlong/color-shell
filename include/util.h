@@ -7,18 +7,18 @@
  * 获取当前目录
  * @return 当前目录
  */
-extern DLL_OUT std::wstring getCurrentDirectory();
+extern DLL_OUT wstr getCurrentDirectory();
 
 /**
  * 获取进程输出
  * @param cmdLine 命令行
  * @return 进程输出
  */
-extern DLL_OUT std::string getProcessOutput(const std::wstring &cmdLine);
+extern DLL_OUT str getProcessOutput(const wstr &cmdLine);
 
 /**
  * 获取环境变量
  * @param name 环境变量名
  * @return 环境变量值
  */
-extern DLL_OUT std::wstring getEnv(const std::wstring &name);
+extern DLL_OUT wstr getEnv(const wstr &name);

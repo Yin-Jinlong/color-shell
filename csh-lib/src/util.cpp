@@ -2,14 +2,14 @@
 #include <minwindef.h>
 #include <processenv.h>
 
-std::wstring getCurrentDirectory() {
+wstr getCurrentDirectory() {
     wchar_t buffer[MAX_PATH];
     GetCurrentDirectoryW(MAX_PATH, buffer);
     return buffer;
 }
 
 
-std::string getProcessOutput(const std::wstring &cmdLine) {
+str getProcessOutput(const wstr &cmdLine) {
     // TODO ReadFile卡死
     SECURITY_ATTRIBUTES sa = {0};
     HANDLE hRead = nullptr, hWrite = nullptr;
@@ -56,7 +56,7 @@ std::string getProcessOutput(const std::wstring &cmdLine) {
     return out;
 }
 
-std::wstring getEnv(const std::wstring &name) {
+wstr getEnv(const wstr &name) {
     wchar_t buffer[4096];
     GetEnvironmentVariableW(name.c_str(), buffer, 4096);
     return buffer;

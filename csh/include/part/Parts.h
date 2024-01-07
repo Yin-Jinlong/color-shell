@@ -11,13 +11,13 @@ namespace csh {
     class Parts {
     private:
         std::vector<csh::Part *> parts;
-        std::vector<Part *> showList;
+        std::vector<Part *>      showList;
     public:
         const wchar_t start[2] = L"\ue0b6";
 
         u32 lastModifiedTime = 0;
 
-        bool cd= false;
+        bool cd = false;
 
         Parts() = default;
 

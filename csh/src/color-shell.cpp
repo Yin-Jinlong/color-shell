@@ -7,10 +7,10 @@
 #include <algorithm>
 
 ColorShell::ColorShell() {
-    auto    path = getEnv(L"PATH");
+    wstr    path = getEnv(L"PATH");
     wchar_t buf[MAX_PATH];
     GetModuleFileNameW(nullptr, buf, MAX_PATH);
-    std::wstring mp = buf;
+    wstr mp = buf;
     while (mp[mp.size() - 1] != '\\')
         mp.pop_back();
     // 当前工作目录优先级最高
@@ -23,54 +23,55 @@ ColorShell::ColorShell() {
 
 ColorShell::~ColorShell() = default;
 
-void split(const std::wstring &line, _Out_ std::wstring &cmd, _Out_ std::wstring &arg) {
-    std::wstring s = wstr_trim(line, true, false);
+void split(const wstr &line, _Out_ wstr &cmd, _Out_ wstr &arg) {
+    wstr s = wstr_trim(line, true, false);
     if (s.empty())
         return;
-    auto p = s.find_first_of(' ');
+    size_t p = s.find_first_of(' ');
     if (p == std::string::npos) {
         cmd = s;
         return;
     }
-    cmd    = s.substr(0, p);
-    arg    = s.substr(p + 1);
+    cmd      = s.substr(0, p);
+    arg      = s.substr(p + 1);
 }
 
-std::wstring get_ext(const std::wstring &path) {
-    auto p = path.find_last_of('.');
-    if (p == std::wstring::npos)
+wstr getExt(const wstr &path) {
+    size_t p = path.find_last_of('.');
+    if (p == wstr::npos)
         return L"";
-    auto     ext = path.substr(p);
-    for (int i   = 0; i < ext.length(); ++i) {
-        auto c = ext[i];
+    wstr         ext = path.substr(p);
+    for (wchar_t &i: ext) {
+        wchar_t c = i;
         if (c >= 'A' && c <= 'Z')
             c -= 'A' - 'a';
-        ext[i] = c;
+
+        i = c;
     }
     return ext;
 }
 
-#define EXTI_CMD 1
-#define EXTI_BAT 2
-#define EXTI_PS1 3
+#define EXT_I_CMD 1
+#define EXT_I_BAT 2
+#define EXT_I_PS1 3
 
-static std::vector<std::wstring> exts = {L".exe", L".cmd", L".bat", L".ps1"};
+static std::vector<wstr> exts = {L".exe", L".cmd", L".bat", L".ps1"};
 
-std::wstring checkExt(
-        const std::vector<std::wstring> &paths,
-        const std::wstring &cmd
+wstr checkExt(
+        const std::vector<wstr> &paths,
+        const wstr &cmd
 ) {
-    auto noExt = true;
-    auto ext   = get_ext(wstr_trim(cmd, true, false));
+    bool noExt = true;
+    wstr ext   = getExt(wstr_trim(cmd, true, false));
 
-    for (auto &e: exts) {
+    for (const wstr &e: exts) {
         if (e == ext) {
             noExt = false;
             break;
         }
     }
 
-    for (auto &p: paths) {
+    for (const wstr &p: paths) {
         if (!noExt) {
             const csh::File &file = csh::File(p, cmd);
             if (file.exists()) {
@@ -82,7 +83,7 @@ std::wstring checkExt(
             continue;
         }
         // 补全后缀找
-        for (auto &e: exts) {
+        for (const wstr &e: exts) {
             const csh::File &file = csh::File(p, cmd + e);
             if (file.exists()) {
                 if (e == exts[0]) {
@@ -95,7 +96,7 @@ std::wstring checkExt(
     return L"";
 }
 
-void runCmd(std::wstring cmdLine, DWORD &rc, const wchar_t *app = nullptr) {
+void runCmd(wstr cmdLine, DWORD &rc, const wchar_t *app = nullptr) {
     PROCESS_INFORMATION pi = {};
     STARTUPINFOW        si = {};
     si.cb = sizeof(si);
@@ -120,9 +121,9 @@ void runCmd(std::wstring cmdLine, DWORD &rc, const wchar_t *app = nullptr) {
     CloseHandle(pi.hThread);
 }
 
-bool ColorShell::run(std::wstring line, std::wstring &cmd, int &rc, std::wstring &err) {
+bool ColorShell::run(wstr line, wstr &cmd, int &rc, wstr &err) {
     err.clear();
-    std::wstring arg;
+    wstr arg;
     split(line, cmd, arg);
     if (cmd == L"exit") {
         return false;
@@ -134,12 +135,12 @@ bool ColorShell::run(std::wstring line, std::wstring &cmd, int &rc, std::wstring
         return true;
     }
 
-    auto t = checkExt(paths, cmd);
+    wstr t = checkExt(paths, cmd);
     if (t.empty()) {
         err = std::format(L"Unknown command or executable or runnable script file : '{}'", cmd);
-    } else if (t == exts[EXTI_CMD] || t == exts[EXTI_BAT]) {
+    } else if (t == exts[EXT_I_CMD] || t == exts[EXT_I_BAT]) {
         runCmd(std::format(L"cmd /c {}", line), (DWORD &) rc);
-    } else if (t == exts[EXTI_PS1]) {
+    } else if (t == exts[EXT_I_PS1]) {
         runCmd(std::format(L"powershell /c {}", line), (DWORD &) rc);
     } else {
         runCmd(line, (DWORD &) rc, t.c_str());

@@ -9,19 +9,19 @@ namespace csh {
     class PluginPart : public Part {
 
     private:
-        HMODULE hModule;
+        HMODULE           hModule;
         CShOnLoadPluginFn onLoadPluginFn;
-        CShUpdateTypeFn updateTypeFn;
-        CShCanShowFn canShowFn;
-        CShOnUpdateFn onUpdateFn;
+        CShUpdateTypeFn   updateTypeFn;
+        CShCanShowFn      canShowFn;
+        CShOnUpdateFn     onUpdateFn;
 
         std::vector<ColorStrPart> parts;
 
         UpdateType updateType;
     public:
-        std::wstring name;
+        wstr name;
 
-        explicit PluginPart(csh::PartConfig &config,const std::wstring& name);
+        explicit PluginPart(csh::PartConfig &config, const wstr &name);
 
         ~PluginPart();
 

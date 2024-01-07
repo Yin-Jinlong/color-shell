@@ -3,20 +3,20 @@
 
 
 csh::Part::Part(csh::PartConfig &config) {
-    this->config = new PartConfig;
+    this->config                  = new PartConfig;
     this->config->foregroundColor = config.foregroundColor;
     this->config->backgroundColor = config.backgroundColor;
-    this->config->end = config.end;
-    this->config->passBgc = config.passBgc;
+    this->config->end             = config.end;
+    this->config->passBgc         = config.passBgc;
 }
 
-csh::Part::Part(csh::PartConfig &config, std::vector<std::wstring> &contents) {
-    this->config = new PartConfig;
+csh::Part::Part(csh::PartConfig &config, std::vector<wstr> &contents) {
+    this->config                  = new PartConfig;
     this->config->foregroundColor = config.foregroundColor;
     this->config->backgroundColor = config.backgroundColor;
-    this->config->end = config.end;
-    this->config->passBgc = config.passBgc;
-    this->contents = contents;
+    this->config->end             = config.end;
+    this->config->passBgc         = config.passBgc;
+    this->contents                = contents;
 }
 
 csh::Part::~Part() {
@@ -32,28 +32,28 @@ void csh::Part::printContents() {
 }
 
 
-void csh::Part::printWithMaxWidth(const BasePartConfig &config, const std::wstring &text) {
+void csh::Part::printWithMaxWidth(const BasePartConfig &config, const wstr &text) {
     if (text.empty())
         return;
-    auto len = text.length();
+    size_t len = text.length();
     if (len <= config.maxWidth || config.maxWidth <= 3) {
         Console::print(text);
         return;
     }
-    auto maxWidth = config.maxWidth;
+    int maxWidth = config.maxWidth;
     switch (config.ellipsis) {
-        case EllipsisPosition::NONE:
+        case EllipsisPosition::None:
             break;
-        case EllipsisPosition::START:
+        case EllipsisPosition::Start:
             Console::print(L"...");
             Console::print(text.substr(len - maxWidth + 3));
             break;
-        case EllipsisPosition::CENTER:
+        case EllipsisPosition::Center:
             Console::print(text.substr(0, maxWidth / 2 - 2));
             Console::print(L"...");
             Console::print(text.substr(len - maxWidth / 2 + 1));
             break;
-        case EllipsisPosition::END:
+        case EllipsisPosition::End:
             Console::print(text.substr(0, maxWidth / 2 - 2));
             Console::print(L"...");
             break;

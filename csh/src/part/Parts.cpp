@@ -2,7 +2,7 @@
 #include "Console.h"
 
 csh::Parts::~Parts() {
-    for (auto &part: parts) {
+    for (Part *&part: parts) {
         delete part;
     }
 }
@@ -11,7 +11,7 @@ void csh::Parts::print() const {
     Console::reset();
     Console::setForegroundColor(parts[0]->config->backgroundColor);
     std::wcout << start;
-    for (auto part: showList) {
+    for (Part *part: showList) {
         part->print();
     }
 }
@@ -19,7 +19,7 @@ void csh::Parts::print() const {
 void csh::Parts::update(UpdateType type) {
     Part *last = nullptr;
     showList.clear();
-    for (auto part: parts) {
+    for (Part *part: parts) {
         if (part->update(type)) {
             showList.push_back(part);
             if (last) {

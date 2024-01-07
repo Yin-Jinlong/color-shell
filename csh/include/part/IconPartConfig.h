@@ -8,8 +8,8 @@ namespace csh {
 
     struct IconPartConfig : BasePartConfig {
     public:
-        const wchar_t *icon = L"";
-        ShowMode iconShowMode = ShowMode::AUTO;
+        wstr     icon;
+        ShowMode iconShowMode = ShowMode::Auto;
     };
 
 }

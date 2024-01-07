@@ -13,12 +13,12 @@ namespace csh {
     class UserPart : public Part {
 
     private:
-        std::wstring user;
+        wstr user;
     public:
 
         UserPartConfig *config;
 
-        explicit UserPart(UserPartConfig &config, std::vector<std::wstring> &contents);
+        explicit UserPart(UserPartConfig &config, std::vector<wstr> &contents);
 
         UserPart(UserPart &other);
 

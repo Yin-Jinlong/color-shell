@@ -34,7 +34,7 @@ void mainLoop();
 /**
  * 处理输入
  */
-std::wstring input();
+wstr input();
 
 u32 defOut, defIn;
 
@@ -67,7 +67,7 @@ int main() {
     resetToUTF_8();
     initParts();
 
-    parts.update(csh::UpdateType::INIT);
+    parts.update(csh::UpdateType::Init);
 
     mainLoop();
     return EXIT_SUCCESS;
@@ -86,21 +86,21 @@ void initParts() {
     csh::UserPartConfig userConfig;
     userConfig.backgroundColor = csh::Color(68, 125, 222);
     userConfig.icon            = L"\uF4FF ";
-    auto userContents = std::vector<std::wstring>();
-    auto up           = new csh::UserPart(userConfig, userContents);
+    std::vector<wstr> userContents;
+    auto              up = new csh::UserPart(userConfig, userContents);
     parts += up;
 
     csh::PathPartConfig pathPartConfig;
     pathPartConfig.backgroundColor = csh::Color(240, 205, 100);
     pathPartConfig.icon            = L" \uF413 ";
-    pathPartConfig.iconShowMode    = csh::ShowMode::AUTO;
-    auto pathContents = std::vector<std::wstring>();
-    auto pp           = new csh::PathPart(pathPartConfig, pathContents);
+    pathPartConfig.iconShowMode    = csh::ShowMode::Auto;
+    std::vector<wstr> pathContents;
+    auto              pp = new csh::PathPart(pathPartConfig, pathContents);
     parts += pp;
 
     csh::PartConfig nodePluginPartConfig;
     nodePluginPartConfig.backgroundColor = csh::Color(67, 133, 61);
-    parts += new csh::PluginPart(nodePluginPartConfig, std::wstring(L"node"));
+    parts += new csh::PluginPart(nodePluginPartConfig, wstr(L"node"));
 
     csh::PartConfig gitPluginPartConfig;
     gitPluginPartConfig.backgroundColor = csh::Color(250, 80, 40);
@@ -111,11 +111,11 @@ void initParts() {
 void updateParts() {
     csh::File wdir(getCurrentDirectory());
     if (!parts.cd && wdir.lastModified() != parts.lastModifiedTime) {
-        parts.update(csh::UpdateType::WORK_DIR_CHANGED);
+        parts.update(csh::UpdateType::WorkDirChanged);
         parts.lastModifiedTime = wdir.lastModified();
     } else {
         parts.cd = false;
-        parts.update(csh::UpdateType::UPDATE);
+        parts.update(csh::UpdateType::Update);
     }
 }
 
@@ -126,8 +126,8 @@ void updateConsoleInfo() {
 }
 
 void mainLoop() {
-    int          rc = 0;
-    std::wstring err;
+    int  rc = 0;
+    wstr err;
 
     while (true) {
         updateConsoleInfo();
@@ -142,7 +142,7 @@ void mainLoop() {
         Console::reset();
         _flushall();
 
-        std::wstring line = input();
+        wstr line = input();
 
         if (line.empty()) {
             if (feof(stdin)) {
@@ -152,7 +152,7 @@ void mainLoop() {
             continue;
         }
 
-        std::wstring cmd;
+        wstr cmd;
         try {
             resetToDefault();
             if (!sh.run(line, cmd, rc, err))
@@ -173,26 +173,26 @@ void mainLoop() {
 /**
  * 设置光标位置
  */
-void setCurPos(_COORD pos) {
+void setCurPos(COORD pos) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
 /**
  * 设置光标位置
  */
-void setCurPos(SHORT x, SHORT y) {
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), {x, y});
+void setCurPos(int x, int y) {
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), {static_cast<SHORT>(x), static_cast<SHORT>(y)});
 }
 
 /**
  * 历史记录
  */
-std::vector<std::wstring> history;
+std::vector<wstr> history;
 
 /**
  * 重新打印当前输入
  */
-void reprint(const _COORD &src, const std::wstring &line) {
+void reprint(const COORD &src, const wstr &line) {
     setCurPos(src);
     Console::clear();
     Console::print(line);
@@ -201,10 +201,10 @@ void reprint(const _COORD &src, const std::wstring &line) {
 /**
  * 设置光标位置到line的i位置
  */
-void SetCursorToI(const std::wstring &line, _COORD sp, short i) {
+void setCursorToI(const wstr &line, COORD sp, int i) {
     int len = i;
 
-    for (auto li=0;li<i;li++) {
+    for (int li = 0; li < i; li++) {
         if (is_full_width_char(line[li]))
             len++;
     }
@@ -215,12 +215,12 @@ void SetCursorToI(const std::wstring &line, _COORD sp, short i) {
  * 处理方向键
  */
 void dealArrowKey(
-        std::wstring &line,
+        wstr &line,
         int &i,
         int &hi,
         bool &hiChanged,
-        const _COORD &sp,
-        const std::wstring &input,
+        const COORD &sp,
+        const wstr &input,
         int key
 ) {
     if (key == SK_LEFT) {
@@ -233,7 +233,7 @@ void dealArrowKey(
     } else if (key == SK_RIGHT) {
         i++;
         if (i > line.size())
-            i = line.size();
+            i = static_cast<int>(line.size());
         else {
             Console::moveCursorRight(is_full_width_char(line[i - 1]) ? 2 : 1);
         }
@@ -245,7 +245,7 @@ void dealArrowKey(
         hiChanged = true;
         line      = history[hi];
         reprint(sp, line);
-        i = line.size();
+        i = static_cast<int>(line.size());
     } else {
         if (history.empty())
             return;
@@ -259,7 +259,7 @@ void dealArrowKey(
             line = history[hi];
         }
         reprint(sp, line);
-        i = line.size();
+        i = static_cast<int>(line.size());
     }
 }
 
@@ -267,12 +267,12 @@ void dealArrowKey(
  * 处理单个字符
  */
 bool dealChar(
-        std::wstring &line,
-        std::wstring &input,
+        wstr &line,
+        wstr &input,
         int &i,
         int &hi,
         bool &hiChanged,
-        const _COORD &sp,
+        const COORD &sp,
         wchar_t c
 ) {
     if (!c || c == 0xe0) {
@@ -284,7 +284,7 @@ bool dealChar(
                 return true;
             line.erase(i, 1);
             reprint(sp, line);
-            SetCursorToI(line, sp, i);
+            setCursorToI(line, sp, i);
         }
     } else {
         if (c == '\t') {
@@ -297,7 +297,7 @@ bool dealChar(
                 i--;
                 line.erase(line.begin() + i);
                 reprint(sp, line);
-                SetCursorToI(line, sp, i);
+                setCursorToI(line, sp, i);
             }
         } else {
             if (c < ' ')
@@ -305,7 +305,7 @@ bool dealChar(
             line.insert(line.begin() + i, c);
             i++;
             reprint(sp, line);
-            SetCursorToI(line, sp, i);
+            setCursorToI(line, sp, i);
         }
     }
     if (!hiChanged)
@@ -313,18 +313,18 @@ bool dealChar(
     return true;
 }
 
-std::wstring input() {
+wstr input() {
     ctrlC = false;
 
     updateConsoleInfo();
-    _COORD sp        = cbi.dwCursorPosition;
-    int    i         = 0;
-    int    hi        = history.size();
-    bool   hiChanged = false;
+    COORD sp        = cbi.dwCursorPosition;
+    int   i         = 0;
+    int   hi        = static_cast<int>(history.size());
+    bool  hiChanged = false;
 
-    std::wstring line;
-    std::wstring input;
-    bool         inputting = true;
+    wstr line;
+    wstr input;
+    bool inputting = true;
 
     while (inputting) {
         if (_kbhit()) // 检查是否有按键按下
