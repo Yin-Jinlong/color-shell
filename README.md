@@ -10,8 +10,8 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
 
 [//]: # (统计)
-![Total Lines](https://img.shields.io/badge/total_lines-3,298-9a9a9a)
-![Source Lines](https://img.shields.io/badge/source_lines-1,486-9a9a9a)
+![Total Lines](https://img.shields.io/badge/total_lines-3,789-9a9a9a)
+![Source Lines](https://img.shields.io/badge/source_lines-1,811-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
@@ -71,13 +71,13 @@
 - ✅ 直接输入（不阻塞）
 - ✅ 历史命令
 - ✅ 持久化历史命令
-- 🔲 命令补全
+- ✅ 命令补全*
 - ✅ 执行结果*
 - ❌ 管道
 - ❌ 重定向输入
 - ❌ 重定向输出
-- ❌ 配置
-- ❌ 自定义配置
+- 🔲 配置
+- 🔲 自定义配置
 - ✅ [插件](./extras/README.md)*
 
 <small style="color:rgba(128,128,128,0.5)">注：*为基本完成，未勾选标识正在进行或将要进行</small>
