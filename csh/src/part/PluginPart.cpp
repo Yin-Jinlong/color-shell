@@ -40,6 +40,6 @@ bool csh::PluginPart::update(UpdateType type) {
 
 void csh::PluginPart::printContents() {
     for (const ColorStrPartStruct &part: parts) {
-        Console::print(part.str);
+        Console::print(part.str, true);
     }
 }

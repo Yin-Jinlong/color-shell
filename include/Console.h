@@ -153,29 +153,33 @@ public:
      * 打印字符串
      *
      * @param str 字符串
+     * @param convert 是否转换到ANSI
      */
-    MAYBE_UNUSED static void print(const wstr &str);
+    MAYBE_UNUSED static void print(const wstr &str,bool convert=false);
 
     /**
      * 打印字符串并换行
      *
      * @param str 字符串
+     * @param convert 是否转换到ANSI
      */
-    MAYBE_UNUSED static void println(const wstr &str);
+    MAYBE_UNUSED static void println(const wstr &str,bool convert=false);
 
     /**
      * 打印字符串
      *
      * @param str 字符串
+     * @param convert 是否转换到ANSI
      */
-    MAYBE_UNUSED static void print(const wchar_t *str);
+    MAYBE_UNUSED static void print(const wchar_t *str,bool convert=false);
 
     /**
      * 打印字符串并换行
      *
      * @param str 字符串
+     * @param convert 是否转换到ANSI
      */
-    MAYBE_UNUSED static void println(const wchar_t *str);
+    MAYBE_UNUSED static void println(const wchar_t *str,bool convert=false);
 
     /**
      * 打印字符

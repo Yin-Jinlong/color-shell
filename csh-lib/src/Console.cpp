@@ -66,23 +66,39 @@ void Console::clear(int flag) {
     printf(L"\033[{}J", flag);
 }
 
-void Console::print(const wstr &str) {
-    std::wcout << str;
+void Console::print(const wstr &str, bool convert) {
+    if (convert)
+        print(str.c_str(), convert);
+    else
+        std::wcout << str;
 }
 
-void Console::println(const wstr &str) {
-    print(str);
+void Console::println(const wstr &str, bool convert) {
+    print(str, convert);
     println();
 }
 
-void Console::print(const wchar_t *str) {
+void Console::print(const wchar_t *str, bool convert) {
     if (!str)
         return;
-    std::wcout << str;
+    if (convert) {
+        int len = WideCharToMultiByte(CP_UTF8, 0, str, -1, nullptr, 0, nullptr, nullptr);
+        if (len == 0)
+            return;
+        char *buf = new char[len];
+        if (WideCharToMultiByte(CP_UTF8, 0, str, -1, buf, len, nullptr, nullptr) == 0) {
+            delete[] buf;
+            return;
+        }
+        std::cout << buf;
+        delete[] buf;
+    } else {
+        std::wcout << str;
+    }
 }
 
-void Console::println(const wchar_t *str) {
-    print(str);
+void Console::println(const wchar_t *str, bool convert) {
+    print(str, convert);
     println();
 }
 
