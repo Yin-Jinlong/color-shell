@@ -9,16 +9,19 @@
 #include "part/PluginPart.h"
 #include "file.h"
 #include "util.h"
-#include "key-scan-code.h"
 #include "str/char-util.h"
 #include "CmdHistory.h"
+#include "CmdList.h"
 
 #define SET_UTF_8(s) s.imbue(std::locale(".UTF-8"))
+
+extern void split(const wstr &line, ARG_OUT wstr &cmd, ARG_OUT wstr &arg);
 
 BOOL WINAPI handleCtrlC(DWORD dwCtrlType);
 
 csh::File *historyFile;
 
+csh::CmdList    cmdList;
 ColorShell      sh;
 csh::Parts      parts;
 /**
@@ -150,19 +153,14 @@ void updateParts() {
     }
 }
 
-CONSOLE_SCREEN_BUFFER_INFO cbi = {};
-
-void updateConsoleInfo() {
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cbi);
-}
-
 void mainLoop() {
     int  rc = 0;
     wstr err;
 
     while (true) {
-        updateConsoleInfo();
-        if (cbi.dwCursorPosition.X) {
+        int x, y;
+        Console::getCursorPosition(x, y);
+        if (x) {
             std::wcout << std::endl;
         }
 
@@ -172,8 +170,10 @@ void mainLoop() {
 
         Console::reset();
         _flushall();
+        Console::save();
 
         wstr line = input();
+        Console::clear();
 
         if (line.empty()) {
             if (feof(stdin)) {
@@ -202,21 +202,6 @@ void mainLoop() {
     }
 }
 
-/**
- * 设置光标位置
- */
-void setCurPos(COORD pos) {
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-}
-
-/**
- * 设置光标位置
- */
-void setCurPos(int x, int y) {
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), {static_cast<SHORT>(x), static_cast<SHORT>(y)});
-}
-
-
 wstr line, hint;
 int  hintPos = 0;
 
@@ -230,35 +215,49 @@ void updateHint() {
             return;
         }
     }
+    wstr            cmd, arg;
+    split(line, cmd, arg);
+    if (arg.empty())
+        hint = cmdList.matchOne(cmd);
 }
 
 /**
  * 设置光标位置到line的i位置
  */
-void setCursorToI(COORD sp, int i) {
+void setCursorToI(int i) {
+    Console::restore();
     int len = i;
 
     for (int li = 0; li < i; li++) {
         if (is_full_width_char(line[li]))
             len++;
     }
-    setCurPos(sp.X + len, sp.Y);
+    Console::moveCursorRight(len);
 }
 
 /**
  * 重新打印当前输入
  */
-void reprint(const COORD &src, bool update = true) {
+void reprint(int i, bool update = true) {
     if (update)
         updateHint();
     Console::setForegroundColor(csh::Gray);
-    setCursorToI(src,hintPos);
+    Console::restore();
+    setCursorToI(hintPos);
     Console::clear();
     Console::print(hint);
 
     Console::setForegroundColor(csh::White);
-    setCurPos(src);
+    Console::restore();
     Console::print(line);
+
+    Console::restore();
+    wstr cmd, arg;
+    split(line, cmd, arg);
+    Console::setForegroundColor(cmdList[cmd] ? csh::Green : csh::Red);
+    Console::print(cmd);
+    Console::reset();
+    setCursorToI(i);
 }
 
 /**
@@ -267,33 +266,33 @@ void reprint(const COORD &src, bool update = true) {
 void dealArrowKey(
         int &i,
         bool &hiChanged,
-        const COORD &sp,
         const wstr &input,
-        int key
+        u32 key
 ) {
-    if (key == SK_LEFT) {
+    if (key == VK_LEFT) {
         i--;
         if (i < 0)
             i = 0;
         else {
             Console::moveCursorLeft(is_full_width_char(line[i]) ? 2 : 1);
         }
-    } else if (key == SK_RIGHT) {
+    } else if (key == VK_RIGHT) {
         i++;
         if (i > line.size()) {
-            line = hint;
-            i    = static_cast<int>(line.size());
-            reprint(sp);
+            if (!hint.empty())
+                line = hint;
+            i        = static_cast<int>(line.size());
+            reprint(i);
         } else {
             Console::moveCursorRight(is_full_width_char(line[i - 1]) ? 2 : 1);
         }
-    } else if (key == SK_UP) {
+    } else if (key == VK_UP) {
         if (history.empty())
             return;
         hiChanged = true;
         line      = *history.last();
-        reprint(sp);
-        i = static_cast<int>(line.size());
+        i         = static_cast<int>(line.size());
+        reprint(i);
     } else {
         if (history.empty())
             return;
@@ -305,55 +304,127 @@ void dealArrowKey(
             line      = input;
             hiChanged = false;
         }
-        reprint(sp);
-        i = static_cast<int>(line.size());
+        i         = static_cast<int>(line.size());
+        reprint(i);
     }
 }
+
+void complete(
+        COORD &sp,
+        int &i) {
+    if (line.empty())
+        return;
+    wstr cmd, arg;
+    split(line, cmd, arg);
+    if (!arg.empty())
+        return;
+    std::vector<wstr> suggests;
+    cmdList.match(cmd, suggests);
+    if (suggests.empty())
+        return;
+    if (suggests.size() == 1) {
+        line = suggests[0] + L" ";
+        i    = static_cast<int>(line.size());
+        reprint(i);
+        return;
+    }
+    Console::println('\r');
+    Console::clear();
+
+    COORD size;
+    Console::getBufferSize(size);
+
+    // 打印行数
+    int      c   = 0;
+    // 最大打印行数
+    int      pc  = 0;
+    // 命令长度
+    int      sl  = 0;
+    // 下一行起始坐标
+    int      off = 0;
+    for (int j   = 0; j < suggests.size(); ++j) {
+        const wstr &s = suggests[j];
+        Console::moveCursorRight(off);
+        if (c == 9 && off + sl + 1 >= size.X && j < suggests.size() - 1) {
+            Console::println(L"...");
+            break;
+        }
+        Console::println(off + s.length() >= size.X ? s.substr(0, size.X - off - 1) : s);
+        if (s.length() > sl)
+            sl = static_cast<int>(s.length());
+        c++;
+        if (pc <= 10)
+            pc++;
+        if (c >= 10) {
+            off += sl + 1;
+            sl = 0;
+            if (off > size.X)
+                break;
+            Console::moveCursorUp(c);
+            c = 0;
+        }
+    }
+
+    int d = sp.Y + pc - size.Y;
+
+    if (d > 0) {
+        sp.Y = static_cast<SHORT>(sp.Y - d - 1);
+        Console::setCursorPosition(sp);
+        Console::save();
+    } else {
+        Console::setCursorPosition(sp);
+    }
+    setCursorToI(i);
+}
+
 
 /**
  * 处理单个字符
  */
 bool dealChar(
         int &i,
-        const COORD &sp,
+        COORD &sp,
         wchar_t c
 ) {
     if (c == '\t') {
-
+        complete(sp, i);
     } else if (c == '\r' || c == '\n') {
         Console::print(L"\r\n");
         return false;
     } else if (c == '\b') {
         if (!line.empty()) {
-            i--;
-            line.erase(line.begin() + i);
-            reprint(sp);
-            setCursorToI(sp, i);
+            if (i > 0) {
+                i--;
+                line.erase(line.begin() + i);
+                reprint(i);
+            }
         }
     } else {
+        if (c == 3) {
+            line = L"";
+            return false;
+        }
         if (c < ' ')
             return true;
         line.insert(line.begin() + i, c);
         i++;
-        reprint(sp);
-        setCursorToI(sp, i);
+        reprint(i);
     }
     return true;
 }
 
 bool readAllBufChar(int &i, bool &hiChanged, COORD sp, wstr &input) {
     wchar_t c;
-    while ((c = _getwch()) != WEOF) {
+    while (!ctrlC && (c = _getwch()) != WEOF) {
         if (!c || c == 0xe0) {
-            c = _getwch();
-            if (c == SK_LEFT || c == SK_RIGHT || c == SK_UP || c == SK_DOWN) {
-                dealArrowKey(i, hiChanged, sp, input, c);
-            } else if (c == SK_DEL) {
+            c = MapVirtualKeyA(_getwch(), MAPVK_VSC_TO_VK);
+            if (c == VK_LEFT || c == VK_RIGHT || c == VK_UP || c == VK_DOWN) {
+                dealArrowKey(i, hiChanged, input, c);
+            } else if (c == VK_DELETE) {
                 if (line.empty() || i == line.size())
                     continue;
                 line.erase(i, 1);
-                reprint(sp);
-                setCursorToI(sp, i);
+                reprint(i);
             }
         } else {
             if (!dealChar(i, sp, c))
@@ -368,10 +439,10 @@ bool readAllBufChar(int &i, bool &hiChanged, COORD sp, wstr &input) {
 wstr input() {
     ctrlC = false;
 
-    updateConsoleInfo();
-    COORD sp        = cbi.dwCursorPosition;
-    int   i         = 0;
-    bool  hiChanged = false;
+    COORD sp;
+    Console::getCursorPosition(sp);
+    int  i         = 0;
+    bool hiChanged = false;
 
     line.clear();
     wstr input;

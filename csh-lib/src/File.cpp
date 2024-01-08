@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <corecrt_io.h>
+#include <Windows.h>
 
 csh::File::File(wstr path) {
     this->path = std::move(path);
@@ -132,6 +133,30 @@ void mks(const std::vector<wstr> &paths) {
         if (mk(p) == ERROR_PATH_NOT_FOUND)
             return;
     }
+}
+
+DWORD csh::File::list(std::vector<wstr> &list, bool file, bool dir) {
+    if (!isDir())
+        return -1;
+    // 列出文件
+    WIN32_FIND_DATAW data;
+    HANDLE           hFind = FindFirstFileW((path + L"\\*").c_str(), &data);
+    if (hFind == INVALID_HANDLE_VALUE)
+        return GetLastError();
+    do {
+        wstr name  = data.cFileName;
+        bool isDir = (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+
+        if (name != L"." && name != L"..") {
+            if ((dir && isDir) || (file && !isDir)) {
+                list.push_back(name);
+            }
+        }
+
+    } while (FindNextFileW(hFind, &data));
+
+    FindClose(hFind);
+    return 0;
 }
 
 bool csh::File::mkdirs() const {

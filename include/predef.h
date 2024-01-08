@@ -17,6 +17,10 @@
 #define MAYBE_UNUSED [[maybe_unused]]
 #define DLL_OUTER_CALL MAYBE_UNUSED DLL_OUT
 
+#define ARG_OUT
+#define ARG_IN
+#define ARG_INOUT
+
 typedef int8_t  i8;
 typedef int16_t i16;
 typedef int32_t i32;

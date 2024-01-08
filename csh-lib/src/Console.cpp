@@ -1,7 +1,7 @@
 #include "Console.h"
 
-
-bool Console::withColor = true;
+bool                       Console::withColor = true;
+CONSOLE_SCREEN_BUFFER_INFO Console::csbi      = {};
 
 
 void Console::setColorMode(bool on) {
@@ -39,18 +39,26 @@ void Console::setColor(u8 fr, u8 fg, u8 fb, u8 br, u8 bg, u8 bb) {
 }
 
 void Console::moveCursorUp(int n) {
+    if (n < 1)
+        return;
     printf(L"\033[{}A", n);
 }
 
 void Console::moveCursorDown(int n) {
+    if (n < 1)
+        return;
     printf(L"\033[{}B", n);
 }
 
 void Console::moveCursorLeft(int n) {
+    if (n < 1)
+        return;
     printf(L"\033[{}D", n);
 }
 
 void Console::moveCursorRight(int n) {
+    if (n < 1)
+        return;
     printf(L"\033[{}C", n);
 }
 
@@ -60,6 +68,11 @@ void Console::clear(int flag) {
 
 void Console::print(const wstr &str) {
     std::wcout << str;
+}
+
+void Console::println(const wstr &str) {
+    print(str);
+    println();
 }
 
 void Console::print(const wchar_t *str) {
@@ -84,4 +97,40 @@ void Console::println(wchar_t c) {
 
 void Console::println() {
     print('\n');
+}
+
+void update(CONSOLE_SCREEN_BUFFER_INFO &csbi) {
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+}
+
+void Console::getCursorPosition(COORD &coord) {
+    update(csbi);
+    coord = csbi.dwCursorPosition;
+}
+
+void Console::getCursorPosition(int &x, int &y) {
+    update(csbi);
+    x = csbi.dwCursorPosition.X;
+    y = csbi.dwCursorPosition.Y;
+}
+
+void Console::setCursorPosition(int x, int y) {
+    printf(L"\033[{};{}H", y + 1, x + 1);
+}
+
+void Console::setCursorPosition(const COORD &coord) {
+    setCursorPosition(coord.X, coord.Y);
+}
+
+void Console::getBufferSize(COORD &size) {
+    update(csbi);
+    size = csbi.dwSize;
+}
+
+void Console::save() {
+    print(L"\033[s");
+}
+
+void Console::restore() {
+    print(L"\033[u");
 }

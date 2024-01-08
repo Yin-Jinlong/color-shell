@@ -10,6 +10,15 @@ private:
      */
     std::vector<wstr> paths;
 public:
+
+    static constexpr const wchar_t *CD = L"cd";
+
+    static constexpr const wchar_t *EXIT = L"exit";
+
+    static constexpr const wchar_t *HISTORY = L"history";
+
+    static constexpr const wchar_t *UPDATE_INDEXES = L"update-indexes";
+
     ColorShell();
 
     ~ColorShell();
@@ -24,4 +33,14 @@ public:
      * @return 是否继续执行
      */
     bool run(wstr line, wstr &cmd, int &rc, wstr &err);
+
+    /**
+     * 更新当前目录命令索引
+     */
+    void updateCurrentIndexes();
+
+    /**
+     * 更新所有PATH命令索引
+     */
+    void updateIndexes();
 };

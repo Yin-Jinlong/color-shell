@@ -2,6 +2,7 @@
 
 #include <predef.h>
 #include "Color.h"
+#include <Windows.h>
 
 /**
  * 控制台
@@ -18,6 +19,8 @@ private:
      * 是否打开颜色
      */
     static bool withColor;
+
+    static CONSOLE_SCREEN_BUFFER_INFO csbi;
 public:
 
     /**
@@ -154,6 +157,13 @@ public:
     MAYBE_UNUSED static void print(const wstr &str);
 
     /**
+     * 打印字符串并换行
+     *
+     * @param str 字符串
+     */
+    MAYBE_UNUSED static void println(const wstr &str);
+
+    /**
      * 打印字符串
      *
      * @param str 字符串
@@ -197,4 +207,51 @@ public:
     MAYBE_UNUSED static inline void printf(std::wformat_string<T...> fmt, T &&... args) {
         print(std::format(fmt, std::forward<T>(args)...));
     }
+
+    /**
+     * 获取光标位置
+     *
+     * @param coord 光标位置
+     */
+    static void getCursorPosition(ARG_OUT COORD &coord);
+
+    /**
+     * 获取光标位置
+     *
+     * @param x x
+     * @param y y
+     */
+    static void getCursorPosition(ARG_OUT int &x, int &y);
+
+    /**
+     * 设置光标位置
+     *
+     * @param x x
+     * @param y y
+     */
+    static void setCursorPosition(int x, int y);
+
+    /**
+     * 设置光标位置
+     *
+     * @param coord 光标位置
+     */
+    static void setCursorPosition(const COORD &coord);
+
+    /**
+     * 获取屏幕大小
+     *
+     * @param size 屏幕大小
+     */
+    static void getBufferSize(COORD &size);
+
+    /**
+     * 保存光标位置
+     */
+    static void save();
+
+    /**
+     * 恢复光标位置
+     */
+    static void restore();
 };

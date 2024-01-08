@@ -19,7 +19,7 @@ csh::CmdHistory::~CmdHistory() {
 }
 
 bool csh::CmdHistory::add(const wstr &cmd) {
-    if (size >= maxSize && !removeHead()) {
+    if (cmd.empty() || (size >= maxSize && !removeHead())) {
         return false;
     }
     if (size && tail->str == cmd)

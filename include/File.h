@@ -159,6 +159,17 @@ namespace csh {
         MAYBE_UNUSED USE_RET File getParent() const;
 
         /**
+         * 获取文件列表
+         *
+         * @param list 文件列表
+         * @param file 是否列出文件
+         * @param dir 是否列出目录
+         *
+         * @return 是否成功
+         */
+        MAYBE_UNUSED DWORD list(ARG_OUT std::vector<wstr> &list, bool file = true, bool dir = false);
+
+        /**
          * 创建目录
          *
          * @return 是否成功

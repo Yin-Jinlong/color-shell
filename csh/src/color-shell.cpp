@@ -3,9 +3,15 @@
 #include "inner-cmd.h"
 #include "util.h"
 #include "File.h"
+#include "CmdList.h"
 #include <Windows.h>
 #include <algorithm>
 
+static std::vector<wstr> exts = {L".exe", L".cmd", L".bat", L".ps1"};
+
+wstr getExt(const wstr &path);
+
+extern csh::CmdList    cmdList;
 extern csh::CmdHistory history;
 
 ColorShell::ColorShell() {
@@ -21,11 +27,13 @@ ColorShell::ColorShell() {
     paths.push_back(mp);
     // 最后是PATH
     wstr_split(path, paths, ';');
+
+    updateIndexes();
 }
 
 ColorShell::~ColorShell() = default;
 
-void split(const wstr &line, _Out_ wstr &cmd, _Out_ wstr &arg) {
+void split(const wstr &line, ARG_OUT wstr &cmd, ARG_OUT wstr &arg) {
     wstr s = wstr_trim(line, true, false);
     if (s.empty())
         return;
@@ -56,8 +64,6 @@ wstr getExt(const wstr &path) {
 #define EXT_I_CMD 1
 #define EXT_I_BAT 2
 #define EXT_I_PS1 3
-
-static std::vector<wstr> exts = {L".exe", L".cmd", L".bat", L".ps1"};
 
 wstr checkExt(
         const std::vector<wstr> &paths,
@@ -127,16 +133,20 @@ bool ColorShell::run(wstr line, wstr &cmd, int &rc, wstr &err) {
     err.clear();
     wstr arg;
     split(line, cmd, arg);
-    if (cmd == L"exit") {
+    if (cmd == EXIT) {
         return false;
-    } else if (cmd == L"cd") {
+    } else if (cmd == CD) {
         rc = csh::cd(arg);
         if (!rc) { // 目录切换，更新路径
             paths[0] = getCurrentDirectory();
+            updateCurrentIndexes();
         }
         return true;
-    } else if (cmd == L"history") {
+    } else if (cmd == HISTORY) {
         rc = csh::history(history, arg);
+        return true;
+    } else if (cmd == UPDATE_INDEXES) {
+        updateIndexes();
         return true;
     }
 
@@ -156,3 +166,49 @@ bool ColorShell::run(wstr line, wstr &cmd, int &rc, wstr &err) {
 #undef EXTI_CMD
 #undef EXTI_BAT
 #undef EXTI_PS1
+
+void filterAdd(std::vector<wstr> &files, bool cur = false) {
+    for (const wstr &f: files) {
+        wstr ext = getExt(f);
+        if (ext.empty())
+            continue;
+        for (wstr &e: exts) {
+            if (e == ext) {
+                wstr cmd = f.substr(0, f.size() - ext.size());
+                if (cur) {
+                    cmdList.addCurrent(cmd);
+                } else {
+                    cmdList += cmd;
+                }
+                break;
+            }
+        }
+    }
+}
+
+void ColorShell::updateCurrentIndexes() {
+    cmdList.clearCurrent();
+    std::vector<wstr> files;
+    wstr              p = paths[0];
+    if (csh::File(p).list(files))
+        return;
+    filterAdd(files, true);
+}
+
+void ColorShell::updateIndexes() {
+    cmdList.clear();
+    updateCurrentIndexes();
+        cmdList += CD;
+    cmdList += EXIT;
+    cmdList += HISTORY;
+    cmdList += UPDATE_INDEXES;
+
+    std::vector<wstr> files;
+    for (int          i = 1; i < paths.size(); i++) {
+        wstr p = paths[i];
+        files.clear();
+        if (csh::File(p).list(files))
+            continue;
+        filterAdd(files);
+    }
+}
