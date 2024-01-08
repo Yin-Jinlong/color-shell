@@ -64,7 +64,7 @@ void resetToDefault() {
     SetConsoleOutputCP(defOut);
 }
 
-void error(const str &msg){
+void error(const str &msg) {
     MessageBoxA(nullptr, msg.c_str(), "Error", MB_OK);
     exit(1);
 }
@@ -185,6 +185,7 @@ void mainLoop() {
 
         wstr cmd;
         try {
+            Console::reset();
             resetToDefault();
             if (!sh.run(line, cmd, rc, err))
                 break;
@@ -215,19 +216,26 @@ void setCurPos(int x, int y) {
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), {static_cast<SHORT>(x), static_cast<SHORT>(y)});
 }
 
-/**
- * 重新打印当前输入
- */
-void reprint(const COORD &src, const wstr &line) {
-    setCurPos(src);
-    Console::clear();
-    Console::print(line);
+
+wstr line, hint;
+int  hintPos = 0;
+
+void updateHint() {
+    hint.clear();
+    if (line.empty())
+        return;
+    for (const wstr &l: history) {
+        if (l.starts_with(line)) {
+            hint = l;
+            return;
+        }
+    }
 }
 
 /**
  * 设置光标位置到line的i位置
  */
-void setCursorToI(const wstr &line, COORD sp, int i) {
+void setCursorToI(COORD sp, int i) {
     int len = i;
 
     for (int li = 0; li < i; li++) {
@@ -238,10 +246,25 @@ void setCursorToI(const wstr &line, COORD sp, int i) {
 }
 
 /**
+ * 重新打印当前输入
+ */
+void reprint(const COORD &src, bool update = true) {
+    if (update)
+        updateHint();
+    Console::setForegroundColor(csh::Gray);
+    setCursorToI(src,hintPos);
+    Console::clear();
+    Console::print(hint);
+
+    Console::setForegroundColor(csh::White);
+    setCurPos(src);
+    Console::print(line);
+}
+
+/**
  * 处理方向键
  */
 void dealArrowKey(
-        wstr &line,
         int &i,
         bool &hiChanged,
         const COORD &sp,
@@ -257,9 +280,11 @@ void dealArrowKey(
         }
     } else if (key == SK_RIGHT) {
         i++;
-        if (i > line.size())
-            i = static_cast<int>(line.size());
-        else {
+        if (i > line.size()) {
+            line = hint;
+            i    = static_cast<int>(line.size());
+            reprint(sp);
+        } else {
             Console::moveCursorRight(is_full_width_char(line[i - 1]) ? 2 : 1);
         }
     } else if (key == SK_UP) {
@@ -267,7 +292,7 @@ void dealArrowKey(
             return;
         hiChanged = true;
         line      = *history.last();
-        reprint(sp, line);
+        reprint(sp);
         i = static_cast<int>(line.size());
     } else {
         if (history.empty())
@@ -280,7 +305,7 @@ void dealArrowKey(
             line      = input;
             hiChanged = false;
         }
-        reprint(sp, line);
+        reprint(sp);
         i = static_cast<int>(line.size());
     }
 }
@@ -289,7 +314,6 @@ void dealArrowKey(
  * 处理单个字符
  */
 bool dealChar(
-        wstr &line,
         int &i,
         const COORD &sp,
         wchar_t c
@@ -303,16 +327,40 @@ bool dealChar(
         if (!line.empty()) {
             i--;
             line.erase(line.begin() + i);
-            reprint(sp, line);
-            setCursorToI(line, sp, i);
+            reprint(sp);
+            setCursorToI(sp, i);
         }
     } else {
         if (c < ' ')
             return true;
         line.insert(line.begin() + i, c);
         i++;
-        reprint(sp, line);
-        setCursorToI(line, sp, i);
+        reprint(sp);
+        setCursorToI(sp, i);
+    }
+    return true;
+}
+
+bool readAllBufChar(int &i, bool &hiChanged, COORD sp, wstr &input) {
+    wchar_t c;
+    while ((c = _getwch()) != WEOF) {
+        if (!c || c == 0xe0) {
+            c = _getwch();
+            if (c == SK_LEFT || c == SK_RIGHT || c == SK_UP || c == SK_DOWN) {
+                dealArrowKey(i, hiChanged, sp, input, c);
+            } else if (c == SK_DEL) {
+                if (line.empty() || i == line.size())
+                    continue;
+                line.erase(i, 1);
+                reprint(sp);
+                setCursorToI(sp, i);
+            }
+        } else {
+            if (!dealChar(i, sp, c))
+                return false;
+        }
+        if (!hiChanged)
+            input = line;
     }
     return true;
 }
@@ -325,34 +373,14 @@ wstr input() {
     int   i         = 0;
     bool  hiChanged = false;
 
-    wstr line;
+    line.clear();
     wstr input;
     bool inputting = true;
 
     history.reset();
     while (inputting) {
-        if (_kbhit()) // 检查是否有按键按下
-        {
-            wchar_t c = WEOF;
-            while ((c = _getwch()) != WEOF) {
-                if (!c || c == 0xe0) {
-                    c = _getwch();
-                    if (c == SK_LEFT || c == SK_RIGHT || c == SK_UP || c == SK_DOWN)
-                        dealArrowKey(line, i, hiChanged, sp, input, c);
-                    else if (c == SK_DEL) {
-                        if (line.empty() || i == line.size())
-                            continue;
-                        line.erase(i, 1);
-                        reprint(sp, line);
-                        setCursorToI(line, sp, i);
-                    }
-                } else {
-                    if (!(inputting = dealChar(line, i, sp, c)))
-                        break;
-                }
-                if (!hiChanged)
-                    input = line;
-            }
+        if (_kbhit()) {
+            inputting = readAllBufChar(i, hiChanged, sp, input);
         } else if (ctrlC) {
             ctrlC = false;
             return L"";

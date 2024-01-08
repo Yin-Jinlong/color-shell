@@ -121,6 +121,10 @@ u32 csh::CmdHistory::length() const {
     return size;
 }
 
+csh::CmdHistory::Iterator csh::CmdHistory::begin() {
+    return csh::CmdHistory::Iterator(tail);
+}
+
 bool csh::CmdHistory::operator+=(const wstr &cmd) {
     return add(cmd);
 }

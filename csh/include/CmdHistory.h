@@ -14,6 +14,7 @@ namespace csh {
             Item *next = nullptr;
             wstr str;
         };
+
         /**
          * 最大长度
          */
@@ -37,6 +38,31 @@ namespace csh {
 
         File *file = nullptr;
     public:
+
+        class Iterator {
+        private:
+            Item *item = nullptr;
+        public:
+            constexpr explicit Iterator(Item *item) : item(item) {}
+
+            constexpr wstr &operator*() const {
+                return item->str;
+            }
+
+            constexpr Iterator operator++() {
+                item = item ? item->last : nullptr;
+                return *this;
+            }
+
+            constexpr bool operator==(const Iterator &other) const {
+                return item == other.item;
+            }
+
+            constexpr bool operator!=(const Iterator &other) const {
+                return item != other.item;
+            }
+        };
+
         CmdHistory();
 
         ~CmdHistory();
@@ -107,6 +133,18 @@ namespace csh {
          * @return 长度
          */
         USE_RET u32 length() const;
+
+        /**
+         * 开头，列表尾部
+         */
+        Iterator begin();
+
+        /**
+         * 结尾，列表头部
+         */
+        static constexpr Iterator end() {
+            return Iterator(nullptr);
+        }
 
         /**
          * 追加
