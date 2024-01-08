@@ -5,9 +5,8 @@
 #include "File.h"
 #include "CmdList.h"
 #include <Windows.h>
-#include <algorithm>
 
-static std::vector<wstr> exts = {L".exe", L".cmd", L".bat", L".ps1"};
+const std::vector<wstr> exts = {L".exe", L".cmd", L".bat", L".ps1"};
 
 wstr getExt(const wstr &path);
 
@@ -77,6 +76,29 @@ wstr checkExt(
             noExt = false;
             break;
         }
+    }
+
+    if (cmd.contains(L"\\")|| cmd.contains(L"/")){
+        if (!noExt){
+            const csh::File &file = csh::File(cmd);
+            if (file.exists()) {
+                if (ext == exts[0]) {
+                    return file.getPath();
+                }
+                return ext;
+            }
+        }
+        // 补全后缀找
+        for (const wstr &e: exts) {
+            const csh::File &file = csh::File(cmd + e);
+            if (file.exists()) {
+                if (e == exts[0]) {
+                    return file.getPath();
+                }
+                return e;
+            }
+        }
+        return L"";
     }
 
     for (const wstr &p: paths) {
@@ -154,7 +176,7 @@ bool ColorShell::run(wstr line, wstr &cmd, int &rc, wstr &err) {
     if (t.empty()) {
         err = std::format(L"Unknown command or executable or runnable script file : '{}'", cmd);
     } else if (t == exts[EXT_I_CMD] || t == exts[EXT_I_BAT]) {
-        runCmd(std::format(L"cmd /c {}", line), (DWORD &) rc);
+        runCmd(std::format(L"cmd /c \"\"{}\"\" {})", cmd,arg), (DWORD &) rc);
     } else if (t == exts[EXT_I_PS1]) {
         runCmd(std::format(L"powershell /c {}", line), (DWORD &) rc);
     } else {
@@ -172,7 +194,7 @@ void filterAdd(std::vector<wstr> &files, bool cur = false) {
         wstr ext = getExt(f);
         if (ext.empty())
             continue;
-        for (wstr &e: exts) {
+        for (const wstr& e: exts) {
             if (e == ext) {
                 wstr cmd = f.substr(0, f.size() - ext.size());
                 if (cur) {

@@ -16,6 +16,8 @@
 #define SET_UTF_8(s) s.imbue(std::locale(".UTF-8"))
 
 extern void split(const wstr &line, ARG_OUT wstr &cmd, ARG_OUT wstr &arg);
+extern wstr getExt(const wstr &path);
+const std::vector<wstr> exts = {L".exe", L".cmd", L".bat", L".ps1"};
 
 BOOL WINAPI handleCtrlC(DWORD dwCtrlType);
 
@@ -235,6 +237,19 @@ void setCursorToI(int i) {
     Console::moveCursorRight(len);
 }
 
+bool checkExists(const wstr &cmd){
+    wstr ext=getExt(cmd);
+    if (ext.empty()){
+        for(const wstr &e:exts){
+            if (csh::File(cmd+e).exists())
+                return true;
+        }
+    } else{
+        return csh::File(cmd).exists();
+    }
+    return false;
+}
+
 /**
  * 重新打印当前输入
  */
@@ -254,7 +269,7 @@ void reprint(int i, bool update = true) {
     wstr cmd, arg;
     split(line, cmd, arg);
     Console::restore();
-    Console::setForegroundColor(cmdList[cmd] ? csh::LightGreen : csh::LightRed);
+    Console::setForegroundColor((cmdList[cmd]|| checkExists(cmd)) ? csh::LightGreen : csh::LightRed);
     Console::print(cmd);
     setCursorToI(i);
     Console::reset();
