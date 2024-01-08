@@ -125,7 +125,7 @@ void initParts() {
     parts += up;
 
     csh::PathPartConfig pathPartConfig;
-    pathPartConfig.backgroundColor = csh::Color(240, 205, 100);
+    pathPartConfig.backgroundColor = csh::Color(224, 192, 80);
     pathPartConfig.icon            = L" \uF413 ";
     pathPartConfig.iconShowMode    = csh::ShowMode::Auto;
     std::vector<wstr> pathContents;
@@ -241,23 +241,23 @@ void setCursorToI(int i) {
 void reprint(int i, bool update = true) {
     if (update)
         updateHint();
-    Console::setForegroundColor(csh::Gray);
     Console::restore();
     setCursorToI(hintPos);
     Console::clear();
+    Console::setForegroundColor(csh::DarkGray);
     Console::print(hint);
 
-    Console::setForegroundColor(csh::White);
     Console::restore();
+    Console::setForegroundColor(csh::LightGray);
     Console::print(line);
 
-    Console::restore();
     wstr cmd, arg;
     split(line, cmd, arg);
-    Console::setForegroundColor(cmdList[cmd] ? csh::Green : csh::Red);
+    Console::restore();
+    Console::setForegroundColor(cmdList[cmd] ? csh::LightGreen : csh::LightRed);
     Console::print(cmd);
-    Console::reset();
     setCursorToI(i);
+    Console::reset();
 }
 
 /**
