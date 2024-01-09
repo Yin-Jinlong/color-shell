@@ -20,7 +20,7 @@ wstr wstrTrim(const wstr &str, bool start, bool end) {
             len--;
         }
     }
-    return str.substr(s, e - s + 1);
+    return str.substr(s, e - s);
 }
 
 constexpr inline i64 WSTR_HASH(wchar_t *str) {

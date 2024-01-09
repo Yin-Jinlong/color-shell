@@ -4,8 +4,6 @@ project(lib CXX)
 
 set_msvc_utf_flags()
 
-set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/../csh)
-
 file(GLOB LIB_SRCS
         include/*.h
         src/*.cpp
@@ -18,3 +16,5 @@ add_custom_target(build-lib ALL
         DEPENDS csh-lib
 )
 copy_target_files(build-lib csh-lib ${BIN_DIR})
+
+add_subdirectory(test)

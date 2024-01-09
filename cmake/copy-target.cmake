@@ -7,3 +7,10 @@ function(copy_target_files TARGET_NAME TARGET DIR)
             $<TARGET_FILE:${TARGET}> ${DIR}
     )
 endfunction()
+
+function(copy_target_to T TF)
+    add_custom_command(TARGET ${T} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:${TF}> ${CMAKE_CURRENT_BINARY_DIR}
+    )
+endfunction()
