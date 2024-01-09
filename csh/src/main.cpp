@@ -83,7 +83,7 @@ void setup() {
         if (!cshHome.mkdirs())
             error("Can't create .csh directory");
     }
-    historyFile = new csh::File(cshHome.getPath(), L"histories");
+    historyFile = new csh::File(cshHome.getPath(), L"history");
     histories.load(*historyFile);
 }
 
