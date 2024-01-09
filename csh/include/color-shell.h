@@ -1,7 +1,8 @@
 #pragma once
 
 #include <predef.h>
-#include <vector>
+
+typedef int (*CShCmdFn)(const wstr &argLine);
 
 class ColorShell {
 private:
@@ -11,6 +12,8 @@ private:
     std::vector<wstr> paths;
 public:
 
+    static constexpr std::array<const wchar_t *, 4> EXTS = {L".exe", L".cmd", L".bat", L".ps1"};
+
     static constexpr const wchar_t *CD = L"cd";
 
     static constexpr const wchar_t *EXIT = L"exit";
@@ -18,6 +21,8 @@ public:
     static constexpr const wchar_t *HISTORY = L"history";
 
     static constexpr const wchar_t *UPDATE_INDEXES = L"update-indexes";
+
+    static const std::map<wstr, CShCmdFn> INNER_CMDS;
 
     ColorShell();
 

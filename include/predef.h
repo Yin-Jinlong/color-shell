@@ -7,6 +7,8 @@
 #include <string>
 #include <format>
 #include <vector>
+#include <array>
+#include <map>
 
 #define MAX_LINE_LENGTH 1024
 

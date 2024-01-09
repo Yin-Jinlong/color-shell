@@ -32,7 +32,7 @@ void addModified(std::vector<csh::ColorStrPart> &parts) {
     size_t i = modified.find_first_of(' ');
     if (i == std::string::npos)
         return;
-    wstr s = str_to_wstr(CP_UTF8, modified.substr(0, i));
+    wstr s = strToWstr(CP_UTF8, modified.substr(0, i));
     parts.push_back(csh::ColorStrPart(std::format(L"\uF4D2 *{} ", s), csh::White));
 }
 
@@ -41,7 +41,7 @@ void addBranch(std::vector<csh::ColorStrPart> &parts) {
     branch.erase(branch.end() - 1);
     if (branch.length() > 32)
         return;
-    parts.push_back(csh::ColorStrPart(std::format(L"\U000f062c {}", str_to_wstr(CP_UTF8, branch)), csh::White));
+    parts.push_back(csh::ColorStrPart(std::format(L"\U000f062c {}", strToWstr(CP_UTF8, branch)), csh::White));
 }
 
 DLL_OUTER_CALL CallResult

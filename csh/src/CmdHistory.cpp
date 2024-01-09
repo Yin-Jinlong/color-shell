@@ -90,9 +90,9 @@ bool csh::CmdHistory::load(csh::File &f) {
         return false;
     this->file = new File(f.getPath());
     std::vector<wstr> lines;
-    wstr_split(file->readAllTexts(), lines, '\n');
+    wstrSplit(file->readAllTexts(), lines, '\n');
     for (auto &line: lines) {
-        line = wstr_trim(line, true, true);
+        line = wstrTrim(line, true, true);
         if (line.empty())
             continue;
         add(line);

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <predef.h>
-#include <vector>
-#include <map>
 #include "Color.h"
 
 #define CSH_CALL_FN_SUCCESS true

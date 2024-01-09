@@ -6,12 +6,13 @@
 #include "CmdList.h"
 #include <Windows.h>
 
-const std::vector<wstr> exts = {L".exe", L".cmd", L".bat", L".ps1"};
-
-wstr getExt(const wstr &path);
-
-extern csh::CmdList    cmdList;
-extern csh::CmdHistory history;
+extern csh::CmdList            cmdList;
+extern csh::CmdHistory         histories;
+const std::map<wstr, CShCmdFn> ColorShell::INNER_CMDS = {
+        {ColorShell::CD,             csh::cd},
+        {ColorShell::HISTORY,        csh::history},
+        {ColorShell::UPDATE_INDEXES, csh::updateIndexes}
+};
 
 ColorShell::ColorShell() {
     wstr    path = getEnv(L"PATH");
@@ -25,7 +26,7 @@ ColorShell::ColorShell() {
     // 其次是程序目录
     paths.push_back(mp);
     // 最后是PATH
-    wstr_split(path, paths, ';');
+    wstrSplit(path, paths, ';');
 
     updateIndexes();
 }
@@ -33,7 +34,7 @@ ColorShell::ColorShell() {
 ColorShell::~ColorShell() = default;
 
 void split(const wstr &line, ARG_OUT wstr &cmd, ARG_OUT wstr &arg) {
-    wstr s = wstr_trim(line, true, false);
+    wstr s = wstrTrim(line, true, false);
     if (s.empty())
         return;
     size_t p = s.find_first_of(' ');
@@ -45,83 +46,56 @@ void split(const wstr &line, ARG_OUT wstr &cmd, ARG_OUT wstr &arg) {
     arg      = s.substr(p + 1);
 }
 
-wstr getExt(const wstr &path) {
-    size_t p = path.find_last_of('.');
-    if (p == wstr::npos)
-        return L"";
-    wstr         ext = path.substr(p);
-    for (wchar_t &i: ext) {
-        wchar_t c = i;
-        if (c >= 'A' && c <= 'Z')
-            c -= 'A' - 'a';
-
-        i = c;
-    }
-    return ext;
-}
-
 #define EXT_I_CMD 1
 #define EXT_I_BAT 2
 #define EXT_I_PS1 3
+
+wstr checkExtFile(bool noExt, const wstr *dir, const wstr &cmd, const wstr &ext) {
+    if (!noExt) {
+        const csh::File &file = dir ? csh::File(*dir, cmd) : csh::File(cmd);
+        if (file.exists()) {
+            if (ext == ColorShell::EXTS[0]) {
+                return file.getPath();
+            }
+            return ext;
+        }
+        return L"";
+    }
+    // 补全后缀找
+    for (const wstr &e: ColorShell::EXTS) {
+        const csh::File &file = dir ? csh::File(*dir, cmd + e) : csh::File(cmd + e);
+        if (file.exists()) {
+            if (e == ColorShell::EXTS[0]) {
+                return file.getPath();
+            }
+            return e;
+        }
+    }
+    return L"";
+}
 
 wstr checkExt(
         const std::vector<wstr> &paths,
         const wstr &cmd
 ) {
     bool noExt = true;
-    wstr ext   = getExt(wstr_trim(cmd, true, false));
+    wstr ext   = wstrGetExt(wstrTrim(cmd, true, false));
 
-    for (const wstr &e: exts) {
+    for (const wstr &e: ColorShell::EXTS) {
         if (e == ext) {
             noExt = false;
             break;
         }
     }
 
-    if (cmd.contains(L"\\")|| cmd.contains(L"/")){
-        if (!noExt){
-            const csh::File &file = csh::File(cmd);
-            if (file.exists()) {
-                if (ext == exts[0]) {
-                    return file.getPath();
-                }
-                return ext;
-            }
-        }
-        // 补全后缀找
-        for (const wstr &e: exts) {
-            const csh::File &file = csh::File(cmd + e);
-            if (file.exists()) {
-                if (e == exts[0]) {
-                    return file.getPath();
-                }
-                return e;
-            }
-        }
-        return L"";
+    if (cmd.contains(L"\\") || cmd.contains(L"/")) {
+        return std::move(checkExtFile(noExt, nullptr, cmd, ext));
     }
 
     for (const wstr &p: paths) {
-        if (!noExt) {
-            const csh::File &file = csh::File(p, cmd);
-            if (file.exists()) {
-                if (ext == exts[0]) {
-                    return file.getPath();
-                }
-                return ext;
-            }
-            continue;
-        }
-        // 补全后缀找
-        for (const wstr &e: exts) {
-            const csh::File &file = csh::File(p, cmd + e);
-            if (file.exists()) {
-                if (e == exts[0]) {
-                    return file.getPath();
-                }
-                return e;
-            }
-        }
+        wstr r = checkExtFile(noExt, &p, cmd, ext);
+        if (!r.empty())
+            return std::move(r);
     }
     return L"";
 }
@@ -157,30 +131,33 @@ bool ColorShell::run(wstr line, wstr &cmd, int &rc, wstr &err) {
     split(line, cmd, arg);
     if (cmd == EXIT) {
         return false;
-    } else if (cmd == CD) {
-        rc = csh::cd(arg);
-        if (!rc) { // 目录切换，更新路径
+    }
+    auto cmdFn = INNER_CMDS.find(cmd);
+    if (cmdFn != INNER_CMDS.end()) {
+        rc = cmdFn->second(arg);
+        if (cmd == CD && !rc) {// 目录切换，更新路径
             paths[0] = getCurrentDirectory();
             updateCurrentIndexes();
         }
-        return true;
-    } else if (cmd == HISTORY) {
-        rc = csh::history(history, arg);
-        return true;
-    } else if (cmd == UPDATE_INDEXES) {
-        updateIndexes();
         return true;
     }
 
     wstr t = checkExt(paths, cmd);
     if (t.empty()) {
         err = std::format(L"Unknown command or executable or runnable script file : '{}'", cmd);
-    } else if (t == exts[EXT_I_CMD] || t == exts[EXT_I_BAT]) {
-        runCmd(std::format(L"cmd /c \"\"{}\"\" {})", cmd,arg), (DWORD &) rc);
-    } else if (t == exts[EXT_I_PS1]) {
-        runCmd(std::format(L"powershell /c {}", line), (DWORD &) rc);
     } else {
-        runCmd(line, (DWORD &) rc, t.c_str());
+        bool isCmd    = (t == EXTS[EXT_I_CMD] || t == EXTS[EXT_I_BAT]);
+        bool isPs     = (t == EXTS[EXT_I_PS1]);
+        bool isScript = isCmd || isPs;
+
+        wstr cmdLine = isScript ? (
+                isCmd ? std::format(L"cmd /c \"\"{}\"\" {}", cmd, arg) :
+                std::format(L"powershell /c {}", line)
+        ) : line;// 是exe
+
+        runCmd(cmdLine,
+               (DWORD &) rc,
+               isScript ? nullptr : t.c_str());
     }
     return true;
 }
@@ -191,10 +168,10 @@ bool ColorShell::run(wstr line, wstr &cmd, int &rc, wstr &err) {
 
 void filterAdd(std::vector<wstr> &files, bool cur = false) {
     for (const wstr &f: files) {
-        wstr ext = getExt(f);
+        wstr ext = wstrGetExt(f);
         if (ext.empty())
             continue;
-        for (const wstr& e: exts) {
+        for (const wstr &e: ColorShell::EXTS) {
             if (e == ext) {
                 wstr cmd = f.substr(0, f.size() - ext.size());
                 if (cur) {
@@ -220,7 +197,7 @@ void ColorShell::updateCurrentIndexes() {
 void ColorShell::updateIndexes() {
     cmdList.clear();
     updateCurrentIndexes();
-        cmdList += CD;
+    cmdList += CD;
     cmdList += EXIT;
     cmdList += HISTORY;
     cmdList += UPDATE_INDEXES;

@@ -163,7 +163,7 @@ bool csh::File::mkdirs() const {
     if (exists())
         return false;
     std::vector<wstr> paths;
-    wstr_split(path, paths, '\\');
+    wstrSplit(path, paths, '\\');
     mks(paths);
     return exists();
 }

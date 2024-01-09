@@ -11,7 +11,7 @@
  * @param end 去除结束空格
  * @return 去除空格后的字符串
  */
-DLL_OUT wstr wstr_trim(const wstr &str, bool start = true, bool end = true);
+DLL_OUT wstr wstrTrim(const wstr &str, bool start = true, bool end = true);
 
 /**
  * 字符串哈希
@@ -26,7 +26,7 @@ constexpr inline i64 WSTR_HASH(wchar_t *str);
  * @param str 字符串
  * @return wstring
  */
-DLL_OUT wstr str_to_wstr(UINT codepage, const std::string &str);
+DLL_OUT wstr strToWstr(UINT codepage, const std::string &str);
 
 /**
  * 分割字符串
@@ -35,4 +35,11 @@ DLL_OUT wstr str_to_wstr(UINT codepage, const std::string &str);
  * @param delim 分隔符
  * @return 数量
  */
-DLL_OUT int wstr_split(const wstr &str, std::vector<wstr> &out, wchar_t delim = L' ');
+DLL_OUT int wstrSplit(const wstr &str, std::vector<wstr> &out, wchar_t delim = L' ');
+
+/**
+ * 获取路径扩展名
+ * @param path 路径
+ * @return 扩展名(带.)或空
+ */
+DLL_OUT wstr wstrGetExt(const wstr &path);

@@ -11,5 +11,7 @@ namespace csh {
      */
     extern DLL_OUT int cd(const wstr &path);
 
-    extern DLL_OUT int history(CmdHistory &history,const wstr &line);
+    extern DLL_OUT int history(const wstr &arg);
+
+    extern DLL_OUT int updateIndexes(const wstr &arg);
 }

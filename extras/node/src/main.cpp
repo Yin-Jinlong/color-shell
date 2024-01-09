@@ -33,7 +33,7 @@ void addVersion(std::vector<csh::ColorStrPart> &parts) {
         str v = getProcessOutput(L"node -v");
         v.erase(v.end() - 1);
         v.erase(v.end() - 1);
-        parts.push_back(csh::ColorStrPart(str_to_wstr(CP_UTF8, v), csh::White));
+        parts.push_back(csh::ColorStrPart(strToWstr(CP_UTF8, v), csh::White));
     } catch (...) {
         parts.push_back(csh::ColorStrPart(L"v?.?.?", csh::White));
     }

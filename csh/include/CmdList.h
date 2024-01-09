@@ -1,7 +1,6 @@
 #pragma once
 
 #include <predef.h>
-#include <map>
 
 namespace csh {
     /**

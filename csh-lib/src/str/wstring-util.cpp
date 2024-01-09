@@ -4,7 +4,7 @@ bool isWhitespace(wchar_t c) {
     return c == L' ' || c == L'\t' || c == L'\r' || c == L'\n';
 }
 
-wstr wstr_trim(const wstr &str, bool start, bool end) {
+wstr wstrTrim(const wstr &str, bool start, bool end) {
     const wchar_t *r  = str.c_str();
     int           len = static_cast<int>(str.size());
     int           s   = 0, e = static_cast<int>(str.size());
@@ -31,7 +31,7 @@ constexpr inline i64 WSTR_HASH(wchar_t *str) {
     return hc;
 }
 
-wstr str_to_wstr(UINT codepage, const std::string &str) {
+wstr strToWstr(UINT codepage, const std::string &str) {
     if (str.empty())
         return L"";
     int  len  = MultiByteToWideChar(codepage, 0, str.c_str(), -1, nullptr, 0);
@@ -42,7 +42,7 @@ wstr str_to_wstr(UINT codepage, const std::string &str) {
     return r;
 }
 
-int wstr_split(const wstr &str, std::vector<wstr> &out, wchar_t delim) {
+int wstrSplit(const wstr &str, std::vector<wstr> &out, wchar_t delim) {
     wstr     s = str;
     for (int i = 0; i < s.size(); i++) {
         if (s[i] == delim) {
@@ -56,4 +56,19 @@ int wstr_split(const wstr &str, std::vector<wstr> &out, wchar_t delim) {
     }
     out.push_back(s);
     return static_cast<int>(out.size());
+}
+
+wstr wstrGetExt(const wstr &path){
+    size_t p = path.find_last_of('.');
+    if (p == wstr::npos)
+        return L"";
+    wstr         ext = path.substr(p);
+    for (wchar_t &i: ext) {
+        wchar_t c = i;
+        if (c >= 'A' && c <= 'Z')
+            c -= 'A' - 'a';
+
+        i = c;
+    }
+    return ext;
 }

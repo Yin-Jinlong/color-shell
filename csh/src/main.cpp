@@ -12,12 +12,11 @@
 #include "str/char-util.h"
 #include "CmdHistory.h"
 #include "CmdList.h"
+#include "str/wstring-util.h"
 
 #define SET_UTF_8(s) s.imbue(std::locale(".UTF-8"))
 
 extern void split(const wstr &line, ARG_OUT wstr &cmd, ARG_OUT wstr &arg);
-extern wstr getExt(const wstr &path);
-const std::vector<wstr> exts = {L".exe", L".cmd", L".bat", L".ps1"};
 
 BOOL WINAPI handleCtrlC(DWORD dwCtrlType);
 
@@ -29,7 +28,7 @@ csh::Parts      parts;
 /**
  * 历史记录
  */
-csh::CmdHistory history;
+csh::CmdHistory histories;
 
 /**
  * 初始化
@@ -84,8 +83,8 @@ void setup() {
         if (!cshHome.mkdirs())
             error("Can't create .csh directory");
     }
-    historyFile = new csh::File(cshHome.getPath(), L"history");
-    history.load(*historyFile);
+    historyFile = new csh::File(cshHome.getPath(), L"histories");
+    histories.load(*historyFile);
 }
 
 int main() {
@@ -113,7 +112,7 @@ BOOL WINAPI handleCtrlC(DWORD dwCtrlType) {
         ctrlC = true;
     } else if (dwCtrlType == CTRL_CLOSE_EVENT) {
         if (historyFile)
-            history.save();
+            histories.save();
     }
     return TRUE;
 }
@@ -211,7 +210,7 @@ void updateHint() {
     hint.clear();
     if (line.empty())
         return;
-    for (const wstr &l: history) {
+    for (const wstr &l: histories) {
         if (l.starts_with(line)) {
             hint = l;
             return;
@@ -238,9 +237,9 @@ void setCursorToI(int i) {
 }
 
 bool checkExists(const wstr &cmd){
-    wstr ext=getExt(cmd);
+    wstr ext=wstrGetExt(cmd);
     if (ext.empty()){
-        for(const wstr &e:exts){
+        for(const wstr &e:ColorShell::EXTS){
             if (csh::File(cmd+e).exists())
                 return true;
         }
@@ -302,17 +301,17 @@ void dealArrowKey(
             Console::moveCursorRight(is_full_width_char(line[i - 1]) ? 2 : 1);
         }
     } else if (key == VK_UP) {
-        if (history.empty())
+        if (histories.empty())
             return;
         hiChanged = true;
-        line      = *history.last();
+        line      = *histories.last();
         i         = static_cast<int>(line.size());
         reprint(i);
     } else {
-        if (history.empty())
+        if (histories.empty())
             return;
         hiChanged = true;
-        wstr *ns  = history.next();
+        wstr *ns  = histories.next();
         if (ns) {
             line = *ns;
         } else {
@@ -463,7 +462,7 @@ wstr input() {
     wstr input;
     bool inputting = true;
 
-    history.reset();
+    histories.reset();
     while (inputting) {
         if (_kbhit()) {
             inputting = readAllBufChar(i, hiChanged, sp, input);
@@ -472,6 +471,6 @@ wstr input() {
             return L"";
         }
     }
-    history += line;
+    histories += line;
     return line;
 }
