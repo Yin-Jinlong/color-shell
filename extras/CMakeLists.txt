@@ -2,11 +2,16 @@ cmake_minimum_required(VERSION 3.22)
 
 project(extras LANGUAGES C CXX)
 
-add_subdirectory(git)
-add_subdirectory(node)
+set(EXTRAS
+        git
+        node
+)
 
-add_custom_target(build-extras ALL
-        DEPENDS
-        build-csh-git
-        build-csh-node
+add_children(${EXTRAS})
+
+set(BUILD_EXTRAS)
+add_list_suffix(EXTRAS build-csh- BUILD_EXTRAS)
+
+add_custom_target(build-${PROJECT_NAME} ALL
+        DEPENDS ${BUILD_EXTRAS}
 )

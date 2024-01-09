@@ -12,15 +12,15 @@ file(GLOB CSH_SRCS
 
 set_msvc_utf_flags()
 
-add_executable(csh ${CSH_SRCS})
-target_link_libraries(csh csh-lib)
+add_executable(${PROJECT_NAME} ${CSH_SRCS})
+target_link_libraries(${PROJECT_NAME} csh-lib)
 
-add_custom_command(TARGET csh POST_BUILD
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:csh-lib> ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-add_custom_target(build-csh ALL
-        DEPENDS csh csh-lib
+add_custom_target(build-${PROJECT_NAME} ALL
+        DEPENDS ${PROJECT_NAME} csh-lib
 )
-copy_target_files(build-csh csh ${BIN_DIR})
+copy_target_files(${PROJECT_NAME} ${BIN_DIR})

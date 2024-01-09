@@ -25,11 +25,9 @@
 **项目📦**
 
 - [commands](./commands/README.md)💼
-    - [cmds](./commands/README.md)🧰
-        - [clear](./commands/cmds/clear/README.md)📘
-        - [mkdir](./commands/cmds/mkdir/README.md)📘
-        - [pwd](./commands/cmds/pwd/README.md)📘
-        - CMakeLists.txt⚙️
+    - [clear](commands/clear/README.md)📘
+    - [mkdir](commands/mkdir/README.md)📘
+    - [pwd](commands/pwd/README.md)📘
     - CMakeLists.txt⚙️
 - [csh](./csh/README.md)💼
 - [csh-lib](./csh-lib/README.md)💼

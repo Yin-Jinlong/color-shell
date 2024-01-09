@@ -10,10 +10,10 @@ file(GLOB
         src/**/*.cpp
 )
 
-add_library(csh-node SHARED ${CSH_NODE_SRCS})
-target_link_libraries(csh-node csh-lib)
+add_library(${PROJECT_NAME} SHARED ${CSH_NODE_SRCS})
+target_link_libraries(${PROJECT_NAME} csh-lib)
 
-add_custom_target(build-csh-node ALL
-        DEPENDS csh-node
+add_custom_target(build-${PROJECT_NAME} ALL
+        DEPENDS ${PROJECT_NAME}
 )
-copy_target_files(build-csh-node csh-node ${EXTRAS_DIR}/node)
+copy_target_files(${PROJECT_NAME} ${EXTRAS_DIR}/node)

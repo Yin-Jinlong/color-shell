@@ -1,12 +1,20 @@
 cmake_minimum_required(VERSION 3.22)
 
-project("csh-commands" CXX)
+project(commands CXX)
 
-add_subdirectory(cmds)
+set(CMDS
+        clear
+        mkdir
+        pwd
+        rm
+)
 
-add_custom_target(build-cmds ALL
-        DEPENDS
-        build-clear
-        build-mkdir
-        build-pwd
+add_children(${CMDS})
+
+set(BUILD_CMDS)
+add_list_suffix(CMDS build- BUILD_CMDS)
+
+
+add_custom_target(build-${PROJECT_NAME} ALL
+        DEPENDS ${BUILD_CMDS}
 )

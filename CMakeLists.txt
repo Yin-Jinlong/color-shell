@@ -10,26 +10,31 @@ set(BIN_DIR ${OUT_DIR}/bin CACHE INTERNAL "可执行文件目录" FORCE)
 set(CONFIG_DIR ${OUT_DIR}/config CACHE INTERNAL "配置及插件配置目录" FORCE)
 set(EXTRAS_DIR ${OUT_DIR}/extras CACHE INTERNAL "插件目录" FORCE)
 
+set(SUBS
+        csh-lib
+        csh
+        commands
+        extras
+)
+
 enable_testing()
 
 include(${CMAKE_SOURCE_DIR}/cmake/copy-target.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/msvc-options.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/children-util.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/list-util.cmake)
 
 include_directories(
         include
 )
 
-link_directories(
-        lib
-)
+add_children(${SUBS})
 
-add_subdirectory(commands)
-add_subdirectory(csh)
-add_subdirectory(csh-lib)
-add_subdirectory(extras)
+set(BUILD_SUBS)
+add_list_suffix(SUBS build- BUILD_SUBS)
 
 add_custom_target(build ALL
-        DEPENDS build-lib build-csh build-cmds build-extras
+        DEPENDS ${BUILD_SUBS}
 )
 
 add_custom_command(TARGET build POST_BUILD

@@ -10,9 +10,9 @@
 
 **基本**
 
-- ✅ [clear](./cmds/clear/README.md)-清屏
+- ✅ [clear](clear/README.md)-清屏
 - 🔲 `ls`-列出文件
-- ✅ [mkdir](./cmds/mkdir/README.md)-创建文件夹
-- ✅ [pwd](./cmds/pwd/README.md)-打印当前工作目录
+- ✅ [mkdir](mkdir/README.md)-创建文件夹
+- ✅ [pwd](pwd/README.md)-打印当前工作目录
 
 <small style="color:rgba(128,128,128,0.5)">注：*为基本完成，未勾选标识正在进行或将要进行</small>
