@@ -30,6 +30,9 @@ csh::Parts      parts;
  */
 csh::CmdHistory histories;
 
+wstr line, hint;
+int  hintPos = 0;
+
 /**
  * 初始化
  */
@@ -45,7 +48,9 @@ void mainLoop();
 /**
  * 处理输入
  */
-wstr input();
+void input();
+
+void printlnShortLine();
 
 u32 defOut, defIn;
 
@@ -162,7 +167,7 @@ void mainLoop() {
         int x, y;
         Console::getCursorPosition(x, y);
         if (x) {
-            std::wcout << std::endl;
+            Console::println();
         }
 
         resetToUTF_8();
@@ -173,14 +178,17 @@ void mainLoop() {
         _flushall();
         Console::save();
 
-        wstr line = input();
-        Console::clear();
+        input();
 
         if (line.empty()) {
             if (feof(stdin)) {
                 std::wcin.clear();
                 rc = 0;
             }
+            ctrlC= true;
+        }
+        if (ctrlC) {
+            printlnShortLine();
             continue;
         }
 
@@ -202,9 +210,6 @@ void mainLoop() {
         }
     }
 }
-
-wstr line, hint;
-int  hintPos = 0;
 
 void updateHint() {
     hint.clear();
@@ -249,6 +254,23 @@ bool checkExists(const wstr &cmd) {
     return false;
 }
 
+void printCmdLine() {
+    wstr cmd, arg;
+    split(line, cmd, arg);
+    Console::setForegroundColor((cmdList[cmd] || checkExists(cmd)) ? csh::LightGreen : csh::LightRed);
+    Console::print(cmd);
+    Console::setForegroundColor(csh::LightGray);
+    Console::print(line.substr(cmd.size()));
+}
+
+void printlnShortLine() {
+    Console::print('\r');
+    Console::print(L"csh>");
+    printCmdLine();
+    Console::clear();
+    Console::println();
+}
+
 /**
  * 重新打印当前输入
  */
@@ -264,15 +286,10 @@ void reprint(int i, bool printHint = true) {
         Console::setForegroundColor(csh::LightGray);
         Console::print(line);
     }
-    wstr cmd, arg;
-    split(line, cmd, arg);
     Console::restore();
     if (!printHint)
         Console::clear();
-    Console::setForegroundColor((cmdList[cmd] || checkExists(cmd)) ? csh::LightGreen : csh::LightRed);
-    Console::print(cmd);
-    Console::setForegroundColor(csh::LightGray);
-    Console::print(line.substr(cmd.size()));
+    printCmdLine();
     setCursorToI(i);
     Console::reset();
 }
@@ -406,8 +423,7 @@ bool dealChar(
     if (c == '\t') {
         complete(sp, i);
     } else if (c == '\r' || c == '\n') {
-        reprint(0, false);
-        Console::print(L"\r\n");
+        printlnShortLine();
         return false;
     } else if (c == '\b') {
         if (!line.empty()) {
@@ -419,7 +435,7 @@ bool dealChar(
         }
     } else {
         if (c == 3) {
-            line = L"";
+            ctrlC = true;
             return false;
         }
         if (c < ' ')
@@ -454,7 +470,7 @@ bool readAllBufChar(int &i, bool &hiChanged, COORD sp, wstr &input) {
     return true;
 }
 
-wstr input() {
+void input() {
     ctrlC = false;
 
     COORD sp;
@@ -471,10 +487,8 @@ wstr input() {
         if (_kbhit()) {
             inputting = readAllBufChar(i, hiChanged, sp, input);
         } else if (ctrlC) {
-            ctrlC = false;
-            return L"";
+            return;
         }
     }
     histories += line;
-    return line;
 }
