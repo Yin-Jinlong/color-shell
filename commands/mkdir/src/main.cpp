@@ -8,8 +8,7 @@ void printHelp() {
 }
 
 DWORD mk(const std::string &name) {
-    CreateDirectoryA(name.c_str(), nullptr);
-    return GetLastError();
+    return CreateDirectoryA(name.c_str(), nullptr) ? 0 : GetLastError();
 }
 
 void printIfError(DWORD err, const std::string &name) {
@@ -28,7 +27,7 @@ void mkdir(const std::string &name) {
 }
 
 void mkdirs(const std::vector<std::string> &paths) {
-    std::string    p;
+    std::string            p;
     for (const std::string &n: paths) {
         p += n;
         p += '\\';
