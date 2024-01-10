@@ -13,7 +13,7 @@ namespace csh {
         std::vector<csh::Part *> parts;
         std::vector<Part *>      showList;
     public:
-        const wchar_t start[2] = L"\ue0b6";
+        const char start[4] = "\ue0b6";
 
         u32 lastModifiedTime = 0;
 

@@ -27,7 +27,7 @@ namespace csh {
     /**
      * 浅红色
      */
-    MAYBE_UNUSED static constexpr Color LightRed(255, 64,64);
+    MAYBE_UNUSED static constexpr Color LightRed(255, 64, 64);
     /**
      * 红色
      */
@@ -35,7 +35,7 @@ namespace csh {
     /**
      * 浅绿色
      */
-     MAYBE_UNUSED static constexpr Color LightGreen(64,255,64);
+    MAYBE_UNUSED static constexpr Color LightGreen(64, 255, 64);
     /**
      * 绿色
      */
@@ -59,7 +59,7 @@ namespace csh {
     /**
      * 浅灰色
      */
-    MAYBE_UNUSED static constexpr Color LightGray(192,192,192);
+    MAYBE_UNUSED static constexpr Color LightGray(192, 192, 192);
     /**
      * 灰色（中间）
      */
@@ -67,7 +67,7 @@ namespace csh {
     /**
      * 暗灰色
      */
-    MAYBE_UNUSED static constexpr Color DarkGray(64,64,64);
+    MAYBE_UNUSED static constexpr Color DarkGray(64, 64, 64);
 
 }
 

@@ -12,7 +12,7 @@ namespace csh {
         struct Item {
             Item *last = nullptr;
             Item *next = nullptr;
-            wstr str;
+            str  str;
         };
 
         /**
@@ -45,7 +45,7 @@ namespace csh {
         public:
             constexpr explicit Iterator(Item *item) : item(item) {}
 
-            constexpr wstr &operator*() const {
+            constexpr str &operator*() const {
                 return item->str;
             }
 
@@ -73,7 +73,7 @@ namespace csh {
          * @param cmd 命令
          * @return 是否成功
          */
-        bool add(const wstr &cmd);
+        bool add(const str &cmd);
 
         /**
          * 移除头部
@@ -92,14 +92,14 @@ namespace csh {
          *
          * @return 命令或第一个或空
          */
-        wstr *last();
+        str *last();
 
         /**
          * 下一个命令
          *
          * @return 命令或空
          */
-        wstr *next();
+        str *next();
 
         /**
          * 清空
@@ -152,6 +152,6 @@ namespace csh {
          * @param cmd 命令
          * @return 是否成功
          */
-        bool operator+=(const wstr &cmd);
+        bool operator+=(const str &cmd);
     };
 }

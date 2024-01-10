@@ -1,16 +1,8 @@
 #include <str/char-util.h>
 
-bool is_high_surrogate(wchar_t wc) {
-    return wc >= 0xD800 && wc <= 0xDBFF;
-}
-
-bool is_low_surrogate(wchar_t wc) {
-    return wc >= 0xDC00 && wc <= 0xDFFF;
-}
-
 #define AND(a, b) (c>=(a) && c<=(b))
 
-bool is_full_width_char(wchar_t c) {
+bool isFullWidthChar(char32_t c) {
     // 不完全符合，还可能有预留和空白
     return  // 韩文字母 https://www.unicode.org/charts/PDF/U1100.pdf
             AND(0x1100, 0x11FF) ||
@@ -48,9 +40,9 @@ bool is_full_width_char(wchar_t c) {
             // CJK 兼容符号 https://www.unicode.org/charts/PDF/UFE30.pdf
             AND(0xFE30, 0xFE4F) ||
             // 半角的全角版本 https://www.unicode.org/charts/PDF/UFF00.pdf
-            AND(0xFF01, 0xFF5E);
-    // 太玄经符号 https://www.unicode.org/charts/PDF/U1D300.pdf
-    // AND(0x1D300, 0x1D356);
+            AND(0xFF01, 0xFF5E) ||
+            // 太玄经符号 https://www.unicode.org/charts/PDF/U1D300.pdf
+            AND(0x1D300, 0x1D356);
 }
 
 #undef AND

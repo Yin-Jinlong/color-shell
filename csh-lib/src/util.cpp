@@ -2,34 +2,34 @@
 #include <minwindef.h>
 #include <processenv.h>
 
-wstr getCurrentDirectory() {
-    wchar_t buffer[MAX_PATH];
-    GetCurrentDirectoryW(MAX_PATH, buffer);
+str getCurrentDirectory() {
+    char buffer[MAX_PATH];
+    GetCurrentDirectoryA(MAX_PATH, buffer);
     return buffer;
 }
 
 
-str getProcessOutput(const wstr &cmdLine) {
+str getProcessOutput(const str &cmdLine) {
     // TODO ReadFile卡死
-    SECURITY_ATTRIBUTES sa = {0};
-    HANDLE hRead = nullptr, hWrite = nullptr;
-    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+    SECURITY_ATTRIBUTES sa    = {0};
+    HANDLE              hRead = nullptr, hWrite = nullptr;
+    sa.nLength              = sizeof(SECURITY_ATTRIBUTES);
     sa.lpSecurityDescriptor = nullptr;
-    sa.bInheritHandle = TRUE;
+    sa.bInheritHandle       = TRUE;
     if (!CreatePipe(&hRead, &hWrite, &sa, 0)) {
         throw std::runtime_error("CreatePipe failed:" + std::to_string(GetLastError()));
     }
 
-    STARTUPINFOW si = {0};
+    STARTUPINFOA        si = {0};
     PROCESS_INFORMATION pi = {nullptr};
     si.cb = sizeof(STARTUPINFO);
-    GetStartupInfoW(&si);
-    si.hStdError = hWrite;
-    si.hStdOutput = hWrite;
+    GetStartupInfoA(&si);
+    si.hStdError   = hWrite;
+    si.hStdOutput  = hWrite;
     si.wShowWindow = SW_HIDE;
-    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
-    if (!CreateProcessW(nullptr,
-                        (wchar_t *) cmdLine.c_str(),
+    si.dwFlags     = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+    if (!CreateProcessA(nullptr,
+                        (char *) cmdLine.data(),
                         nullptr, nullptr,
                         TRUE, NULL,
                         nullptr, nullptr,
@@ -41,8 +41,8 @@ str getProcessOutput(const wstr &cmdLine) {
 
     CloseHandle(hWrite);
     std::string out;
-    char buf[256] = {0};
-    DWORD rc = 0;
+    char        buf[256] = {0};
+    DWORD       rc       = 0;
     while (ReadFile(hRead, buf, 256, &rc, nullptr)) {
         buf[rc] = '\0';
         out += buf;
@@ -56,8 +56,8 @@ str getProcessOutput(const wstr &cmdLine) {
     return out;
 }
 
-wstr getEnv(const wstr &name) {
-    wchar_t buffer[4096];
-    GetEnvironmentVariableW(name.c_str(), buffer, 4096);
+str getEnv(const str &name) {
+    char buffer[4096];
+    GetEnvironmentVariableA(name.c_str(), buffer, 4096);
     return buffer;
 }

@@ -8,7 +8,7 @@ namespace csh {
 
     struct IconPartConfig : BasePartConfig {
     public:
-        wstr     icon;
+        str      icon;
         ShowMode iconShowMode = ShowMode::Auto;
     };
 

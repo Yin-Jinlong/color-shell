@@ -1,6 +1,8 @@
 #include <predef.h>
 #include <Windows.h>
 #include <conio.h>
+#include <io.h>
+#include <fstream>
 #include "Console.h"
 #include "color-shell.h"
 #include "part/PathPart.h"
@@ -12,13 +14,16 @@
 #include "str/char-util.h"
 #include "CmdHistory.h"
 #include "CmdList.h"
-#include "str/wstring-util.h"
+#include "str/string-util.h"
+//#include "yaml-cpp/yaml.h"
 
 #define SET_UTF_8(s) s.imbue(std::locale(".UTF-8"))
 
-extern void split(const wstr &line, ARG_OUT wstr &cmd, ARG_OUT wstr &arg);
+extern void split(const str &line, ARG_OUT str &cmd, ARG_OUT str &arg);
 
 BOOL WINAPI handleCtrlC(DWORD dwCtrlType);
+
+//csh::UserPartConfig userConfig;
 
 csh::File *historyFile;
 
@@ -30,8 +35,8 @@ csh::Parts      parts;
  */
 csh::CmdHistory histories;
 
-wstr line, hint;
-int  hintPos = 0;
+str line, hint;
+int hintPos = 0;
 
 /**
  * 初始化
@@ -60,9 +65,9 @@ u32 defOut, defIn;
 void resetToUTF_8() {
     SetConsoleCP(CP_UTF8);
     SetConsoleOutputCP(CP_UTF8);
-    SET_UTF_8(std::wcin);
-    SET_UTF_8(std::wcout);
-    SET_UTF_8(std::wcerr);
+    SET_UTF_8(std::cin);
+    SET_UTF_8(std::cout);
+    SET_UTF_8(std::cerr);
 }
 
 /**
@@ -78,17 +83,29 @@ void error(const str &msg) {
     exit(1);
 }
 
+void createFile(const str &file) {
+    std::wofstream f(file);
+    if (!f.is_open()) {
+        error("Can't create file");
+    }
+    f.close();
+}
+
+void mkdir(str &home) {
+    csh::File f(home, ".csh");
+    if (f.exists())
+        return;
+    if (!f.mkdirs())
+        error("Can't create .csh directory");
+}
+
 void setup() {
-    wstr home = getEnv(L"USERPROFILE");
+    str home = getEnv("USERPROFILE");
     if (home.empty()) {
         error("Can't find user profile");
     }
-    csh::File cshHome(home, L".csh");
-    if (!cshHome.exists()) {
-        if (!cshHome.mkdirs())
-            error("Can't create .csh directory");
-    }
-    historyFile = new csh::File(cshHome.getPath(), L"history");
+    mkdir(home);
+    historyFile = new csh::File(home, "csh/history");
     histories.load(*historyFile);
 }
 
@@ -125,26 +142,26 @@ BOOL WINAPI handleCtrlC(DWORD dwCtrlType) {
 void initParts() {
     csh::UserPartConfig userConfig;
     userConfig.backgroundColor = csh::Color(68, 125, 222);
-    userConfig.icon            = L"\uF4FF ";
-    std::vector<wstr> userContents;
-    auto              up = new csh::UserPart(userConfig, userContents);
+    userConfig.icon            = "\uF4FF ";
+    std::vector<str> userContents;
+    auto             up = new csh::UserPart(userConfig, userContents);
     parts += up;
 
     csh::PathPartConfig pathPartConfig;
     pathPartConfig.backgroundColor = csh::Color(224, 192, 80);
-    pathPartConfig.icon            = L" \uF413 ";
+    pathPartConfig.icon            = " \uF413 ";
     pathPartConfig.iconShowMode    = csh::ShowMode::Auto;
-    std::vector<wstr> pathContents;
-    auto              pp = new csh::PathPart(pathPartConfig, pathContents);
+    std::vector<str> pathContents;
+    auto             pp = new csh::PathPart(pathPartConfig, pathContents);
     parts += pp;
 
     csh::PartConfig nodePluginPartConfig;
     nodePluginPartConfig.backgroundColor = csh::Color(67, 133, 61);
-    parts += new csh::PluginPart(nodePluginPartConfig, wstr(L"node"));
+    parts += new csh::PluginPart(nodePluginPartConfig, str("node"));
 
     csh::PartConfig gitPluginPartConfig;
     gitPluginPartConfig.backgroundColor = csh::Color(250, 80, 40);
-    parts += new csh::PluginPart(gitPluginPartConfig, L"git");
+    parts += new csh::PluginPart(gitPluginPartConfig, "git");
 
 }
 
@@ -160,8 +177,8 @@ void updateParts() {
 }
 
 void mainLoop() {
-    int  rc = 0;
-    wstr err;
+    int rc = 0;
+    str err;
 
     while (true) {
         int x, y;
@@ -185,14 +202,14 @@ void mainLoop() {
                 std::wcin.clear();
                 rc = 0;
             }
-            ctrlC= true;
+            ctrlC = true;
         }
         if (ctrlC) {
             printlnShortLine();
             continue;
         }
 
-        wstr cmd;
+        str cmd;
         try {
             Console::reset();
             resetToDefault();
@@ -201,9 +218,9 @@ void mainLoop() {
             if (!err.empty()) {
                 resetToUTF_8();
                 Console::setForegroundColor(csh::Red);
-                std::wcerr << L"error: ";
+                std::cerr << "error: ";
                 Console::reset();
-                std::wcerr << err << std::endl;
+                std::cerr << err << std::endl;
             }
         } catch (std::runtime_error &err) {
             MessageBoxA(nullptr, err.what(), "error", MB_OK);
@@ -215,13 +232,13 @@ void updateHint() {
     hint.clear();
     if (line.empty())
         return;
-    for (const wstr &l: histories) {
+    for (const str &l: histories) {
         if (l.starts_with(line)) {
             hint = l;
             return;
         }
     }
-    wstr            cmd, arg;
+    str            cmd, arg;
     split(line, cmd, arg);
     if (arg.empty())
         hint = cmdList.matchOne(cmd);
@@ -235,16 +252,16 @@ void setCursorToI(int i) {
     int len = i;
 
     for (int li = 0; li < i; li++) {
-        if (is_full_width_char(line[li]))
+        if (isFullWidthChar(line[li]))
             len++;
     }
     Console::moveCursorRight(len);
 }
 
-bool checkExists(const wstr &cmd) {
-    wstr ext = wstrGetExt(cmd);
+bool checkExists(const str &cmd) {
+    str ext = strGetExt(cmd);
     if (ext.empty()) {
-        for (const wstr &e: ColorShell::EXTS) {
+        for (const str &e: ColorShell::EXTS) {
             if (csh::File(cmd + e).exists())
                 return true;
         }
@@ -255,7 +272,7 @@ bool checkExists(const wstr &cmd) {
 }
 
 void printCmdLine() {
-    wstr cmd, arg;
+    str cmd, arg;
     split(line, cmd, arg);
     Console::setForegroundColor((cmdList[cmd] || checkExists(cmd)) ? csh::LightGreen : csh::LightRed);
     Console::print(cmd);
@@ -265,7 +282,7 @@ void printCmdLine() {
 
 void printlnShortLine() {
     Console::print('\r');
-    Console::print(L"csh>");
+    Console::print("csh>");
     printCmdLine();
     Console::clear();
     Console::println();
@@ -300,7 +317,7 @@ void reprint(int i, bool printHint = true) {
 void dealArrowKey(
         int &i,
         bool &hiChanged,
-        const wstr &input,
+        const str &input,
         u32 key
 ) {
     if (key == VK_LEFT) {
@@ -308,7 +325,7 @@ void dealArrowKey(
         if (i < 0)
             i = 0;
         else {
-            Console::moveCursorLeft(is_full_width_char(line[i]) ? 2 : 1);
+            Console::moveCursorLeft(isFullWidthChar(line[i]) ? 2 : 1);
         }
     } else if (key == VK_RIGHT) {
         i++;
@@ -318,7 +335,7 @@ void dealArrowKey(
             i        = static_cast<int>(line.size());
             reprint(i);
         } else {
-            Console::moveCursorRight(is_full_width_char(line[i - 1]) ? 2 : 1);
+            Console::moveCursorRight(isFullWidthChar(line[i - 1]) ? 2 : 1);
         }
     } else if (key == VK_UP) {
         if (histories.empty())
@@ -331,7 +348,7 @@ void dealArrowKey(
         if (histories.empty())
             return;
         hiChanged = true;
-        wstr *ns  = histories.next();
+        str *ns   = histories.next();
         if (ns) {
             line = *ns;
         } else {
@@ -348,16 +365,16 @@ void complete(
         int &i) {
     if (line.empty())
         return;
-    wstr cmd, arg;
+    str cmd, arg;
     split(line, cmd, arg);
     if (!arg.empty())
         return;
-    std::vector<wstr> suggests;
+    std::vector<str> suggests;
     cmdList.match(cmd, suggests);
     if (suggests.empty())
         return;
     if (suggests.size() == 1) {
-        line = suggests[0] + L" ";
+        line = suggests[0] + " ";
         i    = static_cast<int>(line.size());
         reprint(i);
         return;
@@ -377,10 +394,10 @@ void complete(
     // 下一行起始坐标
     int      off = 0;
     for (int j   = 0; j < suggests.size(); ++j) {
-        const wstr &s = suggests[j];
+        const str &s = suggests[j];
         Console::moveCursorRight(off);
         if (c == 9 && off + sl + 1 >= size.X && j < suggests.size() - 1) {
-            Console::println(L"...");
+            Console::println("...");
             break;
         }
         Console::println(off + s.length() >= size.X ? s.substr(0, size.X - off - 1) : s);
@@ -418,7 +435,7 @@ void complete(
 bool dealChar(
         int &i,
         COORD &sp,
-        wchar_t c
+        int c
 ) {
     if (c == '\t') {
         complete(sp, i);
@@ -447,14 +464,14 @@ bool dealChar(
     return true;
 }
 
-bool readAllBufChar(int &i, bool &hiChanged, COORD sp, wstr &input) {
-    wchar_t c;
-    while (!ctrlC && (c = _getwch()) != WEOF) {
+bool readAllBufChar(int &i, bool &hiChanged, COORD sp, str &input) {
+    int c;
+    while (!ctrlC && (c = _getch()) != EOF) {
         if (!c || c == 0xe0) {
-            c = MapVirtualKeyA(_getwch(), MAPVK_VSC_TO_VK);
-            if (c == VK_LEFT || c == VK_RIGHT || c == VK_UP || c == VK_DOWN) {
-                dealArrowKey(i, hiChanged, input, c);
-            } else if (c == VK_DELETE) {
+            u32 key = MapVirtualKeyA(_getch(), MAPVK_VSC_TO_VK);
+            if (key == VK_LEFT || key == VK_RIGHT || key == VK_UP || key == VK_DOWN) {
+                dealArrowKey(i, hiChanged, input, key);
+            } else if (key == VK_DELETE) {
                 if (line.empty() || i == line.size())
                     continue;
                 line.erase(i, 1);
@@ -479,7 +496,7 @@ void input() {
     bool hiChanged = false;
 
     line.clear();
-    wstr input;
+    str  input;
     bool inputting = true;
 
     histories.reset();

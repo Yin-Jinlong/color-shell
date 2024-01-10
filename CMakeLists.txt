@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.22)
 
 project("color-shell" LANGUAGES C CXX)
 
+### 第三方库 ###
+set(YAML_CPP_PROJECT_PATH third_party/externals/jbeder/yaml-cpp)
+
+
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_CXX_STANDARD 23)
 
@@ -17,6 +21,10 @@ set(SUBS
         extras
 )
 
+set(THIRD_PARTIES
+        ${YAML_CPP_PROJECT_PATH}
+)
+
 enable_testing()
 
 include(${CMAKE_SOURCE_DIR}/cmake/copy-target.cmake)
@@ -26,6 +34,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/list-util.cmake)
 
 include_directories(
         include
+        third_party/externals/jbeder/yaml-cpp
 )
 
 add_children(${SUBS})
@@ -40,3 +49,7 @@ add_custom_target(build ALL
 add_custom_command(TARGET build POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${PROJECT_SOURCE_DIR}/LICENSE.md ${OUT_DIR}/LICENSE.md
 )
+
+foreach (TP ${THIRD_PARTIES})
+    add_subdirectory(${TP})
+endforeach ()

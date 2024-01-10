@@ -10,7 +10,7 @@ csh::Parts::~Parts() {
 void csh::Parts::print() const {
     Console::reset();
     Console::setForegroundColor(parts[0]->config->backgroundColor);
-    std::wcout << start;
+    Console::print(start);
     for (Part *part: showList) {
         part->print();
     }

@@ -1,4 +1,4 @@
-#include "str/wstring-util.h"
+#include "str/string-util.h"
 #include <File.h>
 
 #include <utility>
@@ -7,17 +7,17 @@
 #include <corecrt_io.h>
 #include <Windows.h>
 
-csh::File::File(wstr path) {
+csh::File::File(str path) {
     this->path = std::move(path);
 }
 
-csh::File::File(const wstr &dir, const wstr &child) {
-    if (!dir.ends_with(L"\\") && !child.ends_with(L"/")) {
-        path = dir + L"\\" + child;
+csh::File::File(const str &dir, const str &child) {
+    if (!dir.ends_with("\\") && !child.ends_with("/")) {
+        path = dir + "\\" + child;
     } else {
         path = dir + child;
     }
-    for (wchar_t &c: path) {
+    for (char &c: path) {
         if (c == L'/')
             c = L'\\';
     }
@@ -26,10 +26,10 @@ csh::File::File(const wstr &dir, const wstr &child) {
 csh::File::~File() = default;
 
 int csh::File::update() {
-    return _wstat64i32(path.c_str(), &stat);
+    return _stat64i32(path.c_str(), &stat);
 }
 
-#define CHECK(f) _waccess_s(path.c_str(), f)==0
+#define CHECK(f) _access_s(path.c_str(), f)==0
 
 bool csh::File::exists() const {
     return CHECK(F_OK);
@@ -66,12 +66,12 @@ u32 csh::File::lastModified() {
 }
 
 bool csh::File::del() const {
-    return _wremove(path.c_str()) == 0;
+    return remove(path.c_str()) == 0;
 }
 
-wstr csh::File::absolutePath() const {
-    wchar_t buf[MAX_PATH];
-    GetFullPathNameW(path.c_str(), MAX_PATH, buf, nullptr);
+str csh::File::absolutePath() const {
+    char buf[MAX_PATH];
+    GetFullPathNameA(path.c_str(), MAX_PATH, buf, nullptr);
     return buf;
 }
 
@@ -81,33 +81,33 @@ std::fstream csh::File::open(std::ios_base::openmode mode) {
     return std::fstream(path, mode);
 }
 
-wstr csh::File::readAllTexts() {
+str csh::File::readAllTexts() {
     if (!isFile())
         throw std::runtime_error("not a file");
     FILE    *fs;
-    errno_t err = _wfopen_s(&fs, path.c_str(), L"r");
+    errno_t err = fopen_s(&fs, path.c_str(), "r");
     if (err)
         throw std::runtime_error(std::format("open file failed : ", err));
-    wstr    texts;
-    wchar_t buf[4096];
-    while (fgetws(buf, 4096, fs)) {
+    str  texts;
+    char buf[4096];
+    while (fgets(buf, 4096, fs)) {
         texts += buf;
     }
     fclose(fs);
     return texts;
 }
 
-wstr csh::File::getPath() const {
+str csh::File::getPath() const {
     return path;
 }
 
-wstr csh::File::getFileName() const {
-    wstr fullPath = absolutePath();
-    return fullPath.substr(fullPath.find_last_of(L"/\\") + 1);
+str csh::File::getFileName() const {
+    str fullPath = absolutePath();
+    return fullPath.substr(fullPath.find_last_of("/\\") + 1);
 }
 
 csh::File csh::File::getParent() const {
-    wstr         p = absolutePath();
+    str          p = absolutePath();
     unsigned int i = p.find_last_of('\\');
     if (p.find_first_of('\\') == i)
         return csh::File(p);
@@ -118,42 +118,42 @@ bool csh::File::operator==(const csh::File &other) const {
     return absolutePath() == other.absolutePath();
 }
 
-DWORD mk(const wstr &name) {
-    CreateDirectoryW(name.c_str(), nullptr);
+DWORD mk(const str &name) {
+    CreateDirectoryA(name.c_str(), nullptr);
     return GetLastError();
 }
 
-void mks(const std::vector<wstr> &paths) {
-    wstr            p;
-    for (const wstr &n: paths) {
+void mks(const std::vector<str> &paths) {
+    str            p;
+    for (const str &n: paths) {
         p += n;
         p += '\\';
-        if (!_waccess(p.c_str(), 0))
+        if (!_access(p.c_str(), 0))
             continue;
         if (mk(p) == ERROR_PATH_NOT_FOUND)
             return;
     }
 }
 
-DWORD csh::File::list(std::vector<wstr> &list, bool file, bool dir) {
+DWORD csh::File::list(std::vector<str> &list, bool file, bool dir) {
     if (!isDir())
         return -1;
     // 列出文件
-    WIN32_FIND_DATAW data;
-    HANDLE           hFind = FindFirstFileW((path + L"\\*").c_str(), &data);
+    WIN32_FIND_DATAA data;
+    HANDLE           hFind = FindFirstFileA((path + "\\*").c_str(), &data);
     if (hFind == INVALID_HANDLE_VALUE)
         return GetLastError();
     do {
-        wstr name  = data.cFileName;
+        str  name  = data.cFileName;
         bool isDir = (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
-        if (name != L"." && name != L"..") {
+        if (name != "." && name != "..") {
             if ((dir && isDir) || (file && !isDir)) {
                 list.push_back(name);
             }
         }
 
-    } while (FindNextFileW(hFind, &data));
+    } while (FindNextFileA(hFind, &data));
 
     FindClose(hFind);
     return 0;
@@ -162,8 +162,8 @@ DWORD csh::File::list(std::vector<wstr> &list, bool file, bool dir) {
 bool csh::File::mkdirs() const {
     if (exists())
         return false;
-    std::vector<wstr> paths;
-    wstrSplit(path, paths, '\\');
+    std::vector<str> paths;
+    strSplit(path, paths, '\\');
     mks(paths);
     return exists();
 }

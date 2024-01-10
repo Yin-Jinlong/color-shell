@@ -4,7 +4,7 @@
 extern ColorShell sh;
 
 namespace csh {
-    int updateIndexes(const wstr &arg) {
+    int updateIndexes(const str &arg) {
         sh.updateIndexes();
         return 0;
     }

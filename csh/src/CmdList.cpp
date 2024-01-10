@@ -4,7 +4,7 @@ csh::CmdList::CmdList() = default;
 
 csh::CmdList::~CmdList() = default;
 
-void csh::CmdList::add(const wstr &cmd) {
+void csh::CmdList::add(const str &cmd) {
     if (map.find(cmd) == map.end()) {
         map.insert({cmd, 1});
     } else {
@@ -12,7 +12,7 @@ void csh::CmdList::add(const wstr &cmd) {
     }
 }
 
-void csh::CmdList::addCurrent(const wstr &cmd) {
+void csh::CmdList::addCurrent(const str &cmd) {
     if (curMap.find(cmd) == curMap.end()) {
         curMap.insert({cmd, 1});
     } else {
@@ -20,7 +20,7 @@ void csh::CmdList::addCurrent(const wstr &cmd) {
     }
 }
 
-void cmdListFind(std::map<wstr, int> &map, const wstr &cmd, std::vector<wstr> &list) {
+void cmdListFind(std::map<str, int> &map, const str &cmd, std::vector<str> &list) {
     for (auto &e: map) {
         if (e.first.starts_with(cmd)) {
             list.push_back(e.first);
@@ -28,12 +28,12 @@ void cmdListFind(std::map<wstr, int> &map, const wstr &cmd, std::vector<wstr> &l
     }
 }
 
-void csh::CmdList::match(const wstr &cmd, std::vector<wstr> &list) {
+void csh::CmdList::match(const str &cmd, std::vector<str> &list) {
     cmdListFind(curMap, cmd, list);
     cmdListFind(map, cmd, list);
 }
 
-wstr csh::CmdList::matchOne(const wstr &cmd) {
+str csh::CmdList::matchOne(const str &cmd) {
     for (auto &e: curMap) {
         if (e.first.starts_with(cmd)) {
             return e.first;
@@ -44,10 +44,10 @@ wstr csh::CmdList::matchOne(const wstr &cmd) {
             return e.first;
         }
     }
-    return L"";
+    return "";
 }
 
-void csh::CmdList::remove(const wstr &cmd) {
+void csh::CmdList::remove(const str &cmd) {
     if (map.find(cmd) == map.end())
         return;
     if (map[cmd] == 1)
@@ -56,11 +56,11 @@ void csh::CmdList::remove(const wstr &cmd) {
         map[cmd]--;
 }
 
-bool csh::CmdList::operator[](const wstr &cmd) {
+bool csh::CmdList::operator[](const str &cmd) {
     return curMap.find(cmd) != curMap.end() || map.find(cmd) != map.end();
 }
 
-void csh::CmdList::operator+=(const wstr &cmd) {
+void csh::CmdList::operator+=(const str &cmd) {
     add(cmd);
 }
 

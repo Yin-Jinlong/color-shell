@@ -30,7 +30,7 @@ namespace csh {
         /**
          * 路径
          */
-        wstr              path;
+        str               path;
         /**
          * 文件状态
          */
@@ -47,7 +47,7 @@ namespace csh {
          *
          * @param path 路径
          */
-        MAYBE_UNUSED explicit File(wstr path);
+        MAYBE_UNUSED explicit File(str path);
 
         /**
          * 构造函数
@@ -55,7 +55,7 @@ namespace csh {
          * @param dir 目录
          * @param child 子文件
          */
-        MAYBE_UNUSED explicit File(const wstr &dir, const wstr &child);
+        MAYBE_UNUSED explicit File(const str &dir, const str &child);
 
         ~File();
 
@@ -64,7 +64,7 @@ namespace csh {
          *
          * @return 绝对路径
          */
-        MAYBE_UNUSED USE_RET wstr absolutePath() const;
+        MAYBE_UNUSED USE_RET str absolutePath() const;
 
         /**
          * 是否存在
@@ -135,21 +135,21 @@ namespace csh {
          *
          * @return 文本
          */
-        MAYBE_UNUSED USE_RET wstr readAllTexts();
+        MAYBE_UNUSED USE_RET str readAllTexts();
 
         /**
          * 获取路径
          *
          * @return 路径
          */
-        MAYBE_UNUSED USE_RET wstr getPath() const;
+        MAYBE_UNUSED USE_RET str getPath() const;
 
         /**
          * 获取文件名
          *
          * @return 文件名
          */
-        MAYBE_UNUSED USE_RET wstr getFileName() const;
+        MAYBE_UNUSED USE_RET str getFileName() const;
 
         /**
          * 获取父目录
@@ -167,7 +167,7 @@ namespace csh {
          *
          * @return 是否成功
          */
-        MAYBE_UNUSED DWORD list(ARG_OUT std::vector<wstr> &list, bool file = true, bool dir = false);
+        MAYBE_UNUSED DWORD list(ARG_OUT std::vector<str> &list, bool file = true, bool dir = false);
 
         /**
          * 创建目录

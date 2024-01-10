@@ -12,7 +12,7 @@ namespace csh {
         End
     };
 
-    const wchar_t          DefaultEnd[2]   = L"\ue0b0";
+    const char             DefaultEnd[4]   = "\ue0b0";
     const bool             DefaultPassBgc  = false;
     const int              DefaultMaxWidth = 24;
     const EllipsisPosition DefaultEllipsis = EllipsisPosition::Start;
@@ -21,7 +21,7 @@ namespace csh {
     public:
         Color foregroundColor = Color(255, 255, 255);
         Color backgroundColor = Color(0, 0, 0);
-        wstr  end             = DefaultEnd;
+        str   end             = DefaultEnd;
         bool  passBgc         = DefaultPassBgc;
     };
 

@@ -9,9 +9,9 @@ namespace csh {
     class CmdList {
     private:
 
-        std::map<wstr, int> map;
+        std::map<str, int> map;
 
-        std::map<wstr, int> curMap;
+        std::map<str, int> curMap;
     public:
         CmdList();
 
@@ -22,14 +22,14 @@ namespace csh {
          *
          * @param cmd 命令
          */
-        void add(const wstr &cmd);
+        void add(const str &cmd);
 
         /**
          * 添加当前目录命令
          *
          * @param cmd 命令
          */
-        void addCurrent(const wstr &cmd);
+        void addCurrent(const str &cmd);
 
         /**
          * 匹配命令
@@ -37,7 +37,7 @@ namespace csh {
          * @param cmd 命令
          * @param list 匹配结果
          */
-        void match(const wstr &cmd, ARG_OUT std::vector<wstr> &list);
+        void match(const str &cmd, ARG_OUT std::vector<str> &list);
 
         /**
          * 匹配一个命令
@@ -45,14 +45,14 @@ namespace csh {
          * @param cmd 命令
          * @return 匹配结果
          */
-        wstr matchOne(const wstr &cmd);
+        str matchOne(const str &cmd);
 
         /**
          * 移除命令
          *
          * @param cmd 命令
          */
-        void remove(const wstr &cmd);
+        void remove(const str &cmd);
 
         /**
          * 清空当前目录命令
@@ -70,14 +70,14 @@ namespace csh {
          * @param cmd 命令
          * @return 是否存在
          */
-        bool operator[](const wstr &cmd);
+        bool operator[](const str &cmd);
 
         /**
          * 添加命令
          *
          * @param cmd 命令
          */
-        void operator+=(const wstr &cmd);
+        void operator+=(const str &cmd);
     };
 
 }

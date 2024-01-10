@@ -5,7 +5,8 @@ project(csh CXX)
 include_directories(include)
 
 file(GLOB CSH_SRCS
-        ../include/*.h
+        include/*.h
+        include/**/*.h
         src/*.cpp
         src/**/*.cpp
 )
@@ -13,7 +14,10 @@ file(GLOB CSH_SRCS
 set_msvc_utf_flags()
 
 add_executable(${PROJECT_NAME} ${CSH_SRCS})
-target_link_libraries(${PROJECT_NAME} csh-lib)
+target_link_libraries(${PROJECT_NAME}
+        csh-lib
+#        yaml-cpp
+)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different

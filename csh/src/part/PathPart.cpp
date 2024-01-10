@@ -4,8 +4,9 @@
 #include <utility>
 #include <functional>
 #include <Console.h>
+#include <direct.h>
 
-csh::PathPart::PathPart(csh::PathPartConfig &config, std::vector<wstr> &contents) : Part(config, contents) {
+csh::PathPart::PathPart(csh::PathPartConfig &config, std::vector<str> &contents) : Part(config, contents) {
     this->config                  = new PathPartConfig;
     this->config->foregroundColor = config.foregroundColor;
     this->config->backgroundColor = config.backgroundColor;
@@ -29,8 +30,8 @@ csh::PathPart::~PathPart() {
 bool csh::PathPart::update(UpdateType type) {
     if (type > UpdateType::WorkDirChanged)
         return true;
-    wchar_t buf[MAX_PATH];
-    _wgetcwd(buf, MAX_PATH);
+    char buf[MAX_PATH];
+    _getcwd(buf, MAX_PATH);
     path = buf;
     return true;
 }

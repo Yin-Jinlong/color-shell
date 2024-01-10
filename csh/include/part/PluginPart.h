@@ -19,9 +19,9 @@ namespace csh {
 
         UpdateType updateType;
     public:
-        wstr name;
+        str name;
 
-        explicit PluginPart(csh::PartConfig &config, const wstr &name);
+        explicit PluginPart(csh::PartConfig &config, const str &name);
 
         ~PluginPart();
 

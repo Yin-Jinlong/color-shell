@@ -1,16 +1,16 @@
 #include <part/PluginPart.h>
 #include "Console.h"
 
-csh::PluginPart::PluginPart(csh::PartConfig &config, const wstr &name) : Part(config) {
+csh::PluginPart::PluginPart(csh::PartConfig &config, const str &name) : Part(config) {
     this->name = name;
 
-    wstr path = L"../extras/";
+    str path = "../extras/";
     path += name;
-    path += L"/csh-";
+    path += "/csh-";
     path += name;
-    path += L".dll";
+    path += ".dll";
 
-    hModule = LoadLibraryW(path.c_str());
+    hModule = LoadLibraryA(path.c_str());
     if (!hModule) {
         throw std::runtime_error("Failed to load plugin ");
     }
@@ -19,7 +19,7 @@ csh::PluginPart::PluginPart(csh::PartConfig &config, const wstr &name) : Part(co
     updateTypeFn   = (CShUpdateTypeFn) GetProcAddress(hModule, "CShUpdateType");
     onUpdateFn     = (CShOnUpdateFn) GetProcAddress(hModule, "CShOnUpdate");
 
-    std::map<wstr, wstr> cfg;
+    std::map<str, str> cfg;
     onLoadPluginFn && onLoadPluginFn(cfg);
 
     if (updateTypeFn)
@@ -40,6 +40,6 @@ bool csh::PluginPart::update(UpdateType type) {
 
 void csh::PluginPart::printContents() {
     for (const ColorStrPartStruct &part: parts) {
-        Console::print(part.str, true);
+        Console::print(part.str);
     }
 }

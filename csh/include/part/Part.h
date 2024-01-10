@@ -9,13 +9,13 @@ namespace csh {
 
     class Part {
     public:
-        PartConfig        *config{};
-        std::vector<wstr> contents;
+        PartConfig       *config{};
+        std::vector<str> contents;
 
         Part *last = nullptr;
         Part *next = nullptr;
 
-        explicit Part(PartConfig &config, std::vector<wstr> &contents);
+        explicit Part(PartConfig &config, std::vector<str> &contents);
 
         explicit Part(PartConfig &config);
 
@@ -38,7 +38,7 @@ namespace csh {
          * @param config 配置
          * @param text 文本
          */
-        static void printWithMaxWidth(const BasePartConfig &config, const wstr &text);
+        static void printWithMaxWidth(const BasePartConfig &config, const str &text);
 
         /**
          * 打印

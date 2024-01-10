@@ -1,11 +1,11 @@
 #include <predef.h>
 #include <csh-plugin.h>
 #include "util.h"
-#include "str/wstring-util.h"
+#include "str/string-util.h"
 
 extern "C" {
 DLL_OUTER_CALL CallResult
-CShOnLoadPlugin(std::map<wstr, wstr> &config) {
+CShOnLoadPlugin(std::map<str, str> &config) {
 
     return CSH_CALL_FN_SUCCESS;
 }
@@ -18,7 +18,7 @@ CShUpdateType() {
 
 DLL_OUTER_CALL bool CShCanShow() {
     try {
-        str gitOut = getProcessOutput(L"git rev-parse --is-inside-work-tree");
+        str gitOut = getProcessOutput("git rev-parse --is-inside-work-tree");
         return gitOut == "true\n";
     } catch (...) {
     }
@@ -27,27 +27,26 @@ DLL_OUTER_CALL bool CShCanShow() {
 
 void addModified(std::vector<csh::ColorStrPart> &parts) {
 
-    str modified = getProcessOutput(L"git diff --shortstat");
+    str modified = getProcessOutput("git diff --shortstat");
     modified.erase(modified.begin());
     size_t i = modified.find_first_of(' ');
     if (i == std::string::npos)
         return;
-    wstr s = strToWstr(CP_UTF8, modified.substr(0, i));
-    parts.push_back(csh::ColorStrPart(std::format(L"\uF4D2 *{} ", s), csh::White));
+    parts.push_back(csh::ColorStrPart(std::format("\uF4D2 *{} ", modified.substr(0, i)), csh::White));
 }
 
 void addBranch(std::vector<csh::ColorStrPart> &parts) {
-    str branch = getProcessOutput(L"git rev-parse --abbrev-ref HEAD");
+    str branch = getProcessOutput("git rev-parse --abbrev-ref HEAD");
     branch.erase(branch.end() - 1);
     if (branch.length() > 32)
         return;
-    parts.push_back(csh::ColorStrPart(std::format(L"\U000f062c {}", strToWstr(CP_UTF8, branch)), csh::White));
+    parts.push_back(csh::ColorStrPart(std::format("\U000f062c {}", branch), csh::White));
 }
 
 DLL_OUTER_CALL CallResult
 CShOnUpdate(std::vector<csh::ColorStrPart> &parts) {
     parts.clear();
-    parts.push_back(csh::ColorStrPart(L" \U000f02a2 ", csh::White));
+    parts.push_back(csh::ColorStrPart(" \U000f02a2 ", csh::White));
     addModified(parts);
     addBranch(parts);
     return CSH_CALL_FN_SUCCESS;

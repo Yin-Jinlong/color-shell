@@ -1,11 +1,11 @@
 #include <predef.h>
 #include <csh-plugin.h>
 #include "util.h"
-#include "str/wstring-util.h"
+#include "str/string-util.h"
 #include "File.h"
 
 extern "C" {
-DLL_OUTER_CALL CallResult CShOnLoadPlugin(std::map<wstr, wstr> &config) {
+DLL_OUTER_CALL CallResult CShOnLoadPlugin(std::map<str, str> &config) {
 
     return CSH_CALL_FN_SUCCESS;
 }
@@ -15,33 +15,33 @@ DLL_OUTER_CALL csh::UpdateType CShUpdateType() {
 }
 
 DLL_OUTER_CALL bool CShCanShow() {
-    wstr      cd  = getCurrentDirectory();
+    str       cd  = getCurrentDirectory();
     csh::File dir = csh::File(cd);
-    csh::File f(cd + L"/package.json");
+    csh::File f(cd + "/package.json");
     while (!f.exists()) {
         csh::File p = dir.getParent();
         if (dir == p)
             return false;
         dir = p;
-        f   = csh::File(dir.getPath() + L"/package.json");
+        f   = csh::File(dir.getPath() + "/package.json");
     }
     return true;
 }
 
 void addVersion(std::vector<csh::ColorStrPart> &parts) {
     try {
-        str v = getProcessOutput(L"node -v");
+        str v = getProcessOutput("node -v");
         v.erase(v.end() - 1);
         v.erase(v.end() - 1);
-        parts.push_back(csh::ColorStrPart(strToWstr(CP_UTF8, v), csh::White));
+        parts.push_back(csh::ColorStrPart(v, csh::White));
     } catch (...) {
-        parts.push_back(csh::ColorStrPart(L"v?.?.?", csh::White));
+        parts.push_back(csh::ColorStrPart("v?.?.?", csh::White));
     }
 }
 
 DLL_OUTER_CALL CallResult CShOnUpdate(std::vector<csh::ColorStrPart> &parts) {
     parts.clear();
-    parts.push_back(csh::ColorStrPart(L" \U000f0399 ", csh::White));
+    parts.push_back(csh::ColorStrPart(" \U000f0399 ", csh::White));
     addVersion(parts);
     return CSH_CALL_FN_SUCCESS;
 }

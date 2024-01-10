@@ -2,27 +2,27 @@
 
 #include <predef.h>
 
-typedef int (*CShCmdFn)(const wstr &argLine);
+typedef int (*CShCmdFn)(const str &argLine);
 
 class ColorShell {
 private:
     /**
      * 路径
      */
-    std::vector<wstr> paths;
+    std::vector<str> paths;
 public:
 
-    static constexpr std::array<const wchar_t *, 4> EXTS = {L".exe", L".cmd", L".bat", L".ps1"};
+    static constexpr std::array<const char *, 4> EXTS = {".exe", ".cmd", ".bat", ".ps1"};
 
-    static constexpr const wchar_t *CD = L"cd";
+    static constexpr const char *CD = "cd";
 
-    static constexpr const wchar_t *EXIT = L"exit";
+    static constexpr const char *EXIT = "exit";
 
-    static constexpr const wchar_t *HISTORY = L"history";
+    static constexpr const char *HISTORY = "history";
 
-    static constexpr const wchar_t *UPDATE_INDEXES = L"update-indexes";
+    static constexpr const char *UPDATE_INDEXES = "update-indexes";
 
-    static const std::map<wstr, CShCmdFn> INNER_CMDS;
+    static const std::map<str, CShCmdFn> INNER_CMDS;
 
     ColorShell();
 
@@ -37,7 +37,7 @@ public:
      * @param [out] err 错误信息
      * @return 是否继续执行
      */
-    bool run(wstr line, wstr &cmd, int &rc, wstr &err);
+    bool run(str line, str &cmd, int &rc, str &err);
 
     /**
      * 更新当前目录命令索引

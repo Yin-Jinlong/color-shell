@@ -13,12 +13,12 @@ namespace csh {
     class PathPart : public Part {
 
     private:
-        wstr path;
+        str path;
     public:
 
         PathPartConfig *config;
 
-        explicit PathPart(PathPartConfig &config, std::vector<wstr> &contents);
+        explicit PathPart(PathPartConfig &config, std::vector<str> &contents);
 
         PathPart(PathPart &other);
 

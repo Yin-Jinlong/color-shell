@@ -9,9 +9,9 @@ namespace csh {
      * @param path 路径
      * @return 错误码
      */
-    extern DLL_OUT int cd(const wstr &path);
+    extern DLL_OUT int cd(const str &path);
 
-    extern DLL_OUT int history(const wstr &arg);
+    extern DLL_OUT int history(const str &arg);
 
-    extern DLL_OUT int updateIndexes(const wstr &arg);
+    extern DLL_OUT int updateIndexes(const str &arg);
 }

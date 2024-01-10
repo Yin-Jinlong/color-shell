@@ -1,7 +1,7 @@
 #include <CmdHistory.h>
 #include <fstream>
 #include "File.h"
-#include "str/wstring-util.h"
+#include "str/string-util.h"
 
 
 csh::CmdHistory::CmdHistory() = default;
@@ -18,7 +18,7 @@ csh::CmdHistory::~CmdHistory() {
     }
 }
 
-bool csh::CmdHistory::add(const wstr &cmd) {
+bool csh::CmdHistory::add(const str &cmd) {
     if (cmd.empty() || (size >= maxSize && !removeHead())) {
         return false;
     }
@@ -57,7 +57,7 @@ void csh::CmdHistory::reset() {
     now = nullptr;
 }
 
-wstr *csh::CmdHistory::last() {
+str *csh::CmdHistory::last() {
     if (!size)
         return nullptr;
     if (!now) {
@@ -69,7 +69,7 @@ wstr *csh::CmdHistory::last() {
     return &now->str;
 }
 
-wstr *csh::CmdHistory::next() {
+str *csh::CmdHistory::next() {
     if (!size)
         return nullptr;
     if (now) {
@@ -89,10 +89,10 @@ bool csh::CmdHistory::load(csh::File &f) {
     if (!f.exists())
         return false;
     this->file = new File(f.getPath());
-    std::vector<wstr> lines;
-    wstrSplit(file->readAllTexts(), lines, '\n');
+    std::vector<str> lines;
+    strSplit(file->readAllTexts(), lines, '\n');
     for (auto &line: lines) {
-        line = wstrTrim(line, true, true);
+        line = strTrim(line, true, true);
         if (line.empty())
             continue;
         add(line);
@@ -103,7 +103,7 @@ bool csh::CmdHistory::load(csh::File &f) {
 bool csh::CmdHistory::save() {
     if (!file)
         return false;
-    std::wofstream os(file->getPath());
+    std::ofstream os(file->getPath());
     if (!os.is_open())
         return false;
     for (auto i = head; i; i = i->next) {
@@ -125,6 +125,6 @@ csh::CmdHistory::Iterator csh::CmdHistory::begin() {
     return csh::CmdHistory::Iterator(tail);
 }
 
-bool csh::CmdHistory::operator+=(const wstr &cmd) {
+bool csh::CmdHistory::operator+=(const str &cmd) {
     return add(cmd);
 }

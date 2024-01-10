@@ -153,25 +153,22 @@ public:
      * 打印字符串
      *
      * @param str 字符串
-     * @param convert 是否转换到ANSI
      */
-    MAYBE_UNUSED static void print(const wstr &str,bool convert=false);
+    MAYBE_UNUSED static void print(const str &str);
 
     /**
      * 打印字符串并换行
      *
      * @param str 字符串
-     * @param convert 是否转换到ANSI
      */
-    MAYBE_UNUSED static void println(const wstr &str,bool convert=false);
+    MAYBE_UNUSED static void println(const str &str);
 
     /**
      * 打印字符串
      *
      * @param str 字符串
-     * @param convert 是否转换到ANSI
      */
-    MAYBE_UNUSED static void print(const wchar_t *str,bool convert=false);
+    MAYBE_UNUSED static void print(const char *str);
 
     /**
      * 打印字符串并换行
@@ -179,21 +176,21 @@ public:
      * @param str 字符串
      * @param convert 是否转换到ANSI
      */
-    MAYBE_UNUSED static void println(const wchar_t *str,bool convert=false);
+    MAYBE_UNUSED static void println(const char *str);
 
     /**
      * 打印字符
      *
      * @param c 字符
      */
-    MAYBE_UNUSED static void print(wchar_t c);
+    MAYBE_UNUSED static void print(char c);
 
     /**
      * 打印字符并换行
      *
      * @param c 字符
      */
-    MAYBE_UNUSED static void println(wchar_t c);
+    MAYBE_UNUSED static void println(char c);
 
     /**
      * 换行
@@ -208,7 +205,7 @@ public:
      * @param args 参数
      */
     template<class... T>
-    MAYBE_UNUSED static inline void printf(std::wformat_string<T...> fmt, T &&... args) {
+    MAYBE_UNUSED static inline void printf(std::format_string<T...> fmt, T &&... args) {
         print(std::format(fmt, std::forward<T>(args)...));
     }
 

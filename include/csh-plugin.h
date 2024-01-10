@@ -38,7 +38,7 @@ namespace csh {
         /**
          * 字符串
          */
-        wstr       str;
+        str        str;
         /**
          * 颜色
          */
@@ -48,7 +48,7 @@ namespace csh {
 
 
 // 加载插件函数
-typedef CallResult (*CShOnLoadPluginFn)(std::map<wstr, wstr> &config);
+typedef CallResult (*CShOnLoadPluginFn)(std::map<str, str> &config);
 
 // 插件更新时机函数
 typedef csh::UpdateType (*CShUpdateTypeFn)();

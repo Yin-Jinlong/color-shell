@@ -4,7 +4,7 @@
 #include "Console.h"
 
 
-csh::UserPart::UserPart(csh::UserPartConfig &config, std::vector<wstr> &contents) : Part(config, contents) {
+csh::UserPart::UserPart(csh::UserPartConfig &config, std::vector<str> &contents) : Part(config, contents) {
     this->config                  = new UserPartConfig;
     this->config->foregroundColor = config.foregroundColor;
     this->config->backgroundColor = config.backgroundColor;
@@ -26,9 +26,9 @@ csh::UserPart::~UserPart() {
 bool csh::UserPart::update(UpdateType type) {
     if (type > UpdateType::Init)
         return true;
-    wchar_t buf[UNLEN + 1];
-    DWORD   len = UNLEN + 1;
-    GetUserNameW(buf, &len);
+    char  buf[UNLEN + 1];
+    DWORD len = UNLEN + 1;
+    GetUserNameA(buf, &len);
     this->user = buf;
     return true;
 }
