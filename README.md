@@ -10,8 +10,8 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
 
 [//]: # (统计)
-![Total Lines](https://img.shields.io/badge/total_lines-4,023-9a9a9a)
-![Source Lines](https://img.shields.io/badge/source_lines-1,952-9a9a9a)
+![Total Lines](https://img.shields.io/badge/total_lines-4,201-9a9a9a)
+![Source Lines](https://img.shields.io/badge/source_lines-2,058-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
@@ -28,6 +28,7 @@
     - [clear](commands/clear/README.md)📘
     - [mkdir](commands/mkdir/README.md)📘
     - [pwd](commands/pwd/README.md)📘
+    - [rm](commands/rm/README.md)📘
     - CMakeLists.txt⚙️
 - [csh](./csh/README.md)💼
 - [csh-lib](./csh-lib/README.md)💼
