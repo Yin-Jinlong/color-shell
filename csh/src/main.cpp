@@ -236,14 +236,14 @@ void setCursorToI(int i) {
     Console::moveCursorRight(len);
 }
 
-bool checkExists(const wstr &cmd){
-    wstr ext=wstrGetExt(cmd);
-    if (ext.empty()){
-        for(const wstr &e:ColorShell::EXTS){
-            if (csh::File(cmd+e).exists())
+bool checkExists(const wstr &cmd) {
+    wstr ext = wstrGetExt(cmd);
+    if (ext.empty()) {
+        for (const wstr &e: ColorShell::EXTS) {
+            if (csh::File(cmd + e).exists())
                 return true;
         }
-    } else{
+    } else {
         return csh::File(cmd).exists();
     }
     return false;
@@ -252,23 +252,24 @@ bool checkExists(const wstr &cmd){
 /**
  * 重新打印当前输入
  */
-void reprint(int i, bool update = true) {
-    if (update)
+void reprint(int i, bool printHint = true) {
+    if (printHint) {
         updateHint();
-    Console::restore();
-    setCursorToI(hintPos);
-    Console::clear();
-    Console::setForegroundColor(csh::DarkGray);
-    Console::print(hint);
-
-    Console::restore();
-    Console::setForegroundColor(csh::LightGray);
-    Console::print(line);
-
+        Console::restore();
+        setCursorToI(hintPos);
+        Console::clear();
+        Console::setForegroundColor(csh::DarkGray);
+        Console::print(hint);
+        Console::restore();
+        Console::setForegroundColor(csh::LightGray);
+        Console::print(line);
+    }
     wstr cmd, arg;
     split(line, cmd, arg);
     Console::restore();
-    Console::setForegroundColor((cmdList[cmd]|| checkExists(cmd)) ? csh::LightGreen : csh::LightRed);
+    if (!printHint)
+        Console::clear();
+    Console::setForegroundColor((cmdList[cmd] || checkExists(cmd)) ? csh::LightGreen : csh::LightRed);
     Console::print(cmd);
     setCursorToI(i);
     Console::reset();
@@ -403,6 +404,7 @@ bool dealChar(
     if (c == '\t') {
         complete(sp, i);
     } else if (c == '\r' || c == '\n') {
+        reprint(0, false);
         Console::print(L"\r\n");
         return false;
     } else if (c == '\b') {
