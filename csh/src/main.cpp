@@ -271,6 +271,8 @@ void reprint(int i, bool printHint = true) {
         Console::clear();
     Console::setForegroundColor((cmdList[cmd] || checkExists(cmd)) ? csh::LightGreen : csh::LightRed);
     Console::print(cmd);
+    Console::setForegroundColor(csh::LightGray);
+    Console::print(line.substr(cmd.size()));
     setCursorToI(i);
     Console::reset();
 }
