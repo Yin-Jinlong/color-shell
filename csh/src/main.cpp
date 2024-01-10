@@ -383,7 +383,7 @@ void complete(
     int d = sp.Y + pc - size.Y;
 
     if (d > 0) {
-        sp.Y = static_cast<SHORT>(sp.Y - d - 1);
+        sp.Y = static_cast<SHORT>(sp.Y - d - (pc > 9 ? 1 : 2));
         Console::setCursorPosition(sp);
         Console::save();
     } else {
