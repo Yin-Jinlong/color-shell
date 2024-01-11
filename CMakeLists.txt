@@ -4,6 +4,7 @@ project("color-shell" LANGUAGES C CXX)
 
 ### 第三方库 ###
 set(YAML_CPP_PROJECT_PATH third_party/externals/jbeder/yaml-cpp)
+set(TINY_UNICODE_PROJECT_PATH third_party/externals/yin-jinlong/tiny-unicode)
 
 
 set(CMAKE_C_STANDARD 23)
@@ -23,6 +24,7 @@ set(SUBS
 
 set(THIRD_PARTIES
         ${YAML_CPP_PROJECT_PATH}
+        ${TINY_UNICODE_PROJECT_PATH}
 )
 
 enable_testing()

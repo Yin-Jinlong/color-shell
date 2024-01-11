@@ -116,14 +116,14 @@ public:
      *
      * @param n 移动的行数
      */
-    MAYBE_UNUSED static void moveCursorLeft(int n = 1);
+    MAYBE_UNUSED static void moveCursorLeft(int n = 1,bool autoUp=true);
 
     /**
      * 向右移动光标
      *
      * @param n 移动的行数
      */
-    MAYBE_UNUSED static void moveCursorRight(int n = 1);
+    MAYBE_UNUSED static void moveCursorRight(int n = 1,bool autoDown=true);
 
     /**
      * 光标到可视末尾

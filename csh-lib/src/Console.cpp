@@ -49,16 +49,50 @@ void Console::moveCursorDown(int n) {
     printf("\033[{}B", n);
 }
 
-void Console::moveCursorLeft(int n) {
+void Console::moveCursorLeft(int n, bool autoUp) {
     if (n < 1)
         return;
-    printf("\033[{}D", n);
+    if (!autoUp) {
+        printf("\033[{}D", n);
+        return;
+    }
+    COORD np, size;
+    getCursorPosition(np);
+    getBufferSize(size);
+
+    if (np.X - n < 0) {
+        printf("\033[A\033[{}C", size.X+100000);
+        n -= np.X+1;
+    }
+    while (n > size.X) {
+        printf("\033[A\033[{}C", size.X);
+        n -= size.X;
+    }
+    if (n > 0)
+        printf("\033[{}D", n);
 }
 
-void Console::moveCursorRight(int n) {
+void Console::moveCursorRight(int n, bool autoDown) {
     if (n < 1)
         return;
-    printf("\033[{}C", n);
+    if (!autoDown) {
+        printf("\033[{}C", n);
+        return;
+    }
+    COORD np, size;
+    getCursorPosition(np);
+    getBufferSize(size);
+
+    if (np.X + n >= size.X) {
+        print("\r\n");
+        n -= size.X - np.X;
+    }
+    while (n > size.X) {
+        print("\r\n");
+        n -= size.X;
+    }
+    if (n > 0)
+        printf("\033[{}C", n);
 }
 
 void Console::clear(int flag) {

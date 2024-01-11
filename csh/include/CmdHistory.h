@@ -1,6 +1,7 @@
 #pragma once
 
 #include <predef.h>
+#include "File.h"
 
 namespace csh {
 
