@@ -105,7 +105,7 @@ void setup() {
         error("Can't find user profile");
     }
     mkdir(home);
-    historyFile = new csh::File(home, "csh/history");
+    historyFile = new csh::File(home, ".csh/history");
     histories.load(*historyFile);
 }
 
@@ -457,7 +457,7 @@ bool dealChar(
         }
         if (c < ' ')
             return true;
-        line.insert(line.begin() + i, c);
+        line.insert(line.begin() + i, static_cast<char>(c));
         i++;
         reprint(i);
     }
