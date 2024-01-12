@@ -157,6 +157,13 @@ public:
     MAYBE_UNUSED static void print(const str &str);
 
     /**
+     * 打印字符串
+     *
+     * @param str 字符串
+     */
+    MAYBE_UNUSED static void print(const u32str &str);
+
+    /**
      * 打印字符串并换行
      *
      * @param str 字符串

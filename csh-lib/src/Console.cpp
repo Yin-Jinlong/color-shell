@@ -1,4 +1,6 @@
+#include <tiny-unicode.h>
 #include "Console.h"
+#include "str/string-util.h"
 
 bool                       Console::withColor = true;
 CONSOLE_SCREEN_BUFFER_INFO Console::csbi      = {};
@@ -61,8 +63,8 @@ void Console::moveCursorLeft(int n, bool autoUp) {
     getBufferSize(size);
 
     if (np.X - n < 0) {
-        printf("\033[A\033[{}C", size.X+100000);
-        n -= np.X+1;
+        printf("\033[A\033[{}C", size.X + 100000);
+        n -= np.X + 1;
     }
     while (n > size.X) {
         printf("\033[A\033[{}C", size.X);
@@ -107,6 +109,10 @@ void Console::print(const str &str) {
 void Console::println(const str &str) {
     print(str);
     println();
+}
+
+void Console::print(const u32str &str) {
+    print(u32StrToStr(str));
 }
 
 void Console::print(const char *str) {
@@ -168,3 +174,4 @@ void Console::save() {
 void Console::restore() {
     print("\033[u");
 }
+

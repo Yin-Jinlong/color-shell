@@ -34,3 +34,17 @@ DLL_OUT int strSplit(const str &string, std::vector<str> &out, char delim = L' '
  * @return 扩展名(带.)或空
  */
 DLL_OUT str strGetExt(const str &path);
+
+/**
+ * u32str转str
+ * @param s u32str
+ * @return str
+ */
+DLL_OUT str u32StrToStr(const u32str &s);
+
+/**
+ * str转u32str
+ * @param s str
+ * @return u32str
+ */
+DLL_OUT u32str strToU32Str(const str &s);

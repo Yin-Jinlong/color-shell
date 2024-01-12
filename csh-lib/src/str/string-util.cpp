@@ -1,4 +1,5 @@
 #include <str/string-util.h>
+#include <tiny-unicode.h>
 
 bool isWhitespace(wchar_t c) {
     return c == L' ' || c == L'\t' || c == L'\r' || c == L'\n';
@@ -61,4 +62,26 @@ str strGetExt(const str &path) {
         i = c;
     }
     return ext;
+}
+
+str u32StrToStr(const u32str &s) {
+    int  len  = static_cast<int>(s.size() * 4+1);
+    if (!len)
+        return "";
+    auto *buf = new u8_char[len];
+    tu_utf32_to_utf8(s.c_str(), static_cast<int>(s.size()), buf, &len);
+    str r(buf);
+    delete[] buf;
+    return r;
+}
+
+u32str strToU32Str(const str &s) {
+    int  len  = static_cast<int>(s.size())+1;
+    if (!len)
+        return {};
+    auto *buf = new u32_char[len];
+    tu_utf8_to_utf32(s.c_str(), static_cast<int>(s.size()), buf, &len);
+    u32str r(buf);
+    delete[] buf;
+    return r;
 }

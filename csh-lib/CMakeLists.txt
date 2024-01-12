@@ -11,6 +11,9 @@ file(GLOB LIB_SRCS
 )
 
 add_library(${PROJECT_NAME} SHARED ${LIB_SRCS})
+target_link_libraries(${PROJECT_NAME}
+        tiny-unicode
+)
 
 add_custom_target(build-${PROJECT_NAME} ALL
         DEPENDS ${PROJECT_NAME}

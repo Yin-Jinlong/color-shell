@@ -26,7 +26,7 @@ set(YAML_CPP_LINK_DIR
 
 # tiny-unicode
 set(TINY_UNICODE_HOME
-        "${GITHUB_HOME}/yin-jinlong/tiny-unicode/"
+        "${GITHUB_HOME}/yin-jinlong/tiny-unicode"
         CACHE INTERNAL "" FORCE
 )
 set(TINY_UNICODE_INCLUDE_DIR

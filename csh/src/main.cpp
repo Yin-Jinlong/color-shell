@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <io.h>
 #include <fstream>
+#include <tiny-unicode.h>
 #include "Console.h"
 #include "color-shell.h"
 #include "part/PathPart.h"
@@ -35,8 +36,9 @@ csh::Parts      parts;
  */
 csh::CmdHistory histories;
 
-str line, hint;
-int hintPos = 0;
+str    hint;
+u32str line;
+int    hintPos = 0;
 
 /**
  * 初始化
@@ -213,7 +215,10 @@ void mainLoop() {
         try {
             Console::reset();
             resetToDefault();
-            if (!sh.run(line, cmd, rc, err))
+
+            const str &u8Line = u32StrToStr(line);
+            histories += u8Line;
+            if (!sh.run(u8Line, cmd, rc, err))
                 break;
             if (!err.empty()) {
                 resetToUTF_8();
@@ -232,14 +237,15 @@ void updateHint() {
     hint.clear();
     if (line.empty())
         return;
+    str            u8Line = u32StrToStr(line);
     for (const str &l: histories) {
-        if (l.starts_with(line)) {
+        if (l.starts_with(u8Line)) {
             hint = l;
             return;
         }
     }
     str            cmd, arg;
-    split(line, cmd, arg);
+    split(u8Line, cmd, arg);
     if (arg.empty())
         hint = cmdList.matchOne(cmd);
 }
@@ -272,12 +278,12 @@ bool checkExists(const str &cmd) {
 }
 
 void printCmdLine() {
-    str cmd, arg;
-    split(line, cmd, arg);
+    str cmd, arg, u8Line = u32StrToStr(line);
+    split(u8Line, cmd, arg);
     Console::setForegroundColor((cmdList[cmd] || checkExists(cmd)) ? csh::LightGreen : csh::LightRed);
     Console::print(cmd);
     Console::setForegroundColor(csh::LightGray);
-    Console::print(line.substr(cmd.size()));
+    Console::print(u8Line.substr(cmd.size()));
 }
 
 void printlnShortLine() {
@@ -331,7 +337,7 @@ void dealArrowKey(
         i++;
         if (i > line.size()) {
             if (!hint.empty())
-                line = hint;
+                line = strToU32Str(hint);
             i        = static_cast<int>(line.size());
             reprint(i);
         } else {
@@ -341,7 +347,7 @@ void dealArrowKey(
         if (histories.empty())
             return;
         hiChanged = true;
-        line      = *histories.last();
+        line      = strToU32Str(*histories.last());
         i         = static_cast<int>(line.size());
         reprint(i);
     } else {
@@ -350,9 +356,9 @@ void dealArrowKey(
         hiChanged = true;
         str *ns   = histories.next();
         if (ns) {
-            line = *ns;
+            line = strToU32Str(*ns);
         } else {
-            line      = input;
+            line      = strToU32Str(input);
             hiChanged = false;
         }
         i         = static_cast<int>(line.size());
@@ -366,7 +372,7 @@ void complete(
     if (line.empty())
         return;
     str cmd, arg;
-    split(line, cmd, arg);
+    split(u32StrToStr(line), cmd, arg);
     if (!arg.empty())
         return;
     std::vector<str> suggests;
@@ -374,7 +380,7 @@ void complete(
     if (suggests.empty())
         return;
     if (suggests.size() == 1) {
-        line = suggests[0] + " ";
+        line = strToU32Str(suggests[0] + " ");
         i    = static_cast<int>(line.size());
         reprint(i);
         return;
@@ -433,6 +439,7 @@ void complete(
  * 处理单个字符
  */
 bool dealChar(
+        str &tmpInput,
         int &i,
         COORD &sp,
         int c
@@ -455,36 +462,51 @@ bool dealChar(
             ctrlC = true;
             return false;
         }
-        if (c < ' ')
+        if (c > 0 && c < ' ')
             return true;
-        line.insert(line.begin() + i, static_cast<char>(c));
-        i++;
-        reprint(i);
+        char v[2] = {static_cast<char>(c), 0};
+        tmpInput.append(v);
     }
     return true;
 }
 
-bool readAllBufChar(int &i, bool &hiChanged, COORD sp, str &input) {
-    int c;
-    while (!ctrlC && (c = _getch()) != EOF) {
-        if (!c || c == 0xe0) {
-            u32 key = MapVirtualKeyA(_getch(), MAPVK_VSC_TO_VK);
-            if (key == VK_LEFT || key == VK_RIGHT || key == VK_UP || key == VK_DOWN) {
-                dealArrowKey(i, hiChanged, input, key);
-            } else if (key == VK_DELETE) {
-                if (line.empty() || i == line.size())
-                    continue;
-                line.erase(i, 1);
-                reprint(i);
-            }
+bool readAllBufChar(int c, int &i, bool &hiChanged, COORD sp, str &input) {
+    str tmpInput;
+    if (!c || c == 0xe0) {
+        u32 key = MapVirtualKeyA(_getch(), MAPVK_VSC_TO_VK);
+        if (key == VK_LEFT || key == VK_RIGHT || key == VK_UP || key == VK_DOWN) {
+            dealArrowKey(i, hiChanged, input, key);
+        } else if (key == VK_DELETE) {
+            if (line.empty() || i == line.size())
+                return true;
+            line.erase(i, 1);
+            reprint(i);
+        }
+    } else {
+        int  rc;
+        char cs[4] = {static_cast<char>(c), 0, 0, 0};
+        if (tu_u8c_to_u32c_1(cs[0])) {
+            rc = 1;
+        } else if (tu_u8c_to_u32c_2(cs[0], cs[1] = static_cast<char>(_getch()))) {
+            rc = 2;
+        } else if (tu_u8c_to_u32c_3(cs[0], cs[1], cs[2] = static_cast<char>(_getch()))) {
+            rc = 3;
         } else {
-            if (!dealChar(i, sp, c))
+            cs[3] = static_cast<char>(_getch());
+            rc = 4;
+        }
+        for (int j = 0; j < rc; ++j) {
+            if (!dealChar(tmpInput, i, sp, cs[j]))
                 return false;
         }
-        if (!hiChanged)
-            input = line;
     }
-    return true;
+    if (!hiChanged)
+        input = u32StrToStr(line);
+    u32str u32TmpInput = strToU32Str(tmpInput);
+    line.insert(i, u32TmpInput);
+    i += static_cast<int>(u32TmpInput.size());
+    reprint(i);
+    return !ctrlC;
 }
 
 void input() {
@@ -501,11 +523,10 @@ void input() {
 
     histories.reset();
     while (inputting) {
-        if (_kbhit()) {
-            inputting = readAllBufChar(i, hiChanged, sp, input);
-        } else if (ctrlC) {
+        int c = _getch();
+        inputting = readAllBufChar(c, i, hiChanged, sp, input);
+        if (ctrlC) {
             return;
         }
     }
-    histories += line;
 }
