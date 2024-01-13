@@ -28,17 +28,17 @@ BOOL WINAPI handleCtrlC(DWORD dwCtrlType);
 
 csh::File *historyFile;
 
-csh::CmdList    cmdList;
-ColorShell      sh;
-csh::Parts      parts;
+csh::CmdList cmdList;
+ColorShell sh;
+csh::Parts parts;
 /**
  * 历史记录
  */
 csh::CmdHistory histories;
 
-str    hint;
+str hint;
 u32str line;
-int    hintPos = 0;
+int hintPos = 0;
 
 /**
  * 初始化
@@ -115,7 +115,7 @@ int main() {
     setup();
 
     defOut = GetConsoleOutputCP();
-    defIn  = GetConsoleCP();
+    defIn = GetConsoleCP();
     SetConsoleCtrlHandler(handleCtrlC, TRUE);
 
     Console::setColorMode(true);
@@ -144,27 +144,34 @@ BOOL WINAPI handleCtrlC(DWORD dwCtrlType) {
 void initParts() {
     csh::UserPartConfig userConfig;
     userConfig.backgroundColor = csh::Color(68, 125, 222);
-    userConfig.icon            = "\uF4FF ";
+    userConfig.icon = "\uF4FF ";
     std::vector<str> userContents;
-    auto             up = new csh::UserPart(userConfig, userContents);
+    auto up = new csh::UserPart(userConfig, userContents);
     parts += up;
 
     csh::PathPartConfig pathPartConfig;
     pathPartConfig.backgroundColor = csh::Color(224, 192, 80);
-    pathPartConfig.icon            = " \uF413 ";
-    pathPartConfig.iconShowMode    = csh::ShowMode::Auto;
+    pathPartConfig.icon = " \uF413 ";
+    pathPartConfig.iconShowMode = csh::ShowMode::Auto;
     std::vector<str> pathContents;
-    auto             pp = new csh::PathPart(pathPartConfig, pathContents);
+    auto pp = new csh::PathPart(pathPartConfig, pathContents);
     parts += pp;
 
-    csh::PartConfig nodePluginPartConfig;
-    nodePluginPartConfig.backgroundColor = csh::Color(67, 133, 61);
-    parts += new csh::PluginPart(nodePluginPartConfig, str("node"));
+    try {
+        csh::PartConfig nodePluginPartConfig;
+        nodePluginPartConfig.backgroundColor = csh::Color(67, 133, 61);
+        parts += new csh::PluginPart(nodePluginPartConfig, str("node"));
+    } catch (...) {
+        std::cerr << "Load node plugin failed"<< std::endl;
+    }
 
-    csh::PartConfig gitPluginPartConfig;
-    gitPluginPartConfig.backgroundColor = csh::Color(250, 80, 40);
-    parts += new csh::PluginPart(gitPluginPartConfig, "git");
-
+    try {
+        csh::PartConfig gitPluginPartConfig;
+        gitPluginPartConfig.backgroundColor = csh::Color(250, 80, 40);
+        parts += new csh::PluginPart(gitPluginPartConfig, "git");
+    }catch (...) {
+        std::cerr << "Load git plugin failed"<< std::endl;
+    }
 }
 
 void updateParts() {
@@ -237,14 +244,14 @@ void updateHint() {
     hint.clear();
     if (line.empty())
         return;
-    str            u8Line = u32StrToStr(line);
+    str u8Line = u32StrToStr(line);
     for (const str &l: histories) {
         if (l.starts_with(u8Line)) {
             hint = l;
             return;
         }
     }
-    str            cmd, arg;
+    str cmd, arg;
     split(u8Line, cmd, arg);
     if (arg.empty())
         hint = cmdList.matchOne(cmd);
@@ -338,7 +345,7 @@ void dealArrowKey(
         if (i > line.size()) {
             if (!hint.empty())
                 line = strToU32Str(hint);
-            i        = static_cast<int>(line.size());
+            i = static_cast<int>(line.size());
             reprint(i);
         } else {
             Console::moveCursorRight(isFullWidthChar(line[i - 1]) ? 2 : 1);
@@ -347,21 +354,21 @@ void dealArrowKey(
         if (histories.empty())
             return;
         hiChanged = true;
-        line      = strToU32Str(*histories.last());
-        i         = static_cast<int>(line.size());
+        line = strToU32Str(*histories.last());
+        i = static_cast<int>(line.size());
         reprint(i);
     } else {
         if (histories.empty())
             return;
         hiChanged = true;
-        str *ns   = histories.next();
+        str *ns = histories.next();
         if (ns) {
             line = strToU32Str(*ns);
         } else {
-            line      = strToU32Str(input);
+            line = strToU32Str(input);
             hiChanged = false;
         }
-        i         = static_cast<int>(line.size());
+        i = static_cast<int>(line.size());
         reprint(i);
     }
 }
@@ -381,7 +388,7 @@ void complete(
         return;
     if (suggests.size() == 1) {
         line = strToU32Str(suggests[0] + " ");
-        i    = static_cast<int>(line.size());
+        i = static_cast<int>(line.size());
         reprint(i);
         return;
     }
@@ -392,14 +399,14 @@ void complete(
     Console::getBufferSize(size);
 
     // 打印行数
-    int      c   = 0;
+    int c = 0;
     // 最大打印行数
-    int      pc  = 0;
+    int pc = 0;
     // 命令长度
-    int      sl  = 0;
+    int sl = 0;
     // 下一行起始坐标
-    int      off = 0;
-    for (int j   = 0; j < suggests.size(); ++j) {
+    int off = 0;
+    for (int j = 0; j < suggests.size(); ++j) {
         const str &s = suggests[j];
         Console::moveCursorRight(off);
         if (c == 9 && off + sl + 1 >= size.X && j < suggests.size() - 1) {
@@ -483,7 +490,7 @@ bool readAllBufChar(int c, int &i, bool &hiChanged, COORD sp, str &input) {
             reprint(i);
         }
     } else {
-        int  rc;
+        int rc;
         char cs[4] = {static_cast<char>(c), 0, 0, 0};
         if (tu_u8c_to_u32c_1(cs[0])) {
             rc = 1;
@@ -514,11 +521,11 @@ void input() {
 
     COORD sp;
     Console::getCursorPosition(sp);
-    int  i         = 0;
+    int i = 0;
     bool hiChanged = false;
 
     line.clear();
-    str  input;
+    str input;
     bool inputting = true;
 
     histories.reset();
