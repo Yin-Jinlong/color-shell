@@ -86,9 +86,9 @@ void csh::CmdHistory::clear() {
 }
 
 bool csh::CmdHistory::load(csh::File &f) {
+    this->file = new File(f.getPath());
     if (!f.exists())
         return false;
-    this->file = new File(f.getPath());
     std::vector<str> lines;
     strSplit(file->readAllTexts(), lines, '\n');
     for (auto &line: lines) {
