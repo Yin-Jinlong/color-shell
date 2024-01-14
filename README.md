@@ -10,8 +10,8 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
 
 [//]: # (统计)
-![Total Lines](https://img.shields.io/badge/total_lines-4,356-9a9a9a)
-![Source Lines](https://img.shields.io/badge/source_lines-2,121-9a9a9a)
+![Total Lines](https://img.shields.io/badge/total_lines-4,432-9a9a9a)
+![Source Lines](https://img.shields.io/badge/source_lines-2,176-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
@@ -76,7 +76,7 @@
 - ❌ 管道
 - ❌ 重定向输入
 - ❌ 重定向输出
-- 🔲 配置
+- ✅ 配置*
 - 🔲 自定义配置
 - ✅ [插件](./extras/README.md)*
 
