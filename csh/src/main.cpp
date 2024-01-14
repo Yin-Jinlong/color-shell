@@ -1,7 +1,6 @@
 #include <predef.h>
 #include <Windows.h>
 #include <conio.h>
-#include <io.h>
 #include <fstream>
 #include <tiny-unicode.h>
 #include "Console.h"
@@ -545,6 +544,9 @@ bool readAllBufChar(int c, int &i, bool &hiChanged, COORD sp, str &input) {
     if (!hiChanged)
         input = u32StrToStr(line);
     u32str u32TmpInput = strToU32Str(tmpInput);
+    if (u32TmpInput.empty()){
+        return !ctrlC;
+    }
     line.insert(i, u32TmpInput);
     i += static_cast<int>(u32TmpInput.size());
     reprint(i);
