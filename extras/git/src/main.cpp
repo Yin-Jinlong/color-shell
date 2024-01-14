@@ -26,13 +26,12 @@ DLL_OUTER_CALL bool CShCanShow() {
 }
 
 void addModified(std::vector<csh::ColorStrPart> &parts) {
-
     str modified = getProcessOutput("git diff --shortstat");
     modified.erase(modified.begin());
     size_t i = modified.find_first_of(' ');
     if (i == std::string::npos)
         return;
-    parts.push_back(csh::ColorStrPart(std::format("\uF4D2 *{} ", modified.substr(0, i)), csh::White));
+    parts.push_back(csh::ColorStrPart("\uF4D2 *" + modified.substr(0, i), csh::White));
 }
 
 void addBranch(std::vector<csh::ColorStrPart> &parts) {
@@ -40,7 +39,7 @@ void addBranch(std::vector<csh::ColorStrPart> &parts) {
     branch.erase(branch.end() - 1);
     if (branch.length() > 32)
         return;
-    parts.push_back(csh::ColorStrPart(std::format("\U000f062c {}", branch), csh::White));
+    parts.push_back(csh::ColorStrPart("\U000f062c " + branch, csh::White));
 }
 
 DLL_OUTER_CALL CallResult

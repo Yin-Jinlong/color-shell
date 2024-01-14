@@ -4,10 +4,11 @@
 #include "util.h"
 #include "File.h"
 #include "CmdList.h"
+#include "csh-fmt.h"
 #include <Windows.h>
 
-extern csh::CmdList           cmdList;
-extern csh::CmdHistory        histories;
+extern csh::CmdList cmdList;
+extern csh::CmdHistory histories;
 const std::map<str, CShCmdFn> ColorShell::INNER_CMDS = {
         {ColorShell::CD,             csh::cd},
         {ColorShell::HISTORY,        csh::history},
@@ -15,7 +16,7 @@ const std::map<str, CShCmdFn> ColorShell::INNER_CMDS = {
 };
 
 ColorShell::ColorShell() {
-    str  path = getEnv("PATH");
+    str path = getEnv("PATH");
     char buf[MAX_PATH];
     GetModuleFileNameA(nullptr, buf, MAX_PATH);
     str mp = buf;
@@ -42,8 +43,8 @@ void split(const str &line, ARG_OUT str &cmd, ARG_OUT str &arg) {
         cmd = s;
         return;
     }
-    cmd      = s.substr(0, p);
-    arg      = s.substr(p + 1);
+    cmd = s.substr(0, p);
+    arg = s.substr(p + 1);
 }
 
 #define EXT_I_CMD 1
@@ -79,7 +80,7 @@ str checkExt(
         const str &cmd
 ) {
     bool noExt = true;
-    str  ext   = strGetExt(strTrim(cmd, true, false));
+    str ext = strGetExt(strTrim(cmd, true, false));
 
     for (const str &e: ColorShell::EXTS) {
         if (e == ext) {
@@ -102,7 +103,7 @@ str checkExt(
 
 void runCmd(str cmdLine, DWORD &rc, const char *app = nullptr) {
     PROCESS_INFORMATION pi = {};
-    STARTUPINFOA        si = {};
+    STARTUPINFOA si = {};
     si.cb = sizeof(si);
 
     if (!CreateProcessA(
@@ -144,15 +145,15 @@ bool ColorShell::run(str line, str &cmd, int &rc, str &err) {
 
     str t = checkExt(paths, cmd);
     if (t.empty()) {
-        err = std::format("Unknown command or executable or runnable script file : '{}'", cmd);
+        err = csh::format("Unknown command or executable or runnable script file : '{}'", {cmd});
     } else {
-        bool isCmd    = (t == EXTS[EXT_I_CMD] || t == EXTS[EXT_I_BAT]);
-        bool isPs     = (t == EXTS[EXT_I_PS1]);
+        bool isCmd = (t == EXTS[EXT_I_CMD] || t == EXTS[EXT_I_BAT]);
+        bool isPs = (t == EXTS[EXT_I_PS1]);
         bool isScript = isCmd || isPs;
 
         str cmdLine = isScript ? (
-                isCmd ? std::format(R"(cmd /c ""{}"" {})", cmd, arg) :
-                std::format("powershell /c {}", line)
+                isCmd ? csh::format(R"(cmd /c ""{}"" {})", {cmd, arg}) :
+                csh::format("powershell /c {}", {line})
         ) : line;// 是exe
 
         runCmd(cmdLine,
@@ -188,7 +189,7 @@ void filterAdd(std::vector<str> &files, bool cur = false) {
 void ColorShell::updateCurrentIndexes() {
     cmdList.clearCurrent();
     std::vector<str> files;
-    str              p = paths[0];
+    str p = paths[0];
     if (csh::File(p).list(files))
         return;
     filterAdd(files, true);
@@ -203,7 +204,7 @@ void ColorShell::updateIndexes() {
     cmdList += UPDATE_INDEXES;
 
     std::vector<str> files;
-    for (int         i = 1; i < paths.size(); i++) {
+    for (int i = 1; i < paths.size(); i++) {
         str p = paths[i];
         files.clear();
         if (csh::File(p).list(files))

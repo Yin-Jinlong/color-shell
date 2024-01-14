@@ -1,7 +1,6 @@
 #include <predef.h>
 #include <csh-plugin.h>
 #include "util.h"
-#include "str/string-util.h"
 #include "File.h"
 
 extern "C" {

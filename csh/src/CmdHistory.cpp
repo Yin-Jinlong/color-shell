@@ -25,7 +25,7 @@ bool csh::CmdHistory::add(const str &cmd) {
     if (size && tail->str == cmd)
         return false;
     auto i = new Item;
-    i->str  = cmd;
+    i->str = cmd;
     i->last = tail;
     if (size) {
         tail->next = i;

@@ -2,7 +2,9 @@
 
 #include <predef.h>
 #include "Color.h"
+#include "csh-fmt.h"
 #include <Windows.h>
+#include <sstream>
 
 /**
  * 控制台
@@ -116,19 +118,19 @@ public:
      *
      * @param n 移动的行数
      */
-    MAYBE_UNUSED static void moveCursorLeft(int n = 1,bool autoUp=true);
+    MAYBE_UNUSED static void moveCursorLeft(int n = 1, bool autoUp = true);
 
     /**
      * 向右移动光标
      *
      * @param n 移动的行数
      */
-    MAYBE_UNUSED static void moveCursorRight(int n = 1,bool autoDown=true);
+    MAYBE_UNUSED static void moveCursorRight(int n = 1, bool autoDown = true);
 
     /**
      * 光标到可视末尾
      */
-    MAYBE_UNUSED const static int CLEAR_CURSOR_TO_END   = 0;
+    MAYBE_UNUSED const static int CLEAR_CURSOR_TO_END = 0;
     /**
      * 光标到可视开头
      */
@@ -136,11 +138,11 @@ public:
     /**
      * 清除可视区域
      */
-    MAYBE_UNUSED const static int CLEAR_VIEW_ALL        = 2;
+    MAYBE_UNUSED const static int CLEAR_VIEW_ALL = 2;
     /**
      * 清除所有
      */
-    MAYBE_UNUSED const static int CLEAR_ALL             = 3;
+    MAYBE_UNUSED const static int CLEAR_ALL = 3;
 
     /**
      * 清除屏幕
@@ -205,15 +207,14 @@ public:
     MAYBE_UNUSED static void println();
 
     /**
-     * 格式化打印，c++格式化
+     * 格式化打印
      *
-     * @tparam T 自动推断
      * @param fmt 格式化字符串
      * @param args 参数
      */
-    template<class... T>
-    MAYBE_UNUSED static inline void printf(std::format_string<T...> fmt, T &&... args) {
-        print(std::format(fmt, std::forward<T>(args)...));
+    MAYBE_UNUSED static inline void printf(const char *fmt, std::initializer_list<csh::Arg> args) {
+        str s = csh::format(fmt, args);
+        print(s);
     }
 
     /**

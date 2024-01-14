@@ -55,7 +55,7 @@ DWORD delEmptyDir(str &dir) {
 
 DWORD delDir(str &dir) {
     WIN32_FIND_DATAA data;
-    HANDLE           hFind = FindFirstFileA((dir + "\\*").c_str(), &data);
+    HANDLE hFind = FindFirstFileA((dir + "\\*").c_str(), &data);
     if (hFind == INVALID_HANDLE_VALUE) {
         return GetLastError();
     }
@@ -64,10 +64,11 @@ DWORD delDir(str &dir) {
         str name = data.cFileName;
         if (name == "." || name == "..")
             continue;
-        str f = std::format("{}/{}", dir, name);
+        str f = dir + "/";
+        f += name;
         if (isFile(f)) {
             DWORD e = delFile(f);
-            err|= e!= 0;
+            err |= e != 0;
             printIfError(e, f);
             continue;
         }
@@ -84,9 +85,9 @@ int main(int argc, char *argv[]) {
         printHelp();
         return EXIT_FAILURE;
     }
-    int  ai  = 1;
-    bool r   = false;
-    str  arg = argv[1];
+    int ai = 1;
+    bool r = false;
+    str arg = argv[1];
     if (arg[0] == '-') {
         ai++;
         int i = 1;

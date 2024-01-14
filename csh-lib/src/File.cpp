@@ -87,7 +87,7 @@ str csh::File::readAllTexts() {
     FILE *fs;
     errno_t err = fopen_s(&fs, path.c_str(), "r");
     if (err)
-        throw std::runtime_error(std::format("open file failed : ", err));
+        throw std::runtime_error("open file failed : " + std::to_string(err));
     str texts;
     char buf[4096];
     while (fgets(buf, 4096, fs)) {
@@ -176,7 +176,7 @@ bool csh::File::createFile() {
                          CREATE_NEW,
                          FILE_ATTRIBUTE_NORMAL,
                          nullptr
-                         );
+    );
     if (f == INVALID_HANDLE_VALUE)
         return false;
     CloseHandle(f);

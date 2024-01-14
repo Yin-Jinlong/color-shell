@@ -1,13 +1,14 @@
 #pragma once
 
 #include <predef.h>
+#include <csh-fmt.h>
 #include <iostream>
 #include <vector>
 
 typedef void (*TestFn)(str &error);
 
 struct TestCase {
-    str    name;
+    str name;
     TestFn fn;
 };
 
@@ -18,7 +19,7 @@ error="assert failed";\
 }
 
 #define ASSERT_EQ(a, b) if ((a)!=(b)) {\
-error=std::format("'{}' != '{}'", a, b);\
+error=csh::format("'{}' != '{}'",{ a, b});\
 }
 
 std::vector<TestCase> tests;
@@ -26,8 +27,8 @@ std::vector<TestCase> tests;
 #define ADD_TEST(name) tests.push_back({"test"#name, test##name})
 
 static inline int runTests() {
-    int       fc = 0;
-    int       pc = 0;
+    int fc = 0;
+    int pc = 0;
     for (auto &tc: tests) {
         try {
             str err;
