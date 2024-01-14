@@ -13,11 +13,23 @@ file(GLOB CSH_SRCS
 
 set_msvc_utf_flags()
 
-add_executable(${PROJECT_NAME} ${CSH_SRCS})
-target_link_libraries(${PROJECT_NAME}
+set(CSH_LINK_LIBS
         csh-lib
-#        yaml-cpp
+        yaml-cpp
 )
+
+set(CSH_LINK_LIBS_DEBUG
+        csh-lib
+        yaml-cppd
+)
+
+add_executable(${PROJECT_NAME} ${CSH_SRCS})
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_link_libraries(${PROJECT_NAME} ${CSH_LINK_LIBS_DEBUG})
+else ()
+    target_link_libraries(${PROJECT_NAME} ${CSH_LINK_LIBS})
+endif ()
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different

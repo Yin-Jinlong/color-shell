@@ -16,7 +16,9 @@
 #include "CmdHistory.h"
 #include "CmdList.h"
 #include "str/string-util.h"
-//#include "yaml-cpp/yaml.h"
+
+#define YAML_CPP_STATIC_DEFINE
+#include "yaml-cpp/yaml.h"
 
 #define SET_UTF_8(s) s.imbue(std::locale(".UTF-8"))
 
@@ -24,9 +26,10 @@ extern void split(const str &line, ARG_OUT str &cmd, ARG_OUT str &arg);
 
 BOOL WINAPI handleCtrlC(DWORD dwCtrlType);
 
-//csh::UserPartConfig userConfig;
+csh::UserPartConfig userConfig;
+csh::PathPartConfig pathPartConfig;
 
-csh::File *historyFile;
+csh::File *historyFile, *configFile;
 
 csh::CmdList cmdList;
 ColorShell sh;
@@ -101,6 +104,14 @@ void mkdir(str &home) {
         error("Can't create .csh directory");
 }
 
+str toIcon(u32_char c) {
+    u8_char buf[6] = {0};
+    int len = tu_u32c_to_u8c(c, buf);
+    buf[len++] = ' ';
+    buf[len] = 0;
+    return buf;
+}
+
 void setup() {
     str home = getEnv("USERPROFILE");
     if (home.empty()) {
@@ -109,6 +120,33 @@ void setup() {
     mkdir(home);
     historyFile = new csh::File(home, ".csh/history");
     histories.load(*historyFile);
+    configFile = new csh::File(home, ".csh/config.yaml");
+
+    YAML::Node config;
+    if(!configFile->exists()){
+        configFile->createFile();
+    }
+    try {
+        config = YAML::Load(configFile->readAllTexts());
+        YAML::Node csh = config["csh"];
+        YAML::Node user = csh["user"];
+        YAML::Node icon=csh["icon"];
+        if (icon.IsScalar()){
+            userConfig.icon = toIcon(std::stoll(icon.Scalar(), nullptr, 16));
+        } else{
+            userConfig.icon = "\uF4FF ";
+        }
+        YAML::Node path = csh["path"];
+        icon=path["icon"];
+        if (path.IsScalar()){
+            pathPartConfig.icon = toIcon(std::stoll(icon.Scalar(), nullptr, 16));
+        } else{
+            pathPartConfig.icon = "\uF413 ";
+        }
+    } catch (...) {
+        error("Could not load config file: ~/.csh/config.yaml");
+    }
+
 }
 
 int main() {
@@ -137,21 +175,19 @@ BOOL WINAPI handleCtrlC(DWORD dwCtrlType) {
     } else if (dwCtrlType == CTRL_CLOSE_EVENT) {
         if (historyFile)
             histories.save();
+        delete historyFile;
+        delete configFile;
     }
     return TRUE;
 }
 
 void initParts() {
-    csh::UserPartConfig userConfig;
     userConfig.backgroundColor = csh::Color(68, 125, 222);
-    userConfig.icon = "\uF4FF ";
     std::vector<str> userContents;
     auto up = new csh::UserPart(userConfig, userContents);
     parts += up;
 
-    csh::PathPartConfig pathPartConfig;
     pathPartConfig.backgroundColor = csh::Color(224, 192, 80);
-    pathPartConfig.icon = " \uF413 ";
     pathPartConfig.iconShowMode = csh::ShowMode::Auto;
     std::vector<str> pathContents;
     auto pp = new csh::PathPart(pathPartConfig, pathContents);
@@ -162,15 +198,15 @@ void initParts() {
         nodePluginPartConfig.backgroundColor = csh::Color(67, 133, 61);
         parts += new csh::PluginPart(nodePluginPartConfig, str("node"));
     } catch (...) {
-        std::cerr << "Load node plugin failed"<< std::endl;
+        std::cerr << "Load node plugin failed" << std::endl;
     }
 
     try {
         csh::PartConfig gitPluginPartConfig;
         gitPluginPartConfig.backgroundColor = csh::Color(250, 80, 40);
         parts += new csh::PluginPart(gitPluginPartConfig, "git");
-    }catch (...) {
-        std::cerr << "Load git plugin failed"<< std::endl;
+    } catch (...) {
+        std::cerr << "Load git plugin failed" << std::endl;
     }
 }
 
