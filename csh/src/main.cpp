@@ -15,8 +15,7 @@
 #include "CmdList.h"
 #include "str/string-util.h"
 
-#define YAML_CPP_STATIC_DEFINE
-#include "yaml-cpp/yaml.h"
+#include "CShConfig.h"
 
 #define SET_UTF_8(s) s.imbue(std::locale(".UTF-8"))
 
@@ -102,7 +101,12 @@ void mkdir(str &home) {
         error("Can't create .csh directory");
 }
 
-str toIcon(u32_char c) {
+char32_t toChar32(const str &s) {
+    return std::stoll(s, nullptr, 16);
+}
+
+str toIcon(const str &s) {
+    char32_t c = toChar32(s);
     u8_char buf[6] = {0};
     int len = tu_u32c_to_u8c(c, buf);
     buf[len++] = ' ';
@@ -121,29 +125,23 @@ void setup() {
     configFile = new csh::File(home, ".csh/config.yaml");
 
     YAML::Node config;
-    if(!configFile->exists()){
+    if (!configFile->exists()) {
         configFile->createFile();
     }
-    try {
-        config = YAML::Load(configFile->readAllTexts());
-        YAML::Node csh = config["csh"];
-        YAML::Node user = csh["user"];
-        YAML::Node icon=csh["icon"];
-        if (icon.IsScalar()){
-            userConfig.icon = toIcon(std::stoll(icon.Scalar(), nullptr, 16));
-        } else{
-            userConfig.icon = "\uF4FF ";
-        }
-        YAML::Node path = csh["path"];
-        icon=path["icon"];
-        if (path.IsScalar()){
-            pathPartConfig.icon = toIcon(std::stoll(icon.Scalar(), nullptr, 16));
-        } else{
-            pathPartConfig.icon = "\uF413 ";
-        }
-    } catch (...) {
-        error("Could not load config file: ~/.csh/config.yaml");
-    }
+
+    char buf[MAX_PATH];
+    GetModuleFileNameA(nullptr, buf, MAX_PATH);
+    str mp = buf;
+    while (mp[mp.size() - 1] != '\\')
+        mp.pop_back();
+
+    std::vector<str> configFiles;
+    configFiles.push_back(configFile->absolutePath());
+    configFiles.push_back(mp + "\\config.yaml");
+    CShConfig configs(configFiles);
+
+    userConfig.icon = toIcon(configs.getPrDefault("csh.user.icon", "F4FF"));
+    pathPartConfig.icon = toIcon(configs.getPrDefault("csh.path.icon", "F413"));
 
 }
 
@@ -543,7 +541,7 @@ bool readAllBufChar(int c, int &i, bool &hiChanged, COORD sp, str &input) {
     if (!hiChanged)
         input = u32StrToStr(line);
     u32str u32TmpInput = strToU32Str(tmpInput);
-    if (u32TmpInput.empty()){
+    if (u32TmpInput.empty()) {
         return !ctrlC;
     }
     line.insert(i, u32TmpInput);

@@ -39,4 +39,5 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 add_custom_target(build-${PROJECT_NAME} ALL
         DEPENDS ${PROJECT_NAME} csh-lib
 )
-copy_target_files(${PROJECT_NAME} ${BIN_DIR})
+copy_build_target_files(${PROJECT_NAME} ${BIN_DIR})
+copy(build-${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/config/config.yaml ${CONFIG_DIR})

@@ -16,4 +16,4 @@ target_link_libraries(${PROJECT_NAME} csh-lib)
 add_custom_target(build-${PROJECT_NAME} ALL
         DEPENDS ${PROJECT_NAME}
 )
-copy_target_files(${PROJECT_NAME} ${EXTRAS_DIR}/git)
+copy_build_target_files(${PROJECT_NAME} ${EXTRAS_DIR}/git)

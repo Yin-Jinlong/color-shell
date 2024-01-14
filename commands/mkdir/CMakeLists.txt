@@ -9,4 +9,4 @@ add_executable(${PROJECT_NAME} src/main.cpp)
 add_custom_target(build-${PROJECT_NAME} ALL
         DEPENDS ${PROJECT_NAME}
 )
-copy_target_files(${PROJECT_NAME} ${BIN_DIR})
+copy_build_target_files(${PROJECT_NAME} ${BIN_DIR})
