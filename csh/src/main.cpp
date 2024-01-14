@@ -12,7 +12,6 @@
 #include "part/PluginPart.h"
 #include "file.h"
 #include "util.h"
-#include "str/char-util.h"
 #include "CmdHistory.h"
 #include "CmdList.h"
 #include "str/string-util.h"
@@ -301,7 +300,7 @@ void setCursorToI(int i) {
     int len = i;
 
     for (int li = 0; li < i; li++) {
-        if (isFullWidthChar(line[li]))
+        if (tu_is_full_width_char(line[li]))
             len++;
     }
     Console::moveCursorRight(len);
@@ -374,7 +373,7 @@ void dealArrowKey(
         if (i < 0)
             i = 0;
         else {
-            Console::moveCursorLeft(isFullWidthChar(line[i]) ? 2 : 1);
+            Console::moveCursorLeft(tu_is_full_width_char(line[i]) ? 2 : 1);
         }
     } else if (key == VK_RIGHT) {
         i++;
@@ -384,7 +383,7 @@ void dealArrowKey(
             i = static_cast<int>(line.size());
             reprint(i);
         } else {
-            Console::moveCursorRight(isFullWidthChar(line[i - 1]) ? 2 : 1);
+            Console::moveCursorRight(tu_is_full_width_char(line[i - 1]) ? 2 : 1);
         }
     } else if (key == VK_UP) {
         if (histories.empty())
