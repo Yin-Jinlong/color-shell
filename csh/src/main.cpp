@@ -488,7 +488,6 @@ bool dealChar(
     if (c == '\t') {
         complete(sp, i);
     } else if (c == '\r' || c == '\n') {
-        printlnShortLine();
         return false;
     } else if (c == '\b') {
         if (!line.empty()) {
