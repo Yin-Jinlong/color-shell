@@ -184,5 +184,11 @@ namespace csh {
          */
         MAYBE_UNUSED bool operator==(const File &other) const;
 
+        /**
+         * 创建文件
+         *
+         * @return 是否成功
+         */
+        MAYBE_UNUSED bool createFile();
     };
 }

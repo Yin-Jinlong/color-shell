@@ -84,11 +84,11 @@ std::fstream csh::File::open(std::ios_base::openmode mode) {
 str csh::File::readAllTexts() {
     if (!isFile())
         throw std::runtime_error("not a file");
-    FILE    *fs;
+    FILE *fs;
     errno_t err = fopen_s(&fs, path.c_str(), "r");
     if (err)
         throw std::runtime_error(std::format("open file failed : ", err));
-    str  texts;
+    str texts;
     char buf[4096];
     while (fgets(buf, 4096, fs)) {
         texts += buf;
@@ -107,7 +107,7 @@ str csh::File::getFileName() const {
 }
 
 csh::File csh::File::getParent() const {
-    str          p = absolutePath();
+    str p = absolutePath();
     unsigned int i = p.find_last_of('\\');
     if (p.find_first_of('\\') == i)
         return csh::File(p);
@@ -124,7 +124,7 @@ DWORD mk(const str &name) {
 }
 
 void mks(const std::vector<str> &paths) {
-    str            p;
+    str p;
     for (const str &n: paths) {
         p += n;
         p += '\\';
@@ -140,11 +140,11 @@ DWORD csh::File::list(std::vector<str> &list, bool file, bool dir) {
         return -1;
     // 列出文件
     WIN32_FIND_DATAA data;
-    HANDLE           hFind = FindFirstFileA((path + "\\*").c_str(), &data);
+    HANDLE hFind = FindFirstFileA((path + "\\*").c_str(), &data);
     if (hFind == INVALID_HANDLE_VALUE)
         return GetLastError();
     do {
-        str  name  = data.cFileName;
+        str name = data.cFileName;
         bool isDir = (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
         if (name != "." && name != "..") {
@@ -166,5 +166,20 @@ bool csh::File::mkdirs() const {
     strSplit(path, paths, '\\');
     mks(paths);
     return exists();
+}
+
+bool csh::File::createFile() {
+    auto f = CreateFileA(path.c_str(),
+                         GENERIC_READ | GENERIC_WRITE,
+                         0,
+                         nullptr,
+                         CREATE_NEW,
+                         FILE_ATTRIBUTE_NORMAL,
+                         nullptr
+                         );
+    if (f == INVALID_HANDLE_VALUE)
+        return false;
+    CloseHandle(f);
+    return true;
 }
 
