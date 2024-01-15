@@ -245,10 +245,9 @@ void mainLoop() {
             }
             ctrlC = true;
         }
-        if (ctrlC) {
-            printlnShortLine();
+        printlnShortLine();
+        if (ctrlC)
             continue;
-        }
 
         str cmd;
         try {
@@ -486,6 +485,8 @@ bool dealChar(
     if (c == '\t') {
         complete(sp, i);
     } else if (c == '\r' || c == '\n') {
+        if (!line.empty())
+            Console::print("\r");
         return false;
     } else if (c == '\b') {
         if (!line.empty()) {
