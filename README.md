@@ -10,8 +10,8 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
 
 [//]: # (统计)
-![Total Lines](https://img.shields.io/badge/total_lines-4,493-9a9a9a)
-![Source Lines](https://img.shields.io/badge/source_lines-2,225-9a9a9a)
+![Total Lines](https://img.shields.io/badge/total_lines-4,542-9a9a9a)
+![Source Lines](https://img.shields.io/badge/source_lines-2,236-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
@@ -49,6 +49,33 @@
 - 支持Unicode [ANSI](https://zh.wikipedia.org/wiki/ANSI%E8%BD%AC%E4%B9%89%E5%BA%8F%E5%88%97)
   转义的基本终端(PS,Windows Terminal)
 
+## 配置 ⚙️
+
+### 配置文件
+
+`config.cmake`:
+
+```cmake
+set(GITHUB_HOME
+        ".../github" # GitHub 仓库目录
+)
+```
+
+更多见[config.cmake](./config.cmake)
+
+### 编译环境
+
+- `cmake`>=3.22
+- `vs2022`
+- `win10 sdk`
+
+### 项目依赖
+
+需要`include`目录和已编译好的`.dll`或`.lib`文件目录
+
+- [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+- [tiny-unicode](https://github.com/Yin-Jinlong/tiny-unicode)
+
 ## 编译 🔨
 
 构建目标`build`，所有输出在`out`目录下
@@ -81,3 +108,8 @@
 - ✅ [插件](./extras/README.md)*
 
 <small style="color:rgba(128,128,128,0.5)">注：*为基本完成，未勾选标识正在进行或将要进行</small>
+
+## 已知问题 ❗
+
+- 控制台大小改变光标错位
+- 多行命令输入时，光标打印错位
