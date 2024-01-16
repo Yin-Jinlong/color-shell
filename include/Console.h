@@ -151,55 +151,18 @@ public:
      */
     MAYBE_UNUSED static void clear(int flag = CLEAR_CURSOR_TO_END);
 
-    /**
-     * 打印字符串
-     *
-     * @param str 字符串
-     */
-    MAYBE_UNUSED static void print(const str &str);
+    template<typename T>
+    MAYBE_UNUSED static void print(const T v){
+        std::cout << v;
+    }
 
-    /**
-     * 打印字符串
-     *
-     * @param str 字符串
-     */
-    MAYBE_UNUSED static void print(const u32str &str);
+    static void print(const u32str &s);
 
-    /**
-     * 打印字符串并换行
-     *
-     * @param str 字符串
-     */
-    MAYBE_UNUSED static void println(const str &str);
-
-    /**
-     * 打印字符串
-     *
-     * @param str 字符串
-     */
-    MAYBE_UNUSED static void print(const char *str);
-
-    /**
-     * 打印字符串并换行
-     *
-     * @param str 字符串
-     * @param convert 是否转换到ANSI
-     */
-    MAYBE_UNUSED static void println(const char *str);
-
-    /**
-     * 打印字符
-     *
-     * @param c 字符
-     */
-    MAYBE_UNUSED static void print(char c);
-
-    /**
-     * 打印字符并换行
-     *
-     * @param c 字符
-     */
-    MAYBE_UNUSED static void println(char c);
+    template<typename T>
+    MAYBE_UNUSED static void println(const T s){
+        print(s);
+        println();
+    }
 
     /**
      * 换行

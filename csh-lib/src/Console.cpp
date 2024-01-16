@@ -2,7 +2,7 @@
 #include "str/string-util.h"
 
 bool                       Console::withColor = true;
-CONSOLE_SCREEN_BUFFER_INFO Console::csbi = {};
+CONSOLE_SCREEN_BUFFER_INFO Console::csbi      = {};
 
 
 void Console::setColorMode(bool on) {
@@ -100,37 +100,8 @@ void Console::clear(int flag) {
     printf("\033[{}J", flag);
 }
 
-void Console::print(const str &str) {
-    std::cout << str;
-}
-
-void Console::println(const str &str) {
-    print(str);
-    println();
-}
-
-void Console::print(const u32str &str) {
-    print(u32StrToStr(str));
-}
-
-void Console::print(const char *str) {
-    if (!str)
-        return;
-    std::cout << str;
-}
-
-void Console::println(const char *str) {
-    print(str);
-    println();
-}
-
-void Console::print(char c) {
-    std::wcout << c;
-}
-
-void Console::println(char c) {
-    print(c);
-    println();
+void Console::print(const u32str &s) {
+    print(u32StrToStr(s));
 }
 
 void Console::println() {
