@@ -1,11 +1,11 @@
 #include <csh-fmt.h>
 #include <sstream>
 
-str csh::format(const char *fmt, std::initializer_list<Arg> args) {
+str csh::format(const char *fmt, std::initializer_list<StrValue> args) {
     std::stringstream ss;
     char c;
-    const Arg *arg = args.begin();
-    const Arg *end = args.end();
+    const StrValue *arg = args.begin();
+    const StrValue *end = args.end();
     while (arg != end) {
         while ((c = *fmt)) {
             if (c == '{' && fmt[1] == '}') {

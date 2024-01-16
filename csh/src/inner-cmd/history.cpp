@@ -11,7 +11,7 @@ namespace csh {
     int history(const str &arg) {
         str s = strTrim(arg);
         if (s.empty()) {
-            Console::printf("histories: {}", {histories.length()});
+            Console::printf("histories: {}", histories.length());
             return 0;
         }
         std::vector<str> args;

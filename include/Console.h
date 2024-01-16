@@ -212,9 +212,9 @@ public:
      * @param fmt 格式化字符串
      * @param args 参数
      */
-    MAYBE_UNUSED static inline void printf(const char *fmt, std::initializer_list<csh::Arg> args) {
-        str s = csh::format(fmt, args);
-        print(s);
+    template<typename... Args>
+    MAYBE_UNUSED static inline void printf(const char *fmt, Args... args) {
+        print(csh::format(fmt, {csh::Arg(args)...}));
     }
 
     /**

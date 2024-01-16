@@ -145,15 +145,15 @@ bool ColorShell::run(str line, str &cmd, int &rc, str &err) {
 
     str t = checkExt(paths, cmd);
     if (t.empty()) {
-        err = csh::format("Unknown command or executable or runnable script file : '{}'", {cmd});
+        err = csh::format("Unknown command or executable or runnable script file : '{}'", cmd);
     } else {
         bool isCmd = (t == EXTS[EXT_I_CMD] || t == EXTS[EXT_I_BAT]);
         bool isPs = (t == EXTS[EXT_I_PS1]);
         bool isScript = isCmd || isPs;
 
         str cmdLine = isScript ? (
-                isCmd ? csh::format(R"(cmd /c ""{}"" {})", {cmd, arg}) :
-                csh::format("powershell /c {}", {line})
+                isCmd ? csh::format(R"(cmd /c ""{}"" {})", cmd, arg) :
+                csh::format("powershell /c {}", line)
         ) : line;// 是exe
 
         runCmd(cmdLine,

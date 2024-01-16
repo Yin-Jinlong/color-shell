@@ -12,12 +12,13 @@
 
 #define MAX_LINE_LENGTH 1024
 
-#define DLL_OUT __declspec(dllexport)
+#define MAYBE_UNUSED [[maybe_unused]]
+
+#define DLL_OUT MAYBE_UNUSED __declspec(dllexport)
 #define DLL_IN __declspec(dllimport)
 #define USE_RET [[nodiscard]]
 
-#define MAYBE_UNUSED [[maybe_unused]]
-#define DLL_OUTER_CALL MAYBE_UNUSED DLL_OUT
+#define DLL_OUTER_CALL DLL_OUT
 
 #define ARG_OUT
 #define ARG_IN
