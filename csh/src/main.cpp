@@ -522,20 +522,11 @@ bool readAllBufChar(int c, int &i, bool &hiChanged, COORD sp, str &input) {
             reprint(i);
         }
     } else {
-        int rc;
-        char cs[4] = {static_cast<char>(c), 0, 0, 0};
-        if (tu_u8c_to_u32c_1(cs[0])) {
-            rc = 1;
-        } else if (tu_u8c_to_u32c_2(cs[0], cs[1] = static_cast<char>(_getch()))) {
-            rc = 2;
-        } else if (tu_u8c_to_u32c_3(cs[0], cs[1], cs[2] = static_cast<char>(_getch()))) {
-            rc = 3;
-        } else {
-            cs[3] = static_cast<char>(_getch());
-            rc = 4;
-        }
-        for (int j = 0; j < rc; ++j) {
-            if (!dealChar(tmpInput, i, sp, cs[j]))
+        int rc = tu_get_byte_count(static_cast<char>(c));
+        if (!dealChar(tmpInput, i, sp, c))
+            return false;
+        for (int j = 1; j < rc; ++j) {
+            if (!dealChar(tmpInput, i, sp, static_cast<char>(_getch())))
                 return false;
         }
     }
