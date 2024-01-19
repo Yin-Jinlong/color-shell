@@ -1,4 +1,4 @@
-# Color-Shell 彩色的Windows Shell ![Terminal](https://img.shields.io/badge/%3E__-3c3c3c)
+# Color-Shell 彩色的Windows Shell
 
 [//]: # (概览)
 ![GitHub License](https://img.shields.io/github/license/Yin-Jinlong/color-shell)
@@ -10,8 +10,8 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
 
 [//]: # (统计)
-![Total Lines](https://img.shields.io/badge/total_lines-4,542-9a9a9a)
-![Source Lines](https://img.shields.io/badge/source_lines-2,236-9a9a9a)
+![Total Lines](https://img.shields.io/badge/total_lines-4,528-9a9a9a)
+![Source Lines](https://img.shields.io/badge/source_lines-2,245-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
@@ -20,7 +20,7 @@
 
 程序使用`UTF-8`环境。
 
-## 项目结构🗂️
+## 项目结构 🗂️
 
 **项目📦**
 
