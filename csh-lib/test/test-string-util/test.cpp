@@ -1,5 +1,5 @@
 #include <test/test.h>
-#include "str/string-util.h"
+#include <str/string-util.h>
 
 TEST_FN(_strGetExt) {
     str s   = "aaa.b";

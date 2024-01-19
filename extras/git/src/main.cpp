@@ -1,7 +1,6 @@
 #include <predef.h>
 #include <csh-plugin.h>
-#include "util.h"
-#include "str/string-util.h"
+#include <util.h>
 
 extern "C" {
 DLL_OUTER_CALL CallResult

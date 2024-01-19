@@ -1,6 +1,7 @@
 #include <direct.h>
-#include "inner-cmd.h"
-#include "part/Parts.h"
+
+#include "../../include/inner-cmd.h"
+#include "../../include/part/Parts.h"
 
 extern csh::Parts parts;
 

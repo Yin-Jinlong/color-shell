@@ -1,22 +1,16 @@
-#include "part/Part.h"
-#include "Console.h"
+#include <Console.h>
+
+#include "../../include/part/Part.h"
 
 
 csh::Part::Part(csh::PartConfig &config) {
-    this->config                  = new PartConfig;
-    this->config->foregroundColor = config.foregroundColor;
-    this->config->backgroundColor = config.backgroundColor;
-    this->config->end             = config.end;
-    this->config->passBgc         = config.passBgc;
+    this->config = new PartConfig;
+    *this->config = config;
 }
 
 csh::Part::Part(csh::PartConfig &config, std::vector<str> &contents) {
-    this->config                  = new PartConfig;
-    this->config->foregroundColor = config.foregroundColor;
-    this->config->backgroundColor = config.backgroundColor;
-    this->config->end             = config.end;
-    this->config->passBgc         = config.passBgc;
-    this->contents                = contents;
+    this->config = new PartConfig;
+    *this->config = config;
 }
 
 csh::Part::~Part() {

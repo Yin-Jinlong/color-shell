@@ -1,6 +1,8 @@
-#include <CShConfig.h>
-#include "File.h"
-#include "str/string-util.h"
+#include <File.h>
+#include <str/string-util.h>
+
+#include "../include/CShConfig.h"
+
 
 CShConfig::CShConfig(const std::vector<str> &configFiles) {
     for (auto &f: configFiles) {

@@ -3,19 +3,17 @@
 #include <conio.h>
 #include <fstream>
 #include <tiny-unicode.h>
-#include "Console.h"
-#include "color-shell.h"
-#include "part/PathPart.h"
-#include "part/Parts.h"
-#include "part/UserPart.h"
-#include "part/PluginPart.h"
-#include "file.h"
-#include "util.h"
-#include "CmdHistory.h"
-#include "CmdList.h"
-#include "str/string-util.h"
+#include <Console.h>
+#include <file.h>
+#include <util.h>
+#include <str/string-util.h>
 
-#include "CShConfig.h"
+#include "../include/color-shell.h"
+#include "../include/part/PathPart.h"
+#include "../include/part/Parts.h"
+#include "../include/CmdHistory.h"
+#include "../include/CmdList.h"
+#include "../include/CShConfig.h"
 
 #define SET_UTF_8(s) s.imbue(std::locale(".UTF-8"))
 

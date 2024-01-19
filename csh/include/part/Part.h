@@ -1,9 +1,9 @@
 #pragma once
 
 #include <predef.h>
-#include <vector>
+#include <csh-plugin.h>
+
 #include "PartConfig.h"
-#include "csh-plugin.h"
 
 namespace csh {
 

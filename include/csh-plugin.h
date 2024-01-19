@@ -1,7 +1,7 @@
 #pragma once
 
 #include <predef.h>
-#include "Color.h"
+#include <Color.h>
 
 #define CSH_CALL_FN_SUCCESS true
 #define CSH_CALL_FN_FAILED false

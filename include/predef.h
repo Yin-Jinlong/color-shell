@@ -5,16 +5,13 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
-#include <format>
 #include <vector>
 #include <array>
 #include <map>
 
-#define MAX_LINE_LENGTH 1024
-
 #define MAYBE_UNUSED [[maybe_unused]]
 
-#define DLL_OUT MAYBE_UNUSED __declspec(dllexport)
+#define DLL_OUT __declspec(dllexport)
 #define DLL_IN __declspec(dllimport)
 #define USE_RET [[nodiscard]]
 

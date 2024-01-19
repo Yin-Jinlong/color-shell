@@ -1,7 +1,7 @@
 #include <predef.h>
 #include <csh-plugin.h>
-#include "util.h"
-#include "File.h"
+#include <util.h>
+#include <File.h>
 
 extern "C" {
 DLL_OUTER_CALL CallResult CShOnLoadPlugin(std::map<str, str> &config) {

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "predef.h"
-#include "Color.h"
+#include <predef.h>
+#include <Color.h>
+
 #include "PartConfig.h"
 
 namespace csh {
@@ -10,6 +11,10 @@ namespace csh {
     public:
         str      icon;
         ShowMode iconShowMode = ShowMode::Auto;
+
+        IconPartConfig &operator=(const IconPartConfig &other) = default;
+
+        IconPartConfig &operator=(IconPartConfig &&other) noexcept = default;
     };
 
 }

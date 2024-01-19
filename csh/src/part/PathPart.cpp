@@ -1,21 +1,15 @@
-#include <part/PathPart.h>
 #include <windows.h>
-
 #include <utility>
 #include <functional>
 #include <Console.h>
 #include <direct.h>
 
+#include "../../include/part/PathPart.h"
+
+
 csh::PathPart::PathPart(csh::PathPartConfig &config, std::vector<str> &contents) : Part(config, contents) {
-    this->config                  = new PathPartConfig;
-    this->config->foregroundColor = config.foregroundColor;
-    this->config->backgroundColor = config.backgroundColor;
-    this->config->icon            = config.icon;
-    this->config->iconShowMode    = config.iconShowMode;
-    this->config->end             = config.end;
-    this->config->passBgc         = config.passBgc;
-    this->config->maxWidth        = config.maxWidth;
-    this->config->ellipsis        = config.ellipsis;
+    this->config = new PathPartConfig;
+    *this->config = config;
 }
 
 csh::PathPart::PathPart(csh::PathPart &other) : PathPart(*other.config,

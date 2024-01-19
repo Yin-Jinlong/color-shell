@@ -1,8 +1,8 @@
-#include "inner-cmd.h"
-#include "part/Parts.h"
-#include "str/string-util.h"
-#include "Console.h"
-#include "color-shell.h"
+#include <str/string-util.h>
+#include <Console.h>
+
+#include "../../include/inner-cmd.h"
+#include "../../include/color-shell.h"
 
 extern csh::CmdHistory histories;
 

@@ -2,8 +2,6 @@
 
 #include <predef.h>
 #include <csh-fmt.h>
-#include <iostream>
-#include <vector>
 
 typedef void (*TestFn)(str &error);
 
@@ -19,7 +17,7 @@ error="assert failed";\
 }
 
 #define ASSERT_EQ(a, b) if ((a)!=(b)) {\
-error=csh::format("'{}' != '{}'",{ a, b});\
+error=csh::format("'{}' != '{}'", a, b);\
 }
 
 std::vector<TestCase> tests;

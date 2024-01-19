@@ -1,5 +1,5 @@
-#include "inner-cmd.h"
-#include "color-shell.h"
+#include "../../include/inner-cmd.h"
+#include "../../include/color-shell.h"
 
 extern ColorShell sh;
 

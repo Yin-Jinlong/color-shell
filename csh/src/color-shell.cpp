@@ -1,11 +1,12 @@
-#include <color-shell.h>
-#include "str/string-util.h"
-#include "inner-cmd.h"
-#include "util.h"
-#include "File.h"
-#include "CmdList.h"
-#include "csh-fmt.h"
+#include <str/string-util.h>
 #include <Windows.h>
+#include <util.h>
+#include <File.h>
+#include <csh-fmt.h>
+
+#include "../include/color-shell.h"
+#include "../include/inner-cmd.h"
+#include "../include/CmdList.h"
 
 extern csh::CmdList cmdList;
 extern csh::CmdHistory histories;
@@ -126,7 +127,7 @@ void runCmd(str cmdLine, DWORD &rc, const char *app = nullptr) {
     CloseHandle(pi.hThread);
 }
 
-bool ColorShell::run(str line, str &cmd, int &rc, str &err) {
+bool ColorShell::run(const str& line, str &cmd, int &rc, str &err) {
     err.clear();
     str arg;
     split(line, cmd, arg);

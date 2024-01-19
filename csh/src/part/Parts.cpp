@@ -1,5 +1,7 @@
-#include <part/Parts.h>
-#include "Console.h"
+#include <Console.h>
+
+#include "../../include/part/Parts.h"
+
 
 csh::Parts::~Parts() {
     for (Part *&part: parts) {

@@ -37,7 +37,7 @@ public:
      * @param [out] err 错误信息
      * @return 是否继续执行
      */
-    bool run(str line, str &cmd, int &rc, str &err);
+    bool run(const str& line, str &cmd, int &rc, str &err);
 
     /**
      * 更新当前目录命令索引

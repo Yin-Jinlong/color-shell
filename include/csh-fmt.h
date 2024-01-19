@@ -1,7 +1,6 @@
 #pragma once
 
 #include <predef.h>
-
 #include <utility>
 
 // @formatter:off
@@ -16,6 +15,12 @@ namespace csh {
     class DLL_OUT Arg : public StrValue {
     public:
         Arg(T v) : StrValue(v.toString()) {};
+    };
+
+    template<>
+    class DLL_OUT Arg<const char *> : public StrValue {
+    public:
+        Arg(const char * s) : StrValue(s) {}
     };
 
     template<>

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <predef.h>
-#include "Color.h"
-#include "csh-fmt.h"
+#include <Color.h>
+#include <csh-fmt.h>
 #include <Windows.h>
 #include <sstream>
 

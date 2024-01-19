@@ -1,5 +1,5 @@
-#include "Console.h"
-#include "str/string-util.h"
+#include <Console.h>
+#include <str/string-util.h>
 
 bool                       Console::withColor = true;
 CONSOLE_SCREEN_BUFFER_INFO Console::csbi      = {};

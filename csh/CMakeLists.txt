@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.22)
 
 project(csh CXX)
 
-include_directories(include)
-
 file(GLOB CSH_SRCS
         include/*.h
         include/**/*.h

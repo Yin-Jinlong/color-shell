@@ -1,5 +1,7 @@
-#include <part/PluginPart.h>
-#include "Console.h"
+#include <Console.h>
+
+#include "../../include/part/PluginPart.h"
+
 
 csh::PluginPart::PluginPart(csh::PartConfig &config, const str &name) : Part(config) {
     this->name = name;

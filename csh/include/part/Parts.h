@@ -1,7 +1,7 @@
 #pragma once
 
 #include <predef.h>
-#include <vector>
+
 #include "Part.h"
 #include "UserPart.h"
 #include "PathPart.h"

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <predef.h>
 #define YAML_CPP_STATIC_DEFINE
+
+#include <predef.h>
 #include <yaml-cpp/yaml.h>
 
 /**

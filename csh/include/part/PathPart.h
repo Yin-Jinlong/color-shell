@@ -1,6 +1,7 @@
 #pragma once
 
 #include <predef.h>
+
 #include "Part.h"
 #include "IconPartConfig.h"
 

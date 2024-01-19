@@ -1,7 +1,8 @@
-#include <CmdHistory.h>
 #include <fstream>
-#include "File.h"
-#include "str/string-util.h"
+#include <File.h>
+#include <str/string-util.h>
+
+#include "../include/CmdHistory.h"
 
 
 csh::CmdHistory::CmdHistory() = default;
