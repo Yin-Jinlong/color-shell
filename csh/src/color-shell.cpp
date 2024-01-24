@@ -127,7 +127,7 @@ void runCmd(str cmdLine, DWORD &rc, const char *app = nullptr) {
     CloseHandle(pi.hThread);
 }
 
-bool ColorShell::run(const str& line, str &cmd, int &rc, str &err) {
+bool ColorShell::run(const str &line, str &cmd, int &rc, str &err) {
     err.clear();
     str arg;
     split(line, cmd, arg);
@@ -148,14 +148,8 @@ bool ColorShell::run(const str& line, str &cmd, int &rc, str &err) {
     if (t.empty()) {
         err = csh::format("Unknown command or executable or runnable script file : '{}'", cmd);
     } else {
-        bool isCmd = (t == EXTS[EXT_I_CMD] || t == EXTS[EXT_I_BAT]);
-        bool isPs = (t == EXTS[EXT_I_PS1]);
-        bool isScript = isCmd || isPs;
-
-        str cmdLine = isScript ? (
-                isCmd ? csh::format(R"(cmd /c ""{}"" {})", cmd, arg) :
-                csh::format("powershell /c {}", line)
-        ) : line;// 是exe
+        bool isScript = (t == EXTS[EXT_I_CMD] || t == EXTS[EXT_I_BAT] || t == EXTS[EXT_I_PS1]);
+        str cmdLine = isScript ? (csh::format("powershell /c {}", line)) : line;// 是exe
 
         runCmd(cmdLine,
                (DWORD &) rc,
