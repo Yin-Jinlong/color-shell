@@ -11,7 +11,7 @@
 
 [//]: # (统计)
 ![Total Lines](https://img.shields.io/badge/total_lines-4,528-9a9a9a)
-![Source Lines](https://img.shields.io/badge/source_lines-2,245-9a9a9a)
+![Source Lines](https://img.shields.io/badge/source_lines-2,240-9a9a9a)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
@@ -51,17 +51,21 @@
 
 ## 配置 ⚙️
 
-### 配置文件
+### 配置环境
 
-`config.cmake`:
+设置`github`目录
 
-```cmake
-set(GITHUB_HOME
-        ".../github" # GitHub 仓库目录
-)
+直接在系统环境变量添加或者使用IDE加载环境变量文件
+
+```sh
+set GITHUB_DIR=...
 ```
 
-更多见[config.cmake](./config.cmake)
+下载依赖仓库到`GITHUB_DIR/<user>/<repo>`
+
+构建依赖到仓库`build`目录
+
+更多见[config.cmake](config.cmake)
 
 ### 编译环境
 
