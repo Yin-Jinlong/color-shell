@@ -1,8 +1,10 @@
 ### 第三方库 ###
 
-set(GITHUB_HOME
-        "E:/github"
-)
+if (NOT DEFINED ENV{GITHUB_DIR})
+    message(SEND_ERROR "No github dir")
+endif ()
+
+set(GITHUB_DIR $ENV{GITHUB_DIR})
 
 set(TPLS
         YAML_CPP
@@ -12,7 +14,7 @@ set(TPLS
 
 # yaml-cpp
 set(YAML_CPP_HOME
-        "${GITHUB_HOME}/jbeder/yaml-cpp"
+        "${GITHUB_DIR}/jbeder/yaml-cpp"
         CACHE INTERNAL "" FORCE
 )
 set(YAML_CPP_INCLUDE_DIR
@@ -26,7 +28,7 @@ set(YAML_CPP_LINK_DIR
 
 # tiny-unicode
 set(TINY_UNICODE_HOME
-        "${GITHUB_HOME}/yin-jinlong/tiny-unicode"
+        "${GITHUB_DIR}/yin-jinlong/tiny-unicode"
         CACHE INTERNAL "" FORCE
 )
 set(TINY_UNICODE_INCLUDE_DIR
