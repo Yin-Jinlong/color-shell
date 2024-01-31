@@ -10,8 +10,9 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/Yin-Jinlong/color-shell)
 
 [//]: # (统计)
-![Total Lines](https://img.shields.io/badge/total_lines-4,528-9a9a9a)
-![Source Lines](https://img.shields.io/badge/source_lines-2,240-9a9a9a)
+![Total Lines](https://tokei.rs/b1/github/Yin-Jinlong/color-shell)
+![Source Lines](https://tokei.rs/b1/github/Yin-Jinlong/color-shell?category=code)
+![Files](https://tokei.rs/b1/github/Yin-Jinlong/color-shell?category=files)
 
 [//]: # (活动)
 ![GitHub commit activity (branch)](https://img.shields.io/github/commit-activity/m/Yin-Jinlong/color-shell)
